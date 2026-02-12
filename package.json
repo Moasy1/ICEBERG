@@ -1,0 +1,43 @@
+{
+  "name": "iceberg-agency",
+  "version": "1.0.0",
+  "description": "Iceberg Digital Marketing Agency Website with CMS",
+  "main": "api/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "npx serve . -l 3000",
+    "dev:backend": "nodemon api/index.js",
+    "build": "echo 'Frontend build complete'",
+    "start": "node api/index.js",
+    "cms:dev": "cd cms && npm run develop",
+    "cms:build": "cd cms && npm run build",
+    "cms:start": "cd cms && npm run start"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "mongoose": "^8.0.3",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.7",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "concurrently": "^8.2.2",
+    "serve": "^14.2.1"
+  },
+  "keywords": [
+    "digital-marketing",
+    "agency",
+    "cms",
+    "vercel",
+    "express",
+    "strapi"
+  ],
+  "author": "Iceberg Agency",
+  "license": "MIT"
+}
