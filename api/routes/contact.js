@@ -1,12 +1,13 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
 const router = express.Router();
+const Message = require('../models/Message');
 
 // Contact form submission
 router.post('/submit', async (req, res) => {
   try {
     const { name, email, message, phone, company } = req.body;
-    
+
     // Validate required fields
     if (!name || !email || !message) {
       return res.status(400).json({
@@ -14,16 +15,17 @@ router.post('/submit', async (req, res) => {
         error: 'Name, email, and message are required'
       });
     }
-    
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid email format'
-      });
-    }
-    
+
+    // Save message to database
+    const newMessage = new Message({
+      name,
+      email,
+      message,
+      phone,
+      company
+    });
+    await newMessage.save();
+
     // Create email transporter
     const transporter = nodemailer.createTransporter({
       host: process.env.EMAIL_HOST || 'smtp.gmail.com',
@@ -34,7 +36,7 @@ router.post('/submit', async (req, res) => {
         pass: process.env.EMAIL_PASS
       }
     });
-    
+
     // Email to admin
     const adminEmail = {
       from: process.env.EMAIL_USER,
@@ -61,39 +63,21 @@ router.post('/submit', async (req, res) => {
         </div>
       `
     };
-    
-    // Confirmation email to user
-    const userEmail = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Thank you for contacting Iceberg Agency',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #00d4ff; text-align: center;">Thank You for Contacting Iceberg Agency</h2>
-          <div style="background: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
-            <p>Dear ${name},</p>
-            <p>Thank you for reaching out to us. We have received your message and will get back to you within 24 hours.</p>
-            <p>Here's a copy of your message:</p>
-            <div style="background: #ffffff; padding: 15px; border-left: 3px solid #00d4ff; margin: 15px 0;">
-              <p style="white-space: pre-wrap;">${message}</p>
-            </div>
-          </div>
-          <div style="text-align: center; margin: 30px 0;">
-            <p style="color: #666;">Best regards,<br>The Iceberg Agency Team</p>
-          </div>
-        </div>
-      `
-    };
-    
-    // Send emails
-    await transporter.sendMail(adminEmail);
-    await transporter.sendMail(userEmail);
-    
+
+    // Send email to admin (optional check if configured)
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      try {
+        await transporter.sendMail(adminEmail);
+      } catch (err) {
+        console.error('Email sending failed, but message was saved to DB:', err);
+      }
+    }
+
     res.json({
       success: true,
       message: 'Your message has been sent successfully. We will contact you soon!'
     });
-    
+
   } catch (error) {
     console.error('Contact form error:', error);
     res.status(500).json({
@@ -106,12 +90,10 @@ router.post('/submit', async (req, res) => {
 // Get contact submissions (for admin)
 router.get('/submissions', async (req, res) => {
   try {
-    // This would typically require authentication
-    // For now, returning a placeholder response
+    const messages = await Message.find().sort({ createdAt: -1 });
     res.json({
       success: true,
-      data: [],
-      message: 'Contact submissions endpoint - requires authentication'
+      data: messages
     });
   } catch (error) {
     res.status(500).json({

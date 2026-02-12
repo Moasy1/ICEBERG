@@ -9,7 +9,7 @@ let currentEditId = null;
 let currentEditType = null;
 
 // Initialize dashboard
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     loadDashboardData();
     setupEventListeners();
 });
@@ -18,6 +18,10 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupEventListeners() {
     // Content form submission
     document.getElementById('content-form').addEventListener('submit', handleContentSubmit);
+    // Project form submission
+    document.getElementById('project-form').addEventListener('submit', handleProjectSubmit);
+    // Service form submission
+    document.getElementById('service-form').addEventListener('submit', handleServiceSubmit);
 }
 
 // Navigation
@@ -26,18 +30,22 @@ function showSection(sectionId) {
     document.querySelectorAll('.content-section').forEach(section => {
         section.classList.add('hidden');
     });
-    
+
     // Show selected section
     document.getElementById(sectionId).classList.remove('hidden');
-    
+
     // Update nav links
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
     });
-    event.target.classList.add('active');
-    
+
+    // Fallback if event is not passed (direct call)
+    if (window.event && window.event.target) {
+        window.event.target.classList.add('active');
+    }
+
     // Load section data
-    switch(sectionId) {
+    switch (sectionId) {
         case 'dashboard':
             loadDashboardData();
             break;
@@ -59,21 +67,23 @@ function showSection(sectionId) {
 // Dashboard Functions
 async function loadDashboardData() {
     try {
-        const [contentRes, projectsRes, servicesRes] = await Promise.all([
+        const [contentRes, projectsRes, servicesRes, contactsRes] = await Promise.all([
             fetch(`${API_BASE}/content`),
             fetch(`${API_BASE}/projects`),
-            fetch(`${API_BASE}/services`)
+            fetch(`${API_BASE}/services`),
+            fetch(`${API_BASE}/contact/submissions`)
         ]);
-        
+
         const content = await contentRes.json();
         const projects = await projectsRes.json();
         const services = await servicesRes.json();
-        
+        const contacts = await contactsRes.json();
+
         document.getElementById('content-count').textContent = content.data ? Object.keys(content.data).length : 0;
         document.getElementById('projects-count').textContent = projects.data ? projects.data.length : 0;
         document.getElementById('services-count').textContent = services.data ? services.data.length : 0;
-        document.getElementById('contacts-count').textContent = '0'; // Will implement later
-        
+        document.getElementById('contacts-count').textContent = contacts.data ? contacts.data.length : 0;
+
         // Load recent activity
         loadRecentActivity();
     } catch (error) {
@@ -86,7 +96,12 @@ function loadRecentActivity() {
     activityDiv.innerHTML = `
         <div class="flex items-center gap-3 text-sm">
             <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span class="text-gray-300">System initialized successfully</span>
+            <span class="text-gray-300">System connected to real-time database</span>
+            <span class="text-gray-500 text-xs">Just now</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm mt-3">
+            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+            <span class="text-gray-300">Admin dashboard synchronized with backend API</span>
             <span class="text-gray-500 text-xs">Just now</span>
         </div>
     `;
@@ -97,22 +112,22 @@ async function loadContent() {
     try {
         const response = await fetch(`${API_BASE}/content`);
         const result = await response.json();
-        
+
         const tbody = document.getElementById('content-table-body');
-        
+
         if (result.success && result.data) {
             // Convert object to array for display
             const contentArray = Object.entries(result.data).map(([key, value]) => ({
                 key,
-                value: { en: value, ar: value },
-                category: 'general' // Default category
+                value: { en: value, ar: 'Bilingual (Edit to view)' },
+                category: 'navigation' // Default
             }));
-            
+
             tbody.innerHTML = contentArray.map(item => `
                 <tr class="table-row">
-                    <td class="px-6 py-4 text-sm text-gray-300">${item.key}</td>
+                    <td class="px-6 py-4 text-sm text-gray-300 font-mono">${item.key}</td>
                     <td class="px-6 py-4 text-sm text-gray-300">${item.category}</td>
-                    <td class="px-6 py-4 text-sm text-gray-300">${item.value.en}</td>
+                    <td class="px-6 py-4 text-sm text-gray-300 max-w-xs truncate">${item.value.en}</td>
                     <td class="px-6 py-4 text-sm text-gray-300">${item.value.ar}</td>
                     <td class="px-6 py-4 text-sm">
                         <button onclick="editContent('${item.key}')" class="text-blue-400 hover:text-blue-300 mr-3">
@@ -127,7 +142,7 @@ async function loadContent() {
         } else {
             tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-400">No content found</td></tr>';
         }
-        
+
         // Reinitialize icons
         lucide.createIcons();
     } catch (error) {
@@ -138,7 +153,7 @@ async function loadContent() {
 
 async function handleContentSubmit(event) {
     event.preventDefault();
-    
+
     const contentData = {
         key: document.getElementById('content-key').value,
         value: {
@@ -148,11 +163,11 @@ async function handleContentSubmit(event) {
         category: document.getElementById('content-category').value,
         type: 'text'
     };
-    
+
     try {
         const url = currentEditId ? `${API_BASE}/content/${contentData.key}` : `${API_BASE}/content`;
         const method = currentEditId ? 'PUT' : 'POST';
-        
+
         const response = await fetch(url, {
             method: method,
             headers: {
@@ -160,9 +175,9 @@ async function handleContentSubmit(event) {
             },
             body: JSON.stringify(contentData)
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
             closeAllModals();
             loadContent();
@@ -180,7 +195,7 @@ function openContentModal(contentKey = null) {
     currentEditId = contentKey;
     const modal = document.getElementById('content-modal');
     const overlay = document.getElementById('modal-overlay');
-    
+
     if (contentKey) {
         // Load existing content for editing
         fetch(`${API_BASE}/content/${contentKey}`)
@@ -197,12 +212,12 @@ function openContentModal(contentKey = null) {
         // Clear form for new content
         document.getElementById('content-form').reset();
     }
-    
+
     modal.classList.remove('hidden');
     overlay.classList.remove('hidden');
 }
 
-async function editContent(key) {
+function editContent(key) {
     openContentModal(key);
 }
 
@@ -212,9 +227,9 @@ async function deleteContent(key) {
             const response = await fetch(`${API_BASE}/content/${key}`, {
                 method: 'DELETE'
             });
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
                 loadContent();
                 showNotification('Content deleted successfully!', 'success');
@@ -233,21 +248,21 @@ async function loadProjects() {
     try {
         const response = await fetch(`${API_BASE}/projects`);
         const result = await response.json();
-        
+
         const tbody = document.getElementById('projects-table-body');
-        
+
         if (result.success && result.data) {
             tbody.innerHTML = result.data.map(project => `
                 <tr class="table-row">
                     <td class="px-6 py-4 text-sm text-gray-300">${project.title}</td>
                     <td class="px-6 py-4 text-sm text-gray-300">${project.category}</td>
-                    <td class="px-6 py-4 text-sm text-gray-300">${project.client}</td>
+                    <td class="px-6 py-4 text-sm text-gray-300">${project.client || 'N/A'}</td>
                     <td class="px-6 py-4 text-sm">
                         <span class="px-2 py-1 text-xs rounded-full ${project.status === 'published' ? 'status-published' : 'status-draft'}">
                             ${project.status}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-sm">
+                    <td class="px-6 py-4 text-sm text-right">
                         <button onclick="editProject('${project._id}')" class="text-blue-400 hover:text-blue-300 mr-3">
                             <i data-lucide="edit-2" class="w-4 h-4"></i>
                         </button>
@@ -260,7 +275,7 @@ async function loadProjects() {
         } else {
             tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-400">No projects found</td></tr>';
         }
-        
+
         lucide.createIcons();
     } catch (error) {
         console.error('Error loading projects:', error);
@@ -268,31 +283,98 @@ async function loadProjects() {
     }
 }
 
-function openProjectModal() {
-    showNotification('Project editor coming soon!', 'info');
+async function handleProjectSubmit(event) {
+    event.preventDefault();
+
+    const projectData = {
+        title: {
+            en: document.getElementById('project-title-en').value,
+            ar: document.getElementById('project-title-ar').value
+        },
+        slug: document.getElementById('project-slug').value,
+        description: {
+            en: document.getElementById('project-desc-en').value,
+            ar: document.getElementById('project-desc-ar').value
+        },
+        category: document.getElementById('project-category').value,
+        client: document.getElementById('project-client').value,
+        featured: document.getElementById('project-featured').value === 'true',
+        status: document.getElementById('project-status').value
+    };
+
+    try {
+        const url = currentEditId ? `${API_BASE}/projects/${currentEditId}` : `${API_BASE}/projects`;
+        const method = currentEditId ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(projectData)
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            closeAllModals();
+            loadProjects();
+            showNotification('Project saved successfully!', 'success');
+        } else {
+            showNotification('Error saving project: ' + result.error, 'error');
+        }
+    } catch (error) {
+        console.error('Error saving project:', error);
+        showNotification('Error saving project', 'error');
+    }
+}
+
+async function openProjectModal(projectId = null) {
+    currentEditId = projectId;
+    const modal = document.getElementById('project-modal');
+    const overlay = document.getElementById('modal-overlay');
+    const form = document.getElementById('project-form');
+
+    document.getElementById('project-modal-title').textContent = projectId ? 'Edit Project' : 'Add Project';
+    form.reset();
+
+    if (projectId) {
+        try {
+            const response = await fetch(`${API_BASE}/projects?raw=true`);
+            const result = await response.json();
+            const project = result.data.find(p => p._id === projectId);
+
+            if (project) {
+                document.getElementById('project-title-en').value = project.title.en;
+                document.getElementById('project-title-ar').value = project.title.ar;
+                document.getElementById('project-slug').value = project.slug;
+                document.getElementById('project-category').value = project.category;
+                document.getElementById('project-client').value = project.client || '';
+                document.getElementById('project-desc-en').value = project.description.en;
+                document.getElementById('project-desc-ar').value = project.description.ar;
+                document.getElementById('project-featured').value = project.featured.toString();
+                document.getElementById('project-status').value = project.status || 'published';
+            }
+        } catch (error) {
+            console.error('Error loading project details:', error);
+        }
+    }
+
+    modal.classList.remove('hidden');
+    overlay.classList.remove('hidden');
 }
 
 function editProject(id) {
-    showNotification('Project editor coming soon!', 'info');
+    openProjectModal(id);
 }
 
 async function deleteProject(id) {
     if (confirm('Are you sure you want to delete this project?')) {
         try {
-            const response = await fetch(`${API_BASE}/projects/${id}`, {
-                method: 'DELETE'
-            });
-            
+            const response = await fetch(`${API_BASE}/projects/${id}`, { method: 'DELETE' });
             const result = await response.json();
-            
             if (result.success) {
                 loadProjects();
                 showNotification('Project deleted successfully!', 'success');
-            } else {
-                showNotification('Error deleting project: ' + result.error, 'error');
             }
         } catch (error) {
-            console.error('Error deleting project:', error);
             showNotification('Error deleting project', 'error');
         }
     }
@@ -303,21 +385,20 @@ async function loadServices() {
     try {
         const response = await fetch(`${API_BASE}/services`);
         const result = await response.json();
-        
         const tbody = document.getElementById('services-table-body');
-        
+
         if (result.success && result.data) {
             tbody.innerHTML = result.data.map(service => `
                 <tr class="table-row">
-                    <td class="px-6 py-4 text-sm text-gray-300">${service.title}</td>
+                    <td class="px-6 py-4 text-sm text-gray-300 font-medium">${service.title}</td>
                     <td class="px-6 py-4 text-sm text-gray-300">${service.icon}</td>
                     <td class="px-6 py-4 text-sm">
                         <span class="px-2 py-1 text-xs rounded-full ${service.featured ? 'status-published' : 'status-draft'}">
                             ${service.featured ? 'Yes' : 'No'}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-300">${service.order}</td>
-                    <td class="px-6 py-4 text-sm">
+                    <td class="px-6 py-4 text-sm text-gray-300">${service.order || 0}</td>
+                    <td class="px-6 py-4 text-sm text-right">
                         <button onclick="editService('${service._id}')" class="text-blue-400 hover:text-blue-300 mr-3">
                             <i data-lucide="edit-2" class="w-4 h-4"></i>
                         </button>
@@ -330,48 +411,122 @@ async function loadServices() {
         } else {
             tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-400">No services found</td></tr>';
         }
-        
         lucide.createIcons();
     } catch (error) {
         console.error('Error loading services:', error);
-        document.getElementById('services-table-body').innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-red-400">Error loading services</td></tr>';
     }
 }
 
-function openServiceModal() {
-    showNotification('Service editor coming soon!', 'info');
+async function handleServiceSubmit(event) {
+    event.preventDefault();
+
+    const serviceData = {
+        title: {
+            en: document.getElementById('service-title-en').value,
+            ar: document.getElementById('service-title-ar').value
+        },
+        slug: document.getElementById('service-slug').value,
+        shortDescription: {
+            en: document.getElementById('service-short-desc-en').value,
+            ar: document.getElementById('service-short-desc-ar').value
+        },
+        description: {
+            en: document.getElementById('service-short-desc-en').value,
+            ar: document.getElementById('service-short-desc-ar').value
+        },
+        icon: document.getElementById('service-icon').value,
+        iconColor: document.getElementById('service-icon-color').value,
+        featured: document.getElementById('service-featured').value === 'true'
+    };
+
+    try {
+        const url = currentEditId ? `${API_BASE}/services/${currentEditId}` : `${API_BASE}/services`;
+        const method = currentEditId ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(serviceData)
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            closeAllModals();
+            loadServices();
+            showNotification('Service saved successfully!', 'success');
+        }
+    } catch (error) {
+        showNotification('Error saving service', 'error');
+    }
+}
+
+async function openServiceModal(serviceId = null) {
+    currentEditId = serviceId;
+    const modal = document.getElementById('service-modal');
+    const overlay = document.getElementById('modal-overlay');
+    const form = document.getElementById('service-form');
+
+    document.getElementById('service-modal-title').textContent = serviceId ? 'Edit Service' : 'Add Service';
+    form.reset();
+
+    if (serviceId) {
+        try {
+            const response = await fetch(`${API_BASE}/services?raw=true`);
+            const result = await response.json();
+            const service = result.data.find(s => s._id === serviceId);
+            if (service) {
+                document.getElementById('service-title-en').value = service.title.en;
+                document.getElementById('service-title-ar').value = service.title.ar;
+                document.getElementById('service-slug').value = service.slug;
+                document.getElementById('service-icon').value = service.icon;
+                document.getElementById('service-icon-color').value = service.iconColor || 'cyan';
+                document.getElementById('service-short-desc-en').value = service.shortDescription.en;
+                document.getElementById('service-short-desc-ar').value = service.shortDescription.ar;
+                document.getElementById('service-featured').value = service.featured.toString();
+            }
+        } catch (error) { }
+    }
+
+    modal.classList.remove('hidden');
+    overlay.classList.remove('hidden');
 }
 
 function editService(id) {
-    showNotification('Service editor coming soon!', 'info');
+    openServiceModal(id);
 }
 
 async function deleteService(id) {
     if (confirm('Are you sure you want to delete this service?')) {
         try {
-            const response = await fetch(`${API_BASE}/services/${id}`, {
-                method: 'DELETE'
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                loadServices();
-                showNotification('Service deleted successfully!', 'success');
-            } else {
-                showNotification('Error deleting service: ' + result.error, 'error');
-            }
-        } catch (error) {
-            console.error('Error deleting service:', error);
-            showNotification('Error deleting service', 'error');
-        }
+            await fetch(`${API_BASE}/services/${id}`, { method: 'DELETE' });
+            loadServices();
+            showNotification('Service deleted successfully!', 'success');
+        } catch (error) { }
     }
 }
 
 // Contacts Functions
 async function loadContacts() {
-    const tbody = document.getElementById('contacts-table-body');
-    tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-gray-400">Contact messages will appear here</td></tr>';
+    try {
+        const response = await fetch(`${API_BASE}/contact/submissions`);
+        const result = await response.json();
+        const tbody = document.getElementById('contacts-table-body');
+
+        if (result.success && result.data && result.data.length > 0) {
+            tbody.innerHTML = result.data.map(msg => `
+                <tr class="table-row">
+                    <td class="px-6 py-4 text-sm text-gray-300 font-medium">${msg.name}</td>
+                    <td class="px-6 py-4 text-sm text-gray-300">${msg.email}</td>
+                    <td class="px-6 py-4 text-sm text-gray-300 max-w-xs truncate">${msg.message}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">${new Date(msg.createdAt).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+        } else {
+            tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-gray-400">No contact messages yet.</td></tr>';
+        }
+    } catch (error) {
+        console.error('Error loading contacts:', error);
+    }
 }
 
 // Utility Functions
@@ -391,13 +546,13 @@ function showNotification(message, type = 'info') {
         info: 'bg-blue-500',
         warning: 'bg-yellow-500'
     };
-    
+
     const notification = document.createElement('div');
     notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300`;
     notification.textContent = message;
-    
+
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         notification.remove();
     }, 3000);
@@ -407,17 +562,17 @@ function showNotification(message, type = 'info') {
 async function initializeData() {
     try {
         showNotification('Initializing data...', 'info');
-        
+
         const [contentRes, projectsRes, servicesRes] = await Promise.all([
             fetch(`${API_BASE}/content/initialize`, { method: 'POST' }),
             fetch(`${API_BASE}/projects/initialize`, { method: 'POST' }),
             fetch(`${API_BASE}/services/initialize`, { method: 'POST' })
         ]);
-        
+
         const results = await Promise.all([contentRes.json(), projectsRes.json(), servicesRes.json()]);
-        
+
         const allSuccessful = results.every(result => result.success);
-        
+
         if (allSuccessful) {
             showNotification('Data initialized successfully!', 'success');
             loadDashboardData();

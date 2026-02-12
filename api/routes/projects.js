@@ -5,50 +5,54 @@ const router = express.Router();
 // Get all projects with filtering
 router.get('/', async (req, res) => {
   try {
-    const { 
-      category, 
-      featured, 
-      status = 'published', 
+    const {
+      category,
+      featured,
+      status = 'published',
       lang = 'en',
       page = 1,
       limit = 10
     } = req.query;
-    
+
     let query = { status };
-    
+
     if (category) query.category = category;
     if (featured === 'true') query.featured = true;
-    
+
     const skip = (page - 1) * limit;
-    
+
     const projects = await Project.find(query)
       .sort({ featured: -1, completedDate: -1 })
       .skip(skip)
       .limit(parseInt(limit));
-    
-    // Transform projects based on language
-    const transformedProjects = projects.map(project => ({
-      _id: project._id,
-      title: project.title[lang] || project.title.en,
-      slug: project.slug,
-      description: project.description[lang] || project.description.en,
-      category: project.category,
-      client: project.client,
-      technologies: project.technologies,
-      images: project.images,
-      featured: project.featured,
-      completedDate: project.completedDate,
-      projectUrl: project.projectUrl,
-      caseStudy: project.caseStudy ? (project.caseStudy[lang] || project.caseStudy.en) : null,
-      results: project.results,
-      seo: project.seo
-    }));
-    
+
+    // Transform projects based on language if not raw mode
+    let data = projects;
+    if (req.query.raw !== 'true') {
+      data = projects.map(project => ({
+        _id: project._id,
+        title: project.title[lang] || project.title.en,
+        slug: project.slug,
+        description: project.description[lang] || project.description.en,
+        category: project.category,
+        client: project.client,
+        technologies: project.technologies,
+        images: project.images,
+        featured: project.featured,
+        completedDate: project.completedDate,
+        projectUrl: project.projectUrl,
+        caseStudy: project.caseStudy ? (project.caseStudy[lang] || project.caseStudy.en) : null,
+        results: project.results,
+        seo: project.seo,
+        status: project.status
+      }));
+    }
+
     const total = await Project.countDocuments(query);
-    
+
     res.json({
       success: true,
-      data: transformedProjects,
+      data,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -69,16 +73,16 @@ router.get('/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
     const { lang = 'en' } = req.query;
-    
+
     const project = await Project.findOne({ slug, status: 'published' });
-    
+
     if (!project) {
       return res.status(404).json({
         success: false,
         error: 'Project not found'
       });
     }
-    
+
     const transformedProject = {
       _id: project._id,
       title: project.title[lang] || project.title.en,
@@ -95,7 +99,7 @@ router.get('/:slug', async (req, res) => {
       results: project.results,
       seo: project.seo
     };
-    
+
     res.json({
       success: true,
       data: transformedProject
@@ -112,10 +116,10 @@ router.get('/:slug', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const projectData = req.body;
-    
+
     const project = new Project(projectData);
     await project.save();
-    
+
     res.status(201).json({
       success: true,
       data: project
@@ -133,20 +137,20 @@ router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
-    
+
     const project = await Project.findByIdAndUpdate(
       id,
       updateData,
       { new: true, runValidators: true }
     );
-    
+
     if (!project) {
       return res.status(404).json({
         success: false,
         error: 'Project not found'
       });
     }
-    
+
     res.json({
       success: true,
       data: project
@@ -163,16 +167,16 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const project = await Project.findByIdAndDelete(id);
-    
+
     if (!project) {
       return res.status(404).json({
         success: false,
         error: 'Project not found'
       });
     }
-    
+
     res.json({
       success: true,
       message: 'Project deleted successfully'
@@ -189,7 +193,7 @@ router.delete('/:id', async (req, res) => {
 router.get('/categories/list', async (req, res) => {
   try {
     const categories = await Project.distinct('category');
-    
+
     res.json({
       success: true,
       data: categories
@@ -273,7 +277,7 @@ router.post('/initialize', async (req, res) => {
         status: 'published'
       }
     ];
-    
+
     for (const project of sampleProjects) {
       await Project.findOneAndUpdate(
         { slug: project.slug },
@@ -281,7 +285,7 @@ router.post('/initialize', async (req, res) => {
         { upsert: true, new: true }
       );
     }
-    
+
     res.json({
       success: true,
       message: 'Sample projects initialized successfully',
