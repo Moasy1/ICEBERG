@@ -146,6 +146,22 @@
             display: flex;
             width: max-content;
         }
+
+        @keyframes scroll-reverse {
+            0% {
+                transform: translateX(-50%);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .ads-track {
+            animation: scroll-reverse 50s linear infinite;
+            display: flex;
+            width: max-content;
+        }
     </style>
 </head>
 
@@ -667,6 +683,30 @@
                     class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
                 <img src="showcases/dentaquick_showcase_1.png" alt="Showcase"
                     class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+            </div>
+        </div>
+    </section>
+
+    <!-- Ads Showcase Section (Opposite Direction) -->
+    <section id="ads-showcase" class="py-12 bg-[#051021] overflow-hidden border-b border-white/5">
+        <div class="marquee relative w-full overflow-hidden">
+            <div class="ads-track flex gap-8 items-center">
+                <!-- Ads Images -->
+                <img src="ads-showcase/meta_ads.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_2.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_3.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_4.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_5.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_6.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/tiktok_ads.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <!-- Repeat for infinite effect -->
+                <img src="ads-showcase/meta_ads.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_2.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_3.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_4.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_5.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_6.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/tiktok_ads.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
             </div>
         </div>
     </section>
