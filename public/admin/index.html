@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iceberg Admin - CMS Dashboard</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .nav-link.active {
+            background: rgba(6, 182, 212, 0.1);
+            color: #06b6d4;
+            border-left: 3px solid #06b6d4;
+        }
+
+        .form-input {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            color: #f1f5f9;
+        }
+
+        .form-input:focus {
+            border-color: #06b6d4;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3);
+        }
+
+        .table-row:hover {
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .status-published {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .status-draft {
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+    <!-- Admin Header -->
+    <header class="glass-card border-b border-slate-700">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="layers" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-white">Iceberg Admin</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="initializeData()"
+                        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors">
+                        <i data-lucide="refresh-cw" class="w-4 h-4 inline mr-2"></i>
+                        Initialize Data
+                    </button>
+                    <button onclick="logout()"
+                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors">
+                        <i data-lucide="log-out" class="w-4 h-4 inline mr-2"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 glass-card min-h-screen border-r border-slate-700">
+            <nav class="p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" onclick="showSection('dashboard')"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all active">
+                            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('content')"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="file-text" class="w-5 h-5"></i>
+                            Content Management
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('projects')"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="briefcase" class="w-5 h-5"></i>
+                            Projects
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('services')"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="settings" class="w-5 h-5"></i>
+                            Services
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('contacts')"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="message-square" class="w-5 h-5"></i>
+                            Contact Messages
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('showcase')"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="image" class="w-5 h-5"></i>
+                            Showcase Marquee
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('clients')"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                            Client Logos
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section">
+                <h2 class="text-2xl font-bold text-white mb-6">Dashboard Overview</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="glass-card p-6 rounded-xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                <i data-lucide="file-text" class="w-6 h-6 text-blue-400"></i>
+                            </div>
+                            <span class="text-xs text-gray-400">Total</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white" id="content-count">0</h3>
+                        <p class="text-gray-400 text-sm">Content Items</p>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                <i data-lucide="briefcase" class="w-6 h-6 text-green-400"></i>
+                            </div>
+                            <span class="text-xs text-gray-400">Total</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white" id="projects-count">0</h3>
+                        <p class="text-gray-400 text-sm">Projects</p>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                <i data-lucide="settings" class="w-6 h-6 text-purple-400"></i>
+                            </div>
+                            <span class="text-xs text-gray-400">Total</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white" id="services-count">0</h3>
+                        <p class="text-gray-400 text-sm">Services</p>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                                <i data-lucide="message-square" class="w-6 h-6 text-cyan-400"></i>
+                            </div>
+                            <span class="text-xs text-gray-400">Total</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white" id="contacts-count">0</h3>
+                        <p class="text-gray-400 text-sm">Messages</p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 rounded-xl">
+                    <h3 class="text-lg font-semibold text-white mb-4">Recent Activity</h3>
+                    <div id="recent-activity" class="space-y-3">
+                        <p class="text-gray-400">Loading recent activity...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Content Management Section -->
+            <section id="content" class="content-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">Content Management</h2>
+                    <button onclick="openContentModal()"
+                        class="btn-primary px-4 py-2 text-white rounded-lg font-medium">
+                        <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
+                        Add Content
+                    </button>
+                </div>
+
+                <div class="glass-card rounded-xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-800/50">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Key</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Category</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        English</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Arabic</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="content-table-body" class="divide-y divide-slate-700">
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center text-gray-400">Loading content...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section id="projects" class="content-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">Projects Management</h2>
+                    <button onclick="openProjectModal()"
+                        class="btn-primary px-4 py-2 text-white rounded-lg font-medium">
+                        <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
+                        Add Project
+                    </button>
+                </div>
+
+                <div class="glass-card rounded-xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-800/50">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Title</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Category</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Client</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="projects-table-body" class="divide-y divide-slate-700">
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center text-gray-400">Loading projects...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Services Section -->
+            <section id="services" class="content-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">Services Management</h2>
+                    <button onclick="openServiceModal()"
+                        class="btn-primary px-4 py-2 text-white rounded-lg font-medium">
+                        <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
+                        Add Service
+                    </button>
+                </div>
+
+                <div class="glass-card rounded-xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-800/50">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Title</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Icon</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Featured</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Order</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="services-table-body" class="divide-y divide-slate-700">
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center text-gray-400">Loading services...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contacts Section -->
+            <section id="contacts" class="content-section hidden">
+                <h2 class="text-2xl font-bold text-white mb-6">Contact Messages</h2>
+
+                <div class="glass-card rounded-xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-800/50">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Name</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Email</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Message</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contacts-table-body" class="divide-y divide-slate-700">
+                                <tr>
+                                    <td colspan="4" class="px-6 py-8 text-center text-gray-400">No contact messages yet.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Showcase Management Section -->
+                <section id="showcase" class="content-section hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white">Showcase Marquee Management</h2>
+                        <button onclick="saveShowcaseImages()"
+                            class="btn-primary px-4 py-2 text-white rounded-lg font-medium">
+                            <i data-lucide="save" class="w-4 h-4 inline mr-2"></i>
+                            Save Changes
+                        </button>
+                    </div>
+                    <div class="glass-card p-6 rounded-xl">
+                        <p class="text-gray-400 mb-4 text-sm">Update the image URLs for the showcase marquee. Enter one
+                            URL per line.</p>
+                        <textarea id="showcase-urls" rows="12"
+                            class="form-input w-full px-4 py-2 rounded-lg font-mono text-sm"
+                            placeholder="showcases/image1.png"></textarea>
+                    </div>
+                </section>
+
+                <!-- Clients Management Section -->
+                <section id="clients" class="content-section hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white">Client Logos Management</h2>
+                        <button onclick="saveClientLogos()"
+                            class="btn-primary px-4 py-2 text-white rounded-lg font-medium">
+                            <i data-lucide="save" class="w-4 h-4 inline mr-2"></i>
+                            Save Changes
+                        </button>
+                    </div>
+                    <div class="glass-card p-6 rounded-xl">
+                        <p class="text-gray-400 mb-4 text-sm">Update the image URLs for the client logos marquee. Enter
+                            one URL per line.</p>
+                        <textarea id="client-urls" rows="12"
+                            class="form-input w-full px-4 py-2 rounded-lg font-mono text-sm"
+                            placeholder="clients-logos/logo1.png"></textarea>
+                    </div>
+                </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50" onclick="closeAllModals()">
+    </div>
+
+    <!-- Content Modal -->
+    <div id="content-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="glass-card rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-bold text-white mb-4">Add/Edit Content</h3>
+            <form id="content-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Key</label>
+                    <input type="text" id="content-key" class="form-input w-full px-4 py-2 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Category</label>
+                    <select id="content-category" class="form-input w-full px-4 py-2 rounded-lg">
+                        <option value="navigation">Navigation</option>
+                        <option value="hero">Hero</option>
+                        <option value="services">Services</option>
+                        <option value="about">About</option>
+                        <option value="contact">Contact</option>
+                        <option value="footer">Footer</option>
+                        <option value="general">General</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">English Content</label>
+                    <textarea id="content-en" rows="3" class="form-input w-full px-4 py-2 rounded-lg"
+                        required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Arabic Content</label>
+                    <textarea id="content-ar" rows="3" class="form-input w-full px-4 py-2 rounded-lg"
+                        required></textarea>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" class="btn-primary px-6 py-2 text-white rounded-lg font-medium">Save</button>
+                    <button type="button" onclick="closeAllModals()"
+                        class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Project Modal -->
+    <div id="project-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="glass-card rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-bold text-white mb-4" id="project-modal-title">Add Project</h3>
+            <form id="project-form" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Title (EN)</label>
+                        <input type="text" id="project-title-en" class="form-input w-full px-4 py-2 rounded-lg"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Title (AR)</label>
+                        <input type="text" id="project-title-ar" class="form-input w-full px-4 py-2 rounded-lg"
+                            required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Slug (URL identifier)</label>
+                    <input type="text" id="project-slug" class="form-input w-full px-4 py-2 rounded-lg" required>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Category</label>
+                        <select id="project-category" class="form-input w-full px-4 py-2 rounded-lg" required>
+                            <option value="social-media">Social Media</option>
+                            <option value="web-development">Web Development</option>
+                            <option value="seo">SEO</option>
+                            <option value="branding">Branding</option>
+                            <option value="video-photography">Video & Photography</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Client</label>
+                        <input type="text" id="project-client" class="form-input w-full px-4 py-2 rounded-lg">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Description (EN)</label>
+                    <textarea id="project-desc-en" rows="3" class="form-input w-full px-4 py-2 rounded-lg"
+                        required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Description (AR)</label>
+                    <textarea id="project-desc-ar" rows="3" class="form-input w-full px-4 py-2 rounded-lg"
+                        required></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Featured Project</label>
+                        <select id="project-featured" class="form-input w-full px-4 py-2 rounded-lg">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Status</label>
+                        <select id="project-status" class="form-input w-full px-4 py-2 rounded-lg">
+                            <option value="published">Published</option>
+                            <option value="draft">Draft</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" class="btn-primary px-6 py-2 text-white rounded-lg font-medium">Save
+                        Project</button>
+                    <button type="button" onclick="closeAllModals()"
+                        class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Service Modal -->
+    <div id="service-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="glass-card rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-bold text-white mb-4" id="service-modal-title">Add Service</h3>
+            <form id="service-form" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Title (EN)</label>
+                        <input type="text" id="service-title-en" class="form-input w-full px-4 py-2 rounded-lg"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Title (AR)</label>
+                        <input type="text" id="service-title-ar" class="form-input w-full px-4 py-2 rounded-lg"
+                            required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Slug</label>
+                    <input type="text" id="service-slug" class="form-input w-full px-4 py-2 rounded-lg" required>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Icon (Lucide name)</label>
+                        <input type="text" id="service-icon" class="form-input w-full px-4 py-2 rounded-lg"
+                            placeholder="search, megaphone, code" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Icon Color</label>
+                        <select id="service-icon-color" class="form-input w-full px-4 py-2 rounded-lg">
+                            <option value="cyan">Cyan</option>
+                            <option value="blue">Blue</option>
+                            <option value="purple">Purple</option>
+                            <option value="green">Green</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Short Description (EN)</label>
+                    <textarea id="service-short-desc-en" rows="2" class="form-input w-full px-4 py-2 rounded-lg"
+                        required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Short Description (AR)</label>
+                    <textarea id="service-short-desc-ar" rows="2" class="form-input w-full px-4 py-2 rounded-lg"
+                        required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Featured Service</label>
+                    <select id="service-featured" class="form-input w-full px-4 py-2 rounded-lg">
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" class="btn-primary px-6 py-2 text-white rounded-lg font-medium">Save
+                        Service</button>
+                    <button type="button" onclick="closeAllModals()"
+                        class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>

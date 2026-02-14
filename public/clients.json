@@ -1,0 +1,104 @@
+[
+  {
+    "name": "acro stone",
+    "slug": "acro-stone",
+    "thumbnail": "/assets/showcases/acro-stone/65.png",
+    "url": "/showcase/acro-stone.html"
+  },
+  {
+    "name": "BOSLA",
+    "slug": "bosla",
+    "thumbnail": "/assets/showcases/bosla/58.png",
+    "url": "/showcase/bosla.html"
+  },
+  {
+    "name": "Crown Eterna",
+    "slug": "crown-eterna",
+    "thumbnail": "/assets/showcases/crown-eterna/73.png",
+    "url": "/showcase/crown-eterna.html"
+  },
+  {
+    "name": "Dentaquick",
+    "slug": "dentaquick",
+    "thumbnail": "/assets/showcases/dentaquick/14.png",
+    "url": "/showcase/dentaquick.html"
+  },
+  {
+    "name": "Drum Shop Egypt",
+    "slug": "drum-shop-egypt",
+    "thumbnail": "/assets/showcases/drum-shop-egypt/10.png",
+    "url": "/showcase/drum-shop-egypt.html"
+  },
+  {
+    "name": "FMS",
+    "slug": "fms",
+    "thumbnail": "/assets/showcases/fms/30.png",
+    "url": "/showcase/fms.html"
+  },
+  {
+    "name": "Ghamry Hygenic Constructions",
+    "slug": "ghamry-hygenic-constructions",
+    "thumbnail": "/assets/showcases/ghamry-hygenic-constructions/62.png",
+    "url": "/showcase/ghamry-hygenic-constructions.html"
+  },
+  {
+    "name": "Ghost Note",
+    "slug": "ghost-note",
+    "thumbnail": "/assets/showcases/ghost-note/18.png",
+    "url": "/showcase/ghost-note.html"
+  },
+  {
+    "name": "GLORIA THE GREATEST",
+    "slug": "gloria-the-greatest",
+    "thumbnail": "/assets/showcases/gloria-the-greatest/47.png",
+    "url": "/showcase/gloria-the-greatest.html"
+  },
+  {
+    "name": "Lazy Pajama",
+    "slug": "lazy-pajama",
+    "thumbnail": "/assets/showcases/lazy-pajama/37.png",
+    "url": "/showcase/lazy-pajama.html"
+  },
+  {
+    "name": "NELLO MERCATO",
+    "slug": "nello-mercato",
+    "thumbnail": "/assets/showcases/nello-mercato/44.png",
+    "url": "/showcase/nello-mercato.html"
+  },
+  {
+    "name": "PENATES Real Estate Devlopment",
+    "slug": "penates-real-estate-devlopment",
+    "thumbnail": "/assets/showcases/penates-real-estate-devlopment/23.png",
+    "url": "/showcase/penates-real-estate-devlopment.html"
+  },
+  {
+    "name": "Pronto Book Store",
+    "slug": "pronto-book-store",
+    "thumbnail": "/assets/showcases/pronto-book-store/76.png",
+    "url": "/showcase/pronto-book-store.html"
+  },
+  {
+    "name": "SCS",
+    "slug": "scs",
+    "thumbnail": "/assets/showcases/scs/28.png",
+    "url": "/showcase/scs.html"
+  },
+  {
+    "name": "shawaya",
+    "slug": "shawaya",
+    "thumbnail": "/assets/showcases/shawaya/69.png",
+    "url": "/showcase/shawaya.html"
+  },
+  {
+    "name": "varinia",
+    "slug": "varinia",
+    "thumbnail": "/assets/showcases/varinia/54.png",
+    "url": "/showcase/varinia.html"
+  },
+  {
+    "name": "waterpik",
+    "slug": "waterpik",
+    "thumbnail": "/assets/showcases/waterpik/50.png",
+    "url": "/showcase/waterpik.html"
+  }
+]

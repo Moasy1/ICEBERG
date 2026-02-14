@@ -1,15 +1,13 @@
 {
   "version": 2,
-  "outputDirectory": ".",
-  "functions": {
-    "api/index.js": {
-      "maxDuration": 10
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "/api/index.js"
+    },
+    {
+      "source": "/parallax",
+      "destination": "/parallax/index.html"
     }
   ]
 }

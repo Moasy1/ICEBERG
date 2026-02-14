@@ -40,6 +40,7 @@ router.get('/', async (req, res) => {
         images: project.images,
         featured: project.featured,
         completedDate: project.completedDate,
+        clientLogo: project.clientLogo,
         projectUrl: project.projectUrl,
         caseStudy: project.caseStudy ? (project.caseStudy[lang] || project.caseStudy.en) : null,
         results: project.results,
@@ -49,6 +50,7 @@ router.get('/', async (req, res) => {
     }
 
     const total = await Project.countDocuments(query);
+    console.log(`API [GET /projects]: Found ${projects.length} / ${total}`);
 
     res.json({
       success: true,
@@ -94,6 +96,7 @@ router.get('/:slug', async (req, res) => {
       images: project.images,
       featured: project.featured,
       completedDate: project.completedDate,
+      clientLogo: project.clientLogo,
       projectUrl: project.projectUrl,
       caseStudy: project.caseStudy ? (project.caseStudy[lang] || project.caseStudy.en) : null,
       results: project.results,
@@ -206,79 +209,64 @@ router.get('/categories/list', async (req, res) => {
   }
 });
 
-// Initialize sample projects
+// Initialize sample projects from clients
 router.post('/initialize', async (req, res) => {
   try {
-    const sampleProjects = [
+    const Content = require('../models/Content');
+    const clientContent = await Content.findOne({ key: 'gallery_clients' });
+
+    let clients = [];
+    if (clientContent && clientContent.value && clientContent.value.en) {
+      try {
+        clients = JSON.parse(clientContent.value.en);
+      } catch (e) {
+        console.error('Error parsing clients JSON:', e);
+      }
+    }
+
+    const projectsToCreate = [];
+
+    // Add legacy sample projects first
+    const legacyProjects = [
       {
-        title: {
-          en: 'Neon Energy Drink',
-          ar: 'مشروب الطاقة النيون'
-        },
+        title: { en: 'Neon Energy Drink', ar: 'مشروب الطاقة النيون' },
         slug: 'neon-energy-drink',
-        description: {
-          en: 'Full brand launch strategy covering Instagram & TikTok with explosive results.',
-          ar: 'استراتيجية إطلاق علامة تجارية كاملة تغطي انستغرام وتيك توك بنتائج مذهلة.'
-        },
+        description: { en: 'Full brand launch strategy covering Instagram & TikTok.', ar: 'استراتيجية إطلاق علامة تجارية كاملة.' },
         category: 'social-media',
         client: 'Neon Beverages Inc.',
-        technologies: ['Instagram', 'TikTok', 'Content Strategy', 'Influencer Marketing'],
         featured: true,
         completedDate: new Date('2024-01-15'),
-        results: {
-          roiIncrease: 250,
-          trafficIncrease: 400,
-          conversionRate: 8.5
-        },
-        status: 'published'
-      },
-      {
-        title: {
-          en: 'FinTech Global',
-          ar: 'فينتك العالمية'
-        },
-        slug: 'fintech-global',
-        description: {
-          en: 'High-performance React website with 3D elements and real-time data visualization.',
-          ar: 'موقع React عالي الأداء مع عناصر ثلاثية الأبعاد وتصور البيانات في الوقت الفعلي.'
-        },
-        category: 'web-development',
-        client: 'FinTech Global Ltd.',
-        technologies: ['React', 'Three.js', 'Node.js', 'MongoDB'],
-        featured: true,
-        completedDate: new Date('2024-02-20'),
-        results: {
-          roiIncrease: 180,
-          trafficIncrease: 300,
-          conversionRate: 12.3
-        },
-        status: 'published'
-      },
-      {
-        title: {
-          en: 'Urban Fashion',
-          ar: 'الأزياء الحضرية'
-        },
-        slug: 'urban-fashion',
-        description: {
-          en: 'SEO and Google Ads campaign that tripled online sales in 6 months.',
-          ar: 'حملة SEO وإعلانات جوجل التي ضاعفت المبيعات عبر الإنترنت 3 مرات في 6 أشهر.'
-        },
-        category: 'seo',
-        client: 'Urban Fashion Store',
-        technologies: ['Google Ads', 'SEO', 'Analytics', 'Conversion Optimization'],
-        featured: false,
-        completedDate: new Date('2024-03-10'),
-        results: {
-          roiIncrease: 300,
-          trafficIncrease: 250,
-          conversionRate: 6.8
-        },
         status: 'published'
       }
     ];
+    projectsToCreate.push(...legacyProjects);
 
-    for (const project of sampleProjects) {
+    // Create projects for each client logo
+    if (clients && Array.isArray(clients)) {
+      clients.forEach((logoUrl, index) => {
+        const clientName = logoUrl.split('/').pop().split('.')[0].replace(/[-_]/g, ' ').toUpperCase();
+        projectsToCreate.push({
+          title: {
+            en: `${clientName} Digital Evolution`,
+            ar: `التطور الرقمي لـ ${clientName}`
+          },
+          slug: `client-project-${index}`,
+          description: {
+            en: `Strategic digital transformation and brand expansion for ${clientName}.`,
+            ar: `التحول الرقمي الاستراتيجي وتوسيع العلامة التجارية لـ ${clientName}.`
+          },
+          category: 'branding',
+          client: clientName,
+          clientLogo: logoUrl,
+          technologies: ['Branding', 'Digital Strategy', 'UI/UX'],
+          featured: index < 6, // Feature first 6
+          completedDate: new Date(),
+          status: 'published'
+        });
+      });
+    }
+
+    for (const project of projectsToCreate) {
       await Project.findOneAndUpdate(
         { slug: project.slug },
         project,
@@ -288,8 +276,8 @@ router.post('/initialize', async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Sample projects initialized successfully',
-      count: sampleProjects.length
+      message: 'Projects initialized successfully with client logos',
+      count: projectsToCreate.length
     });
   } catch (error) {
     res.status(500).json({

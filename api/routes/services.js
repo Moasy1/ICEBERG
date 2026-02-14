@@ -16,6 +16,7 @@ router.get('/', async (req, res) => {
     if (featured === 'true') query.featured = true;
 
     const services = await Service.find(query).sort({ order: 1, title: 1 });
+    console.log(`API [GET /services]: Found ${services.length} services`);
 
     // Transform services based on language if not raw
     let data = services;

@@ -17,7 +17,7 @@ const contentSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['navigation', 'hero', 'services', 'about', 'contact', 'footer', 'general'],
+    enum: ['navigation', 'hero', 'services', 'about', 'contact', 'footer', 'general', 'showcase', 'clients'],
     required: true
   },
   lastModified: {

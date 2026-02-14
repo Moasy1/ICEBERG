@@ -39,13 +39,43 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/iceberg_cms', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('MongoDB connection error:', err));
+// MongoDB connection helper
+let cachedConnection = null;
+
+const connectToDatabase = async () => {
+  if (cachedConnection && mongoose.connection.readyState === 1) {
+    return cachedConnection;
+  }
+
+  console.log('Connecting to MongoDB...');
+  try {
+    cachedConnection = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/iceberg_cms', {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s
+    });
+    console.log('Connected to MongoDB');
+    return cachedConnection;
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+    throw err;
+  }
+};
+
+// Middleware to ensure DB connection
+app.use(async (req, res, next) => {
+  if (req.path === '/api/health') return next();
+  try {
+    await connectToDatabase();
+    next();
+  } catch (err) {
+    res.status(503).json({
+      success: false,
+      error: 'Database connection failed',
+      details: err.message
+    });
+  }
+});
 
 // Import routes
 const contentRoutes = require('./routes/content');
@@ -60,26 +90,40 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/services', serviceRoutes);
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+app.get('/api/health', async (req, res) => {
+  let connectionError = null;
+  try {
+    await connectToDatabase();
+  } catch (err) {
+    connectionError = err.message;
+  }
+
+  const uri = process.env.MONGODB_URI || '';
+  const maskedUri = uri ? uri.replace(/\/\/.*@/, '//****:****@').substring(0, 30) + '...' : 'not set';
+
+  res.json({
+    status: connectionError ? 'ERROR' : 'OK',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV,
+    mongo: {
+      connection_type: process.env.MONGODB_URI ? 'remote' : 'local',
+      state: mongoose.connection.readyState,
+      state_desc: ['disconnected', 'connected', 'connecting', 'disconnecting'][mongoose.connection.readyState] || 'unknown',
+      uri_preview: maskedUri,
+      error: connectionError
+    }
   });
 });
 
 // Serve static files for production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('dist'));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../dist/index.html'));
-  });
+  app.use(express.static('public')); // Changed from dist to public
 }
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Something went wrong!',
     message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
   });
@@ -90,9 +134,11 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
-});
+// Only listen if running directly
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
 module.exports = app;

@@ -45,6 +45,7 @@ const projectSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  clientLogo: String,
   projectUrl: String,
   caseStudy: {
     en: String,

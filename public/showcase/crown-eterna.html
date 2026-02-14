@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crown Eterna | Iceberg Showcase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #020617; color: white; }
+        .glass-nav { background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Nav -->
+    <nav class="fixed top-0 w-full z-50 glass-nav px-6 py-4 flex justify-between items-center">
+        <a href="/parallax/index.html" class="flex items-center gap-2 group">
+            <i data-lucide="arrow-left" class="text-cyan-400 group-hover:-translate-x-1 transition-transform"></i>
+            <span class="font-bold tracking-widest uppercase text-sm">Back to Home</span>
+        </a>
+        <div class="text-xl font-black italic tracking-tighter">ICEBERG</div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="relative pt-32 pb-12 px-6 container mx-auto text-center">
+        <span class="text-cyan-500 font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Showcase</span>
+        <h1 class="text-5xl md:text-8xl font-black italic tracking-tighter uppercase mb-6">CROWN ETERNA</h1>
+        <p class="text-gray-400 max-w-2xl mx-auto text-lg">Exploring the depth of brand identity and digital presence.</p>
+    </header>
+
+    <!-- Gallery -->
+    <main class="container mx-auto px-6 py-12">
+        <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+            
+        <div class="group relative overflow-hidden rounded-3xl cursor-pointer" onclick="openLightbox('/assets/showcases/crown-eterna/73.png')">
+            <img src="/assets/showcases/crown-eterna/73.png" alt="Crown Eterna 1" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
+            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
+        </div>
+    
+        <div class="group relative overflow-hidden rounded-3xl cursor-pointer" onclick="openLightbox('/assets/showcases/crown-eterna/74.png')">
+            <img src="/assets/showcases/crown-eterna/74.png" alt="Crown Eterna 2" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
+            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
+        </div>
+    
+        <div class="group relative overflow-hidden rounded-3xl cursor-pointer" onclick="openLightbox('/assets/showcases/crown-eterna/75.png')">
+            <img src="/assets/showcases/crown-eterna/75.png" alt="Crown Eterna 3" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
+            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
+        </div>
+    
+        <div class="group relative overflow-hidden rounded-3xl cursor-pointer" onclick="openLightbox('/assets/showcases/crown-eterna/76.png')">
+            <img src="/assets/showcases/crown-eterna/76.png" alt="Crown Eterna 4" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
+            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
+        </div>
+    
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/5 text-center text-gray-600 text-sm">
+        &copy; 2026 Iceberg Agency. All rights reserved.
+    </footer>
+
+    <!-- Lightbox Script -->
+    <div id="lightbox" class="fixed inset-0 z-[60] bg-black/95 hidden flex items-center justify-center p-4" onclick="closeLightbox()">
+        <img id="lightbox-img" src="" class="max-w-full max-h-full rounded-lg shadow-2xl">
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        function openLightbox(src) {
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            img.src = src;
+            lightbox.classList.remove('hidden');
+            gsap.fromTo(img, {scale: 0.9, opacity: 0}, {scale: 1, opacity: 1, duration: 0.3});
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.add('hidden');
+        }
+
+        // Entrance Anim
+        gsap.from("h1", {y: 50, opacity: 0, duration: 1, ease: "power3.out"});
+        gsap.from(".columns-1 > div", {y: 30, opacity: 0, duration: 0.8, stagger: 0.1, delay: 0.3});
+    </script>
+</body>
+</html>
