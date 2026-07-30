@@ -17,12 +17,15 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <link rel="stylesheet" href="/parallax/style.css">
+    <script src="/campaign.js" defer></script>
+    <script src="/ai-agent-widget.js" defer></script>
+    <script src="/meta-pixel.js" defer></script>
 </head>
 
 <body class="bg-[#020617] text-white overflow-x-hidden antialiased">
 
     <!-- Header -->
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-6 bg-[#020617]/80 backdrop-blur-md border-b border-white/5">
+    <header id="main-nav" class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 md:px-8 py-4 md:py-6 bg-[#020617]/80 backdrop-blur-md border-b border-white/5 shadow-lg">
         <div class="flex items-center gap-3">
             <a href="/parallax/index.html" class="flex items-center gap-2 group">
                 <i data-lucide="arrow-left" class="text-cyan-400 group-hover:-translate-x-1 transition-transform"></i>
@@ -33,7 +36,11 @@
              <img src="/parallax/assets/LOGO (2).png" alt="Logo" class="h-10 w-auto">
              <span class="text-2xl font-black italic tracking-tighter text-cyan-400">ICEBERG</span>
         </div>
-        <div class="w-20"></div> <!-- Spacer for balance -->
+        <div class="flex items-center">
+            <a href="/birthday-campaign" class="text-cyan-400 hover:text-cyan-300 font-black italic flex items-center gap-1 animate-pulse transition-all text-xs uppercase tracking-wider">
+                🎁 Birthday Deals
+            </a>
+        </div> <!-- Spacer replaced with Birthday Deals CTA -->
     </header>
 
     <!-- Hero Section -->
@@ -46,6 +53,15 @@
     <!-- Projects Grid -->
     <section class="pb-32 bg-[#020617] relative z-10">
         <div class="container mx-auto px-6">
+            <!-- Portfolio Category Filters -->
+            <div class="flex flex-wrap justify-center gap-3 md:gap-4 mb-16" id="portfolio-filters">
+                <button onclick="filterPortfolio('all', this)" class="portfolio-filter-btn px-6 py-2 rounded-full border border-cyan-500 bg-cyan-500/10 text-cyan-400 text-xs font-bold uppercase tracking-wider transition-all duration-300">All</button>
+                <button onclick="filterPortfolio('branding', this)" class="portfolio-filter-btn px-6 py-2 rounded-full border border-white/10 hover:border-cyan-500/30 text-gray-400 hover:text-white text-xs font-bold uppercase tracking-wider transition-all duration-300">Branding</button>
+                <button onclick="filterPortfolio('videography', this)" class="portfolio-filter-btn px-6 py-2 rounded-full border border-white/10 hover:border-cyan-500/30 text-gray-400 hover:text-white text-xs font-bold uppercase tracking-wider transition-all duration-300">Videography</button>
+                <button onclick="filterPortfolio('webdev', this)" class="portfolio-filter-btn px-6 py-2 rounded-full border border-white/10 hover:border-cyan-500/30 text-gray-400 hover:text-white text-xs font-bold uppercase tracking-wider transition-all duration-300">Web Dev</button>
+                <button onclick="filterPortfolio('ads', this)" class="portfolio-filter-btn px-6 py-2 rounded-full border border-white/10 hover:border-cyan-500/30 text-gray-400 hover:text-white text-xs font-bold uppercase tracking-wider transition-all duration-300">Ads Management</button>
+            </div>
+
             <div class="grid md:grid-cols-2 gap-8">
                 
                 <!-- Acro Stone -->
@@ -226,6 +242,106 @@
             scrollTrigger: {
                 trigger: ".container",
                 start: "top 80%"
+            }
+        });
+
+        // Portfolio Filtering logic with category mapping
+        function initPortfolioFiltering() {
+            const items = document.querySelectorAll('.portfolio-item');
+            const mapping = {
+                'fms': ['branding', 'videography', 'ads'],
+                'drum': ['branding', 'videography', 'ads'],
+                'denta': ['branding', 'videography', 'ads'],
+                'ghost': ['branding', 'videography', 'ads'],
+                'crown': ['branding', 'videography', 'ads'],
+                'scs': ['branding', 'videography', 'ads'],
+                'ghamry': ['webdev', 'seo'],
+                'acro': ['branding'],
+                'bosla': ['branding'],
+                'gloria': ['branding'],
+                'lazy': ['branding', 'videography'],
+                'nello': ['branding'],
+                'penates': ['branding'],
+                'pronto': ['branding'],
+                'shawaya': ['branding'],
+                'varinia': ['branding'],
+                'waterpik': ['branding']
+            };
+
+            items.forEach(item => {
+                const titleElement = item.querySelector('h4');
+                const title = titleElement ? titleElement.innerText.toLowerCase() : '';
+                let categories = ['all'];
+                
+                for (const [key, cats] of Object.entries(mapping)) {
+                    if (title.includes(key)) {
+                        categories.push(...cats);
+                        break;
+                    }
+                }
+                
+                if (categories.length === 1) {
+                    const subtitleElement = item.querySelector('span');
+                    const subtitle = subtitleElement ? subtitleElement.innerText.toLowerCase() : '';
+                    if (subtitle.includes('branding')) categories.push('branding');
+                    if (subtitle.includes('videography')) categories.push('videography');
+                    if (subtitle.includes('ads') || subtitle.includes('management')) categories.push('ads');
+                    if (subtitle.includes('web') || subtitle.includes('dev')) categories.push('webdev');
+                }
+                
+                item.setAttribute('data-cats', categories.join(' '));
+            });
+        }
+
+        function filterPortfolio(category, btn) {
+            // Update active button styles
+            document.querySelectorAll('.portfolio-filter-btn').forEach(b => {
+                b.className = 'portfolio-filter-btn px-6 py-2 rounded-full border border-white/10 hover:border-cyan-500/30 text-gray-400 hover:text-white text-xs font-bold uppercase tracking-wider transition-all duration-300';
+            });
+            btn.className = 'portfolio-filter-btn px-6 py-2 rounded-full border border-cyan-500 bg-cyan-500/10 text-cyan-400 text-xs font-bold uppercase tracking-wider transition-all duration-300';
+
+            const items = document.querySelectorAll('.portfolio-item');
+            
+            // GSAP transition
+            gsap.to(items, {
+                opacity: 0,
+                scale: 0.85,
+                duration: 0.25,
+                onComplete: () => {
+                    items.forEach(item => {
+                        const cats = (item.getAttribute('data-cats') || '').split(' ');
+                        if (category === 'all' || cats.includes(category)) {
+                            item.style.display = 'block';
+                            gsap.to(item, {
+                                opacity: 1,
+                                scale: 1,
+                                duration: 0.35,
+                                delay: 0.05
+                            });
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        }
+
+        // Initialize on DOM load
+        document.addEventListener('DOMContentLoaded', () => {
+            initPortfolioFiltering();
+
+            // Header Scroll Sticky Shrink Handler
+            const nav = document.getElementById('main-nav');
+            if (nav) {
+                const toggleScrolled = () => {
+                    if (window.scrollY > 20) {
+                        nav.classList.add('scrolled');
+                    } else {
+                        nav.classList.remove('scrolled');
+                    }
+                };
+                window.addEventListener('scroll', toggleScrolled);
+                toggleScrolled();
             }
         });
     </script>

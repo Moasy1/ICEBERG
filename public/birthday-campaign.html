@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Campaign | Iceberg Marketing</title>
+    <meta name="description" content="Celebrate Iceberg Birthday Campaign with exclusive 3+1 bundles, sitewide discounts, and August Born rewards.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Canvas Confetti for celebrations -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- intl-tel-input CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+
+    <link rel="stylesheet" href="/parallax/style.css">
+    <link rel="stylesheet" href="/wizard-form.css">
+    <script src="/wizard-form.js" defer></script>
+    <style>
+        :root {
+            --campaign-primary: #06b6d4;
+            --campaign-accent: #8b5cf6;
+            --campaign-bg: #030712;
+        }
+
+        .campaign-bg {
+            background:
+                radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.15), transparent 45%),
+                radial-gradient(circle at 90% 15%, rgba(139, 92, 246, 0.15), transparent 45%),
+                radial-gradient(circle at 50% 85%, rgba(30, 41, 59, 0.4), transparent 50%),
+                var(--campaign-bg);
+        }
+
+        .glow-hover:hover {
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.15), 0 0 60px rgba(139, 92, 246, 0.1);
+        }
+
+        .glass-checkbox:checked + div {
+            border-color: var(--campaign-primary);
+            background: rgba(6, 182, 212, 0.08);
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.15);
+        }
+
+        .glass-checkbox-free:checked + div {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.08);
+            box-shadow: 0 0 25px rgba(34, 197, 94, 0.15);
+        }
+    </style>
+    <script src="/campaign.js" defer></script>
+    <script src="/ai-agent-widget.js" defer></script>
+    <script src="/phone-init.js" defer></script>
+    <script src="/meta-pixel.js" defer></script>
+</head>
+
+<body class="campaign-bg text-white overflow-x-hidden antialiased">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 md:px-8 py-4 md:py-5 bg-slate-950/70 backdrop-blur-xl border-b border-white/10" id="main-nav">
+        <div class="flex items-center gap-3">
+            <a href="/parallax/index.html" class="flex items-center gap-3">
+                <img src="/parallax/assets/LOGO (2).png" alt="Logo" class="h-10 w-auto">
+                <span class="text-2xl font-black italic tracking-tighter text-cyan-400">ICEBERG</span>
+            </a>
+        </div>
+        <nav class="hidden md:flex items-center gap-8 text-sm font-semibold tracking-widest uppercase">
+            <a href="/parallax/index.html#home" class="hover:text-cyan-400 transition-colors">Home</a>
+            <a href="/parallax/index.html#services" class="hover:text-cyan-400 transition-colors">Services</a>
+            <a href="/parallax/index.html#process" class="hover:text-cyan-400 transition-colors">Process</a>
+            <a href="/parallax/index.html#showcases" class="hover:text-cyan-400 transition-colors">Showcases</a>
+            <a href="/parallax/index.html#about" class="hover:text-cyan-400 transition-colors">About</a>
+            <a href="/parallax/index.html#contact" class="px-6 py-2 border border-white/20 rounded-full hover:bg-white/10 transition-all hover:scale-105 active:scale-95 magnetic-btn">Start Project</a>
+        </nav>
+        <button class="md:hidden text-white p-2 glass-card rounded-lg border border-white/10" onclick="toggleMobileMenu()">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 bg-[#020617]/95 backdrop-blur-xl z-[10001] hidden">
+        <div class="flex flex-col items-center justify-center h-full gap-8 text-2xl font-semibold">
+            <button class="absolute top-6 right-6 text-white p-2 glass-card rounded-lg border border-white/10" onclick="toggleMobileMenu()">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <a href="/parallax/index.html#home" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Home</a>
+            <a href="/parallax/index.html#services" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Services</a>
+            <a href="/parallax/index.html#process" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Process</a>
+            <a href="/parallax/index.html#showcases" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Showcases</a>
+            <a href="/parallax/index.html#about" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">About</a>
+            <a href="/parallax/index.html#contact" class="px-8 py-3 border border-cyan-500/30 rounded-full hover:bg-cyan-500/10 text-cyan-400 transition-all font-black italic tracking-wider text-lg uppercase" onclick="toggleMobileMenu()">Start Project</a>
+        </div>
+    </div>
+
+    <!-- Main Section -->
+    <main class="pt-24 pb-20">
+
+        <!-- August Kings Hero Banner -->
+        <section class="py-16 md:py-24 container mx-auto px-6">
+            <div class="relative rounded-3xl overflow-hidden glass-card border border-cyan-500/20 p-8 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12 bg-gradient-to-br from-slate-950 via-slate-900/80 to-indigo-950/70 shadow-2xl">
+                <!-- Glowing elements -->
+                <div class="absolute top-0 right-0 w-[300px] h-[300px] bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+                <div class="absolute bottom-0 left-0 w-[200px] h-[200px] bg-purple-600/10 rounded-full blur-[60px] pointer-events-none"></div>
+
+                <div class="space-y-6 md:w-3/5 relative z-10 text-left">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-full text-xs font-bold uppercase tracking-wider">
+                        <i data-lucide="crown" class="w-4 h-4"></i> August Kings & Queens
+                    </span>
+                    <h1 class="text-4xl md:text-6xl font-black italic tracking-tight leading-none">
+                        BORN IN AUGUST? <br><span class="text-gradient">GET 1 FREE SERVICE!</span>
+                    </h1>
+                    <p class="text-gray-300 text-base md:text-lg leading-relaxed max-w-xl">
+                        To celebrate our Birthday Month, anyone born in August is eligible to claim one of our core services completely free of charge. No catch, just a birthday gift to help your brand ascend.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button onclick="openAugustModal()" class="px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black italic uppercase tracking-wider rounded-full shadow-lg shadow-cyan-500/30 hover:scale-105 active:scale-95 transition-all">
+                            Verify & Claim Now
+                        </button>
+                        <a href="#bundle-builder" class="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full font-bold uppercase tracking-wide flex items-center gap-2 hover:-translate-y-0.5 transition-all">
+                            Explore Bundle Offer <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="md:w-2/5 flex justify-center relative z-10">
+                    <div class="relative w-72 h-72 md:w-80 md:h-80 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-cyan-500 to-purple-600 rounded-full opacity-10 animate-pulse"></div>
+                        <!-- Stylized Crown/Birthday Graphics -->
+                        <svg viewBox="0 0 200 200" class="w-4/5 h-4/5 drop-shadow-[0_0_40px_rgba(6,182,212,0.4)] animate-bounce" style="animation-duration: 6s;">
+                            <path d="M40 140 L160 140 L170 80 L135 110 L100 50 L65 110 L30 80 Z" fill="none" stroke="#06b6d4" stroke-width="6" stroke-linejoin="round"/>
+                            <circle cx="30" cy="80" r="6" fill="#a78bfa"/>
+                            <circle cx="65" cy="110" r="4" fill="#06b6d4"/>
+                            <circle cx="100" cy="50" r="8" fill="#f59e0b"/>
+                            <circle cx="135" cy="110" r="4" fill="#06b6d4"/>
+                            <circle cx="170" cy="80" r="6" fill="#a78bfa"/>
+                            <path d="M50 155 Q100 165 150 155" stroke="#f43f5e" stroke-width="4" fill="none"/>
+                            <path d="M40 140 Q100 148 160 140" stroke="#f59e0b" stroke-width="8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Bundle Builder -->
+        <section id="bundle-builder" class="py-16 container mx-auto px-6 border-t border-white/5">
+            <div class="text-center mb-16 max-w-2xl mx-auto">
+                <span class="text-cyan-400 font-bold tracking-[0.2em] uppercase text-xs mb-3 block">Special Campaign Offer</span>
+                <h2 class="text-4xl md:text-6xl font-black italic tracking-tighter mb-4">PURCHASE 3 + GET 1 FREE</h2>
+                <p class="text-gray-400 text-lg leading-relaxed">
+                    Build a custom hybrid strategy. Select 3 core solutions that your brand needs, and unlock a 4th service of your choice entirely free.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-12 items-start">
+                
+                <!-- Services Selection List (Left 2 Columns) -->
+                <div class="lg:col-span-2 space-y-6">
+                    <h3 class="text-xl font-bold uppercase tracking-wider text-cyan-400 mb-6 flex items-center gap-2">
+                        <i data-lucide="grid" class="w-5 h-5"></i> 1. Choose 3 Core Services
+                    </h3>
+
+                    <!-- Services Grid -->
+                    <div class="grid sm:grid-cols-2 gap-6" id="checklist-services-grid">
+                        
+                        <!-- Web Dev Card -->
+                        <label class="cursor-pointer group relative">
+                            <input type="checkbox" value="web-dev" data-name="Web Development" data-price="20000" data-min-price="20000" data-max-price="35000" class="sr-only glass-checkbox service-opt-checkbox" onchange="updateBundleLogic()">
+                            <div class="glass-card border-morphism p-6 rounded-2xl transition-all duration-300 border border-white/5 hover:border-cyan-500/30 flex flex-col justify-between h-full min-h-[160px]">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center text-cyan-400">
+                                            <i data-lucide="code" class="w-6 h-6"></i>
+                                        </div>
+                                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">20,000 – 35,000 EGP</span>
+                                    </div>
+                                    <h4 class="text-lg font-bold italic tracking-tight text-white mb-2 group-hover:text-cyan-400 transition-colors">Web Development</h4>
+                                    <p class="text-xs text-gray-400 leading-relaxed">High-performance, secure corporate websites & apps.</p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- SEO Card -->
+                        <label class="cursor-pointer group relative">
+                            <input type="checkbox" value="seo" data-name="SEO & Visibility" data-price="35000" data-min-price="35000" data-max-price="60000" class="sr-only glass-checkbox service-opt-checkbox" onchange="updateBundleLogic()">
+                            <div class="glass-card border-morphism p-6 rounded-2xl transition-all duration-300 border border-white/5 hover:border-cyan-500/30 flex flex-col justify-between h-full min-h-[160px]">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-400">
+                                            <i data-lucide="search" class="w-6 h-6"></i>
+                                        </div>
+                                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">35,000 – 60,000 EGP</span>
+                                    </div>
+                                    <h4 class="text-lg font-bold italic tracking-tight text-white mb-2 group-hover:text-blue-400 transition-colors">SEO & Visibility</h4>
+                                    <p class="text-xs text-gray-400 leading-relaxed">Optimize structure and content to dominate search ranks.</p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- Social Media Card -->
+                        <label class="cursor-pointer group relative">
+                            <input type="checkbox" value="social" data-name="Social Media" data-price="16000" data-min-price="16000" data-max-price="25000" class="sr-only glass-checkbox service-opt-checkbox" onchange="updateBundleLogic()">
+                            <div class="glass-card border-morphism p-6 rounded-2xl transition-all duration-300 border border-white/5 hover:border-cyan-500/30 flex flex-col justify-between h-full min-h-[160px]">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-400">
+                                            <i data-lucide="megaphone" class="w-6 h-6"></i>
+                                        </div>
+                                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">16,000 – 25,000 EGP</span>
+                                    </div>
+                                    <h4 class="text-lg font-bold italic tracking-tight text-white mb-2 group-hover:text-emerald-400 transition-colors">Social Media</h4>
+                                    <p class="text-xs text-gray-400 leading-relaxed">Build brand community and engagement dynamically.</p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- Performance Card -->
+                        <label class="cursor-pointer group relative">
+                            <input type="checkbox" value="performance" data-name="Performance Marketing" data-price="15000" data-min-price="15000" data-max-price="25000" class="sr-only glass-checkbox service-opt-checkbox" onchange="updateBundleLogic()">
+                            <div class="glass-card border-morphism p-6 rounded-2xl transition-all duration-300 border border-white/5 hover:border-cyan-500/30 flex flex-col justify-between h-full min-h-[160px]">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="w-12 h-12 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400">
+                                            <i data-lucide="crosshair" class="w-6 h-6"></i>
+                                        </div>
+                                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">15,000 – 25,000 EGP</span>
+                                    </div>
+                                    <h4 class="text-lg font-bold italic tracking-tight text-white mb-2 group-hover:text-indigo-400 transition-colors">Performance Marketing</h4>
+                                    <p class="text-xs text-gray-400 leading-relaxed">High ROI paid ads across Meta & TikTok channels.</p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- Branding Card -->
+                        <label class="cursor-pointer group relative">
+                            <input type="checkbox" value="branding" data-name="Branding & Design" data-price="25000" data-min-price="25000" data-max-price="40000" class="sr-only glass-checkbox service-opt-checkbox" onchange="updateBundleLogic()">
+                            <div class="glass-card border-morphism p-6 rounded-2xl transition-all duration-300 border border-white/5 hover:border-cyan-500/30 flex flex-col justify-between h-full min-h-[160px]">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-400">
+                                            <i data-lucide="palette" class="w-6 h-6"></i>
+                                        </div>
+                                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">25,000 – 40,000 EGP</span>
+                                    </div>
+                                    <h4 class="text-lg font-bold italic tracking-tight text-white mb-2 group-hover:text-amber-400 transition-colors">Branding & Design</h4>
+                                    <p class="text-xs text-gray-400 leading-relaxed">Unique identity systems and memorable logo guidelines.</p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- Content Creation Card -->
+                        <label class="cursor-pointer group relative">
+                            <input type="checkbox" value="content" data-name="Content Creation" data-price="12000" data-min-price="12000" data-max-price="20000" class="sr-only glass-checkbox service-opt-checkbox" onchange="updateBundleLogic()">
+                            <div class="glass-card border-morphism p-6 rounded-2xl transition-all duration-300 border border-white/5 hover:border-cyan-500/30 flex flex-col justify-between h-full min-h-[160px]">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="w-12 h-12 bg-rose-500/10 rounded-xl flex items-center justify-center text-rose-400">
+                                            <i data-lucide="video" class="w-6 h-6"></i>
+                                        </div>
+                                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">12,000 – 20,000 EGP</span>
+                                    </div>
+                                    <h4 class="text-lg font-bold italic tracking-tight text-white mb-2 group-hover:text-rose-400 transition-colors">Content Creation</h4>
+                                    <p class="text-xs text-gray-400 leading-relaxed">Platform-native video and reel assets creation.</p>
+                                </div>
+                            </div>
+                        </label>
+
+                    </div>
+
+                    <!-- Free Add-on Section -->
+                    <div id="free-add-on-section" class="pt-8 opacity-40 pointer-events-none transition-all duration-500">
+                        <h3 class="text-xl font-bold uppercase tracking-wider text-green-400 mb-6 flex items-center gap-2">
+                            <i data-lucide="gift" class="w-5 h-5"></i> 2. Select Your 1 Free Add-on Service
+                        </h3>
+                        <div class="grid sm:grid-cols-3 gap-4" id="free-services-container">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Summary & Claim Form (Right Column) -->
+                <div>
+                    <div class="glass-card p-6 md:p-8 rounded-3xl border border-cyan-500/20 bg-slate-950/80 sticky top-24 space-y-6 shadow-2xl">
+                        <h3 class="text-xl font-black italic tracking-tight">Your Campaign Bundle</h3>
+
+                        <!-- Details list -->
+                        <div class="space-y-4 text-sm border-b border-white/10 pb-6" id="summary-items-list">
+                            <p class="text-gray-400">No services selected yet. Click on the cards to start building.</p>
+                        </div>
+
+                        <!-- Price display -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-sm text-gray-400">
+                                <span>Original Subtotal</span>
+                                <span class="font-mono text-white" id="original-subtotal">0 EGP</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm text-green-400 font-semibold" id="discount-row" style="display: none;">
+                                <span>Free Add-on Discount</span>
+                                <span class="font-mono" id="add-on-discount">-0 EGP</span>
+                            </div>
+                            <div class="flex justify-between items-end border-t border-white/10 pt-4 mt-2">
+                                <span class="font-bold text-base">Total Package</span>
+                                <span class="text-2xl font-black italic text-cyan-400 font-mono" id="bundle-total">0 EGP</span>
+                            </div>
+                        </div>
+
+                        <!-- Lead capture form -->
+                        <form id="bundle-claim-form" onsubmit="submitBundleLead(event)" class="wizard-form space-y-4 pt-4">
+                            <div class="space-y-1">
+                                <label class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Your Name</label>
+                                <input type="text" id="lead-name" name="name" required class="w-full bg-[#0a192f] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Business Email</label>
+                                <input type="email" id="lead-email" name="email" required class="w-full bg-[#0a192f] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Business Name</label>
+                                <input type="text" id="lead-business" name="business_name" required placeholder="Acme Inc." class="w-full bg-[#0a192f] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Website / Business Link</label>
+                                <input type="url" id="lead-link" name="business_link" placeholder="https://example.com" class="w-full bg-[#0a192f] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider block mb-1">Phone Number</label>
+                                <input type="tel" id="bundle-phone" name="phone" required class="w-full bg-[#0a192f] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Notes / Custom Needs</label>
+                                <textarea id="lead-message" rows="2" class="w-full bg-[#0a192f] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors" placeholder="Any details..."></textarea>
+                            </div>
+                            <button type="submit" id="claim-bundle-btn" disabled class="w-full py-3.5 bg-cyan-600 text-white rounded-xl font-black italic uppercase tracking-wider text-xs hover:bg-cyan-500 active:scale-95 disabled:bg-gray-800 disabled:text-gray-600 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-cyan-500/25">
+                                Secure Bundle Deal
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- AI Agent Sandbox demo -->
+        <section class="py-16 container mx-auto px-6 border-t border-white/5">
+            <div class="text-center mb-12 max-w-2xl mx-auto">
+                <span class="text-purple-400 font-bold tracking-[0.2em] uppercase text-xs mb-3 block">Conversational Automation</span>
+                <h2 class="text-4xl md:text-5xl font-black italic tracking-tighter mb-4">LIVE AI AGENT SANDBOX</h2>
+                <p class="text-gray-400 text-base">
+                    Interact with our mock AI strategist to see how conversational workflows can automatically answer questions, capture structured lead details, and book strategy meetings in real time.
+                </p>
+            </div>
+
+            <div class="max-w-3xl mx-auto glass-card rounded-3xl overflow-hidden border border-purple-500/20 bg-slate-950/80 shadow-2xl flex flex-col h-[480px]">
+                <!-- Chat header -->
+                <div class="bg-purple-950/40 border-b border-purple-500/20 px-6 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="relative w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center">
+                            <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border border-slate-950 rounded-full"></span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-white tracking-wide">Iceberg AI Agent</p>
+                            <p class="text-[9px] text-green-400 uppercase font-semibold tracking-widest">Online Demo Sandbox</p>
+                        </div>
+                    </div>
+                    <div class="w-4 h-4 rounded-full bg-red-500/20 border border-red-500/40"></div>
+                </div>
+
+                <!-- Chat history -->
+                <div id="sandbox-chat-body" class="flex-1 overflow-y-auto p-6 space-y-4 text-sm flex flex-col justify-start">
+                    <!-- Automated welcome message -->
+                    <div class="flex gap-3 max-w-[85%]">
+                        <div class="w-8 h-8 rounded-full bg-purple-950 flex-shrink-0 flex items-center justify-center border border-purple-500/30 text-purple-400">
+                            <i data-lucide="bot" class="w-4 h-4"></i>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3 text-gray-200">
+                            Hello! I am the Iceberg AI Automator. 🧊 I can guide you through our services, outline campaign structures, or help you book a meeting. What can I do for you today?
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input area -->
+                <div class="p-4 border-t border-purple-500/20 bg-purple-950/10 space-y-3">
+                    <!-- Quick action suggestions -->
+                    <div class="flex flex-wrap gap-2 justify-start">
+                        <button onclick="sendSandboxMessage('What services do you offer?')" class="text-[10px] bg-purple-500/10 hover:bg-purple-500/25 border border-purple-500/30 px-3 py-1.5 rounded-full text-purple-300 font-bold transition-all">
+                            What services do you offer?
+                        </button>
+                        <button onclick="sendSandboxMessage('Tell me about the birthday bundle.')" class="text-[10px] bg-purple-500/10 hover:bg-purple-500/25 border border-purple-500/30 px-3 py-1.5 rounded-full text-purple-300 font-bold transition-all">
+                            Tell me about the birthday bundle
+                        </button>
+                        <button onclick="sendSandboxMessage('Claim my free August birthday service.')" class="text-[10px] bg-purple-500/10 hover:bg-purple-500/25 border border-purple-500/30 px-3 py-1.5 rounded-full text-purple-300 font-bold transition-all">
+                            Claim August Kings service
+                        </button>
+                    </div>
+                    <form onsubmit="handleSandboxSubmit(event)" class="flex gap-2">
+                        <input type="text" id="sandbox-user-input" placeholder="Ask the AI agent anything..." class="flex-1 bg-[#0a192f] border border-purple-500/20 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500 transition-colors">
+                        <button type="submit" class="bg-purple-600 hover:bg-purple-500 text-white rounded-xl px-4 py-2 flex items-center justify-center active:scale-95 transition-all">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t border-white/5 text-center bg-[#01040f]">
+        <div class="flex flex-col items-center gap-6 mb-8">
+            <img src="/parallax/assets/LOGO%20(2).png" alt="Logo" class="h-12 w-auto grayscale opacity-50 hover:opacity-100 transition-opacity">
+        </div>
+        <p class="text-gray-600 text-xs uppercase tracking-widest font-bold">&copy; 2026 Iceberg Agency. Dig Deep. Rise High.</p>
+    </footer>
+
+    <!-- August Verification Modal -->
+    <div id="august-modal" class="fixed inset-0 bg-[#020617]/90 backdrop-blur-md z-[10000] hidden flex items-center justify-center p-6">
+        <div class="glass-card max-w-md w-full rounded-3xl border border-cyan-500/30 bg-slate-950 p-8 space-y-6 relative shadow-2xl animate-fade-in">
+            <button onclick="closeAugustModal()" class="absolute top-6 right-6 text-gray-400 hover:text-white p-1">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 bg-amber-500/10 rounded-2xl mx-auto flex items-center justify-center text-amber-400">
+                    <i data-lucide="crown" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-2xl font-bold italic tracking-tight uppercase">August Birthday Claim</h3>
+                <p class="text-xs text-gray-400">Please verify your details to register your free service.</p>
+            </div>
+            <form onsubmit="submitAugustClaim(event)" class="wizard-form space-y-4">
+                <div class="space-y-1">
+                    <label class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Full Name</label>
+                    <input type="text" id="august-name" name="name" required class="w-full bg-[#0a192f] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Email Address</label>
+                    <input type="email" id="august-email" name="email" required class="w-full bg-[#0a192f] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Business Name</label>
+                    <input type="text" id="august-business" name="business_name" required placeholder="Acme Inc." class="w-full bg-[#0a192f] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Website / Business Link</label>
+                    <input type="url" id="august-link" name="business_link" placeholder="https://example.com" class="w-full bg-[#0a192f] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider block mb-1">Phone Number</label>
+                    <input type="tel" id="august-phone" name="phone" required class="w-full bg-[#0a192f] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Birth Date</label>
+                    <input type="date" id="august-dob" required class="w-full bg-[#0a192f] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Choose Desired Free Service</label>
+                    <select id="august-service" required class="w-full bg-[#0a192f] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                        <option value="Web Development">Web Development</option>
+                        <option value="SEO & Visibility">SEO & Visibility</option>
+                        <option value="Social Media">Social Media</option>
+                        <option value="Performance Marketing">Performance Marketing</option>
+                        <option value="Branding & Design">Branding & Design</option>
+                        <option value="Content Creation">Content Creation</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Upload ID Document (verification)</label>
+                    <input type="file" id="august-id-file" accept="image/*,application/pdf" required class="w-full bg-[#0a192f] border border-gray-850 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                    <p class="text-[9px] text-gray-500">Allowed formats: PNG, JPG, PDF (Max size: 5MB)</p>
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-cyan-500 to-indigo-600 text-white rounded-xl font-black italic uppercase tracking-wider text-xs hover:from-cyan-400 hover:to-indigo-500 transition-all shadow-lg shadow-cyan-500/25">
+                    Submit Birthday Claim
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script>
+        lucide.createIcons();
+
+        // Mobile Menu Functions with GSAP Animations
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (!menu) return;
+            const links = menu.querySelectorAll('a');
+            const closeBtn = menu.querySelector('button');
+            
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                if (window.mobileMenuTl) window.mobileMenuTl.kill();
+                window.mobileMenuTl = gsap.timeline();
+                window.mobileMenuTl.fromTo(menu, 
+                    { opacity: 0, backdropFilter: 'blur(0px)', webkitBackdropFilter: 'blur(0px)' },
+                    { opacity: 1, backdropFilter: 'blur(24px)', webkitBackdropFilter: 'blur(24px)', duration: 0.4, ease: 'power2.out' }
+                );
+                window.mobileMenuTl.fromTo(links, 
+                    { opacity: 0, y: 30, scale: 0.9 },
+                    { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.05, ease: 'power3.out', delay: 0.1 },
+                    '-=0.3'
+                );
+                if (closeBtn) {
+                    window.mobileMenuTl.fromTo(closeBtn, 
+                        { opacity: 0, rotate: -90, scale: 0.8 },
+                        { opacity: 1, rotate: 0, scale: 1, duration: 0.4, ease: 'back.out(1.7)' },
+                        '-=0.2'
+                    );
+                }
+            } else {
+                if (window.mobileMenuTl) window.mobileMenuTl.kill();
+                window.mobileMenuTl = gsap.timeline({
+                    onComplete: () => menu.classList.add('hidden')
+                });
+                window.mobileMenuTl.to(links, {
+                    opacity: 0,
+                    y: -15,
+                    duration: 0.25,
+                    stagger: 0.03,
+                    ease: 'power2.in'
+                });
+                window.mobileMenuTl.to(menu, {
+                    opacity: 0,
+                    duration: 0.3,
+                    ease: 'power2.inOut'
+                }, '-=0.15');
+            }
+        }
+
+        // Header Scroll Sticky Shrink Handler
+        document.addEventListener('DOMContentLoaded', () => {
+            const nav = document.getElementById('main-nav');
+            if (nav) {
+                const toggleScrolled = () => {
+                    if (window.scrollY > 20) {
+                        nav.classList.add('scrolled');
+                    } else {
+                        nav.classList.remove('scrolled');
+                    }
+                };
+                window.addEventListener('scroll', toggleScrolled);
+                toggleScrolled();
+            }
+        });
+
+        // August Modal Control & intlTelInput Init
+        let iti;
+        document.addEventListener('DOMContentLoaded', () => {
+            const phoneInput = document.querySelector("#august-phone");
+            if (phoneInput && window.intlTelInput) {
+                iti = window.intlTelInput(phoneInput, {
+                    initialCountry: "auto",
+                    geoIpLookup: function(success, failure) {
+                        fetch("https://ipapi.co/json/")
+                            .then(res => res.json())
+                            .then(data => success(data.country_code))
+                            .catch(() => success("eg"));
+                    },
+                    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js"
+                });
+            }
+        });
+
+        function openAugustModal() {
+            document.getElementById('august-modal').classList.remove('hidden');
+        }
+
+        function closeAugustModal() {
+            document.getElementById('august-modal').classList.add('hidden');
+        }
+
+        // Submit August Claim
+        async function submitAugustClaim(e) {
+            e.preventDefault();
+            const name = document.getElementById('august-name').value;
+            const email = document.getElementById('august-email').value;
+            const businessName = document.getElementById('august-business') ? document.getElementById('august-business').value : '';
+            const businessLink = document.getElementById('august-link') ? document.getElementById('august-link').value : '';
+            const phone = iti ? iti.getNumber() : (document.getElementById('august-phone') ? document.getElementById('august-phone').value : '');
+            const dobString = document.getElementById('august-dob').value;
+            const service = document.getElementById('august-service').value;
+            const idFileEl = document.getElementById('august-id-file');
+
+            // Verify birth month is August (month index 7 in JavaScript Date, or substring index check)
+            const dob = new Date(dobString);
+            const month = dob.getMonth(); // 0-indexed: August is 7
+
+            if (month !== 7) {
+                alert("Oops! According to the submitted date of birth, your birth month is not August. This specific reward is reserved for August babies. Feel free to explore our Bundle offers!");
+                return;
+            }
+
+            if (!idFileEl.files || idFileEl.files.length === 0) {
+                alert("Please select your ID verification document.");
+                return;
+            }
+
+            // Construct FormData
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('email', email);
+            formData.append('business_name', businessName);
+            formData.append('business_link', businessLink);
+            formData.append('phone', phone);
+            formData.append('message', `AUGUST KINGS CLAIM: Eligible for 1 free service: "${service}". Business Name: ${businessName}. Website Link: ${businessLink}. Birthdate verified: ${dobString}. Phone: ${phone}`);
+            formData.append('idFile', idFileEl.files[0]);
+
+            try {
+                const response = await fetch('/api/contact/submit', {
+                    method: 'POST',
+                    body: formData // Sends as multipart/form-data
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    closeAugustModal();
+                    // Confetti!
+                    confetti({
+                        particleCount: 150,
+                        spread: 80,
+                        origin: { y: 0.6 }
+                    });
+                    
+                    alert("👑 Happy Birth Month! Your claim and ID verification for free " + service + " has been successfully submitted. We will review your claim and activate your service during our onboarding call!");
+                    document.getElementById('august-name').value = '';
+                    document.getElementById('august-email').value = '';
+                    if (document.getElementById('august-phone')) document.getElementById('august-phone').value = '';
+                    document.getElementById('august-dob').value = '';
+                    idFileEl.value = '';
+                } else {
+                    alert(result.error || "Failed to submit claim. Please try again.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Failed to submit claim. Please try again later.");
+            }
+        }
+
+        // Interactive bundle builder logic
+        // Interactive bundle builder logic
+        const selectedPaid = [];
+        let selectedFree = null;
+
+        function formatPriceRange(min, max) {
+            if (!max || min === max) {
+                return `${min.toLocaleString()} EGP`;
+            }
+            return `${min.toLocaleString()} – ${max.toLocaleString()} EGP`;
+        }
+
+        function updateBundleLogic() {
+            const checkedBoxes = Array.from(document.querySelectorAll('.service-opt-checkbox:checked'));
+            
+            // Re-render subtotal list
+            const listContainer = document.getElementById('summary-items-list');
+            const originalSubtotalEl = document.getElementById('original-subtotal');
+            const discountRow = document.getElementById('discount-row');
+            const addOnDiscount = document.getElementById('add-on-discount');
+            const bundleTotalEl = document.getElementById('bundle-total');
+            const freeSection = document.getElementById('free-add-on-section');
+            const claimBtn = document.getElementById('claim-bundle-btn');
+
+            if (checkedBoxes.length === 0) {
+                listContainer.innerHTML = '<p class="text-gray-400">No services selected yet. Click on the cards to start building.</p>';
+                originalSubtotalEl.innerText = '0 EGP';
+                discountRow.style.display = 'none';
+                bundleTotalEl.innerText = '0 EGP';
+                freeSection.classList.add('opacity-40', 'pointer-events-none');
+                document.getElementById('free-services-container').innerHTML = '';
+                claimBtn.disabled = true;
+                return;
+            }
+
+            // Cap checks at 3. Disable unchecked ones once 3 are chosen
+            const allCheckboxes = document.querySelectorAll('.service-opt-checkbox');
+            if (checkedBoxes.length >= 3) {
+                allCheckboxes.forEach(cb => {
+                    if (!cb.checked) cb.disabled = true;
+                });
+                freeSection.classList.remove('opacity-40', 'pointer-events-none');
+                populateFreeAddons(checkedBoxes);
+            } else {
+                allCheckboxes.forEach(cb => cb.disabled = false);
+                freeSection.classList.add('opacity-40', 'pointer-events-none');
+                document.getElementById('free-services-container').innerHTML = '';
+                selectedFree = null;
+                claimBtn.disabled = true;
+            }
+
+            // Calculate paid sums (min and max)
+            let subtotalMin = 0;
+            let subtotalMax = 0;
+            let listHtml = '';
+            
+            checkedBoxes.forEach(cb => {
+                const name = cb.getAttribute('data-name');
+                const minPrice = parseFloat(cb.getAttribute('data-min-price') || cb.getAttribute('data-price'));
+                const maxPrice = parseFloat(cb.getAttribute('data-max-price') || minPrice);
+                subtotalMin += minPrice;
+                subtotalMax += maxPrice;
+                listHtml += `
+                    <div class="flex justify-between items-center">
+                        <span class="text-white font-medium">${name}</span>
+                        <span class="font-mono text-xs">${formatPriceRange(minPrice, maxPrice)}</span>
+                    </div>
+                `;
+            });
+
+            // If a free service is selected
+            if (selectedFree) {
+                const freeName = selectedFree.name;
+                const freeMin = selectedFree.minPrice || selectedFree.price;
+                const freeMax = selectedFree.maxPrice || freeMin;
+                discountRow.style.display = 'flex';
+                addOnDiscount.innerText = `-${formatPriceRange(freeMin, freeMax)}`;
+                
+                listHtml += `
+                    <div class="flex justify-between items-center text-green-400 font-semibold">
+                        <span>🎁 FREE: ${freeName}</span>
+                        <span class="font-mono text-xs line-through text-gray-500">${formatPriceRange(freeMin, freeMax)}</span>
+                    </div>
+                `;
+                originalSubtotalEl.innerText = formatPriceRange(subtotalMin + freeMin, subtotalMax + freeMax);
+                bundleTotalEl.innerText = formatPriceRange(subtotalMin, subtotalMax);
+                claimBtn.disabled = false;
+            } else {
+                discountRow.style.display = 'none';
+                originalSubtotalEl.innerText = formatPriceRange(subtotalMin, subtotalMax);
+                bundleTotalEl.innerText = formatPriceRange(subtotalMin, subtotalMax);
+                claimBtn.disabled = true;
+            }
+
+            listContainer.innerHTML = listHtml;
+        }
+
+        function populateFreeAddons(selectedPaidCheckboxes) {
+            const container = document.getElementById('free-services-container');
+            
+            // Get all possible services that are NOT selected as paid
+            const allPossible = [
+                { id: 'web-dev', name: 'Web Development', price: 20000, minPrice: 20000, maxPrice: 35000, desc: 'High-performance corporate websites & web apps.', icon: 'code' },
+                { id: 'seo', name: 'SEO & Visibility', price: 35000, minPrice: 35000, maxPrice: 60000, desc: 'Technical SEO & authority architecture.', icon: 'search' },
+                { id: 'social', name: 'Social Media', price: 16000, minPrice: 16000, maxPrice: 25000, desc: 'Platform-native strategy & community building.', icon: 'megaphone' },
+                { id: 'performance', name: 'Performance Marketing', price: 15000, minPrice: 15000, maxPrice: 25000, desc: 'High ROI paid ads across Meta & TikTok.', icon: 'crosshair' },
+                { id: 'branding', name: 'Branding & Design', price: 25000, minPrice: 25000, maxPrice: 40000, desc: 'Identity systems and visual brand books.', icon: 'palette' },
+                { id: 'content', name: 'Content Creation', price: 12000, minPrice: 12000, maxPrice: 20000, desc: 'High-converting short-form video & reels.', icon: 'video' }
+            ];
+
+            const selectedIds = selectedPaidCheckboxes.map(cb => cb.value);
+            const remaining = allPossible.filter(item => !selectedIds.includes(item.id));
+
+            let html = '';
+            remaining.forEach(item => {
+                const isChecked = selectedFree && selectedFree.id === item.id;
+                html += `
+                    <label class="cursor-pointer group relative">
+                        <input type="radio" name="free-opt" value="${item.id}" data-name="${item.name}" data-price="${item.price}" data-min-price="${item.minPrice}" data-max-price="${item.maxPrice}" ${isChecked ? 'checked' : ''} class="sr-only glass-checkbox-free free-radio-opt" onchange="selectFreeService('${item.id}', '${item.name}', ${item.minPrice}, ${item.maxPrice})">
+                        <div class="glass-card border-morphism p-4 rounded-xl transition-all duration-300 border border-white/5 hover:border-green-500/30 flex flex-col justify-between h-full min-h-[110px]">
+                            <div>
+                                <h4 class="text-sm font-bold italic tracking-tight text-white group-hover:text-green-400 transition-colors">${item.name}</h4>
+                                <p class="text-[10px] text-gray-400 leading-normal mt-1">${item.desc}</p>
+                            </div>
+                            <div class="text-[10px] font-bold text-green-400 uppercase tracking-widest mt-2 flex items-center justify-between">
+                                <span>Free add-on</span>
+                                <span class="line-through text-gray-600">${formatPriceRange(item.minPrice, item.maxPrice)}</span>
+                            </div>
+                        </div>
+                    </label>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function selectFreeService(id, name, minPrice, maxPrice) {
+            selectedFree = { id, name, minPrice, maxPrice, price: minPrice };
+            updateBundleLogic();
+        }
+
+        // Submit bundle form
+        async function submitBundleLead(e) {
+            e.preventDefault();
+            const name = document.getElementById('lead-name').value;
+            const email = document.getElementById('lead-email').value;
+            const businessName = document.getElementById('lead-business') ? document.getElementById('lead-business').value : '';
+            const businessLink = document.getElementById('lead-link') ? document.getElementById('lead-link').value : '';
+            const phoneEl = document.getElementById('bundle-phone');
+            const phone = (phoneEl && phoneEl._iti) ? phoneEl._iti.getNumber() : (phoneEl ? phoneEl.value : '');
+            const notes = document.getElementById('lead-message').value;
+
+            const paidList = Array.from(document.querySelectorAll('.service-opt-checkbox:checked')).map(cb => {
+                const n = cb.getAttribute('data-name');
+                const minP = parseFloat(cb.getAttribute('data-min-price') || cb.getAttribute('data-price'));
+                const maxP = parseFloat(cb.getAttribute('data-max-price') || minP);
+                return `${n} (${formatPriceRange(minP, maxP)})`;
+            }).join(', ');
+            const freeName = selectedFree ? `${selectedFree.name} (${formatPriceRange(selectedFree.minPrice || selectedFree.price, selectedFree.maxPrice || selectedFree.price)})` : 'None';
+
+            const metaEventId = `birthday_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+            const formData = {
+                name: name,
+                email: email,
+                business_name: businessName,
+                business_link: businessLink,
+                company: businessName || 'Birthday Bundle',
+                phone: phone,
+                eventId: metaEventId,
+                message: `ICEBERG BIRTHDAY BUNDLE BUILDER:\n- Business Name: ${businessName}\n- Website Link: ${businessLink}\n- Selected Paid Services: ${paidList}\n- Selected FREE Add-on: ${freeName}\n- Phone Number: ${phone}\n\nClient Notes: ${notes}`
+            };
+
+            if (typeof window.trackMetaEvent === 'function') {
+                window.trackMetaEvent('Lead', {
+                    content_name: 'Birthday Campaign Bundle',
+                    selected_free_addon: freeName,
+                    selected_paid_services: paidList
+                }, {
+                    email: email,
+                    phone: phone,
+                    name: name
+                }, metaEventId);
+            }
+
+            try {
+                const response = await fetch('/api/contact/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    confetti({
+                        particleCount: 200,
+                        spread: 100,
+                        origin: { y: 0.6 }
+                    });
+                    
+                    alert("🎉 Bundle Claimed! Thank you for securing our birthday deal. We will reach out to you within 2 hours with our hybrid proposal.");
+                    
+                    // Reset
+                    document.querySelectorAll('.service-opt-checkbox').forEach(cb => {
+                        cb.checked = false;
+                        cb.disabled = false;
+                    });
+                    selectedFree = null;
+                    document.getElementById('lead-name').value = '';
+                    document.getElementById('lead-email').value = '';
+                    if (phoneEl) phoneEl.value = '';
+                    document.getElementById('lead-message').value = '';
+                    updateBundleLogic();
+                } else {
+                    alert(result.error || "Failed to submit bundle request. Please try again.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Failed to submit request. Please try again later.");
+            }
+        }
+
+        // Simulated AI Chatbot Sandbox
+        const mockDb = [];
+        let sandboxState = 'idle'; // idle, expecting_name, expecting_email, expecting_choice, done
+        let leadData = {};
+
+        function appendBotMessage(text) {
+            const body = document.getElementById('sandbox-chat-body');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex gap-3 max-w-[85%] animate-fade-in';
+            wrapper.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-purple-950 flex-shrink-0 flex items-center justify-center border border-purple-500/30 text-purple-400">
+                    <i data-lucide="bot" class="w-4 h-4"></i>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3 text-gray-200">
+                    ${text}
+                </div>
+            `;
+            body.appendChild(wrapper);
+            body.scrollTop = body.scrollHeight;
+            lucide.createIcons();
+        }
+
+        function appendUserMessage(text) {
+            const body = document.getElementById('sandbox-chat-body');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex gap-3 max-w-[85%] self-end justify-end animate-fade-in';
+            wrapper.innerHTML = `
+                <div class="bg-purple-600/25 border border-purple-500/30 rounded-2xl px-4 py-3 text-white">
+                    ${text}
+                </div>
+                <div class="w-8 h-8 rounded-full bg-purple-500 flex-shrink-0 flex items-center justify-center text-white font-bold text-xs">
+                    U
+                </div>
+            `;
+            body.appendChild(wrapper);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const body = document.getElementById('sandbox-chat-body');
+            const indicator = document.createElement('div');
+            indicator.id = 'sandbox-typing-indicator';
+            indicator.className = 'flex gap-3 max-w-[85%] animate-pulse';
+            indicator.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-purple-950 flex-shrink-0 flex items-center justify-center border border-purple-500/30 text-purple-400">
+                    <i data-lucide="bot" class="w-4 h-4"></i>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl px-4 py-2 text-gray-400 italic text-xs flex items-center gap-1">
+                    typing<span>...</span>
+                </div>
+            `;
+            body.appendChild(indicator);
+            body.scrollTop = body.scrollHeight;
+            lucide.createIcons();
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('sandbox-typing-indicator');
+            if (indicator) indicator.remove();
+        }
+
+        function sendSandboxMessage(text) {
+            appendUserMessage(text);
+            processBotResponse(text);
+        }
+
+        function handleSandboxSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('sandbox-user-input');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            sendSandboxMessage(text);
+        }
+
+        function processBotResponse(text) {
+            showTypingIndicator();
+            setTimeout(() => {
+                removeTypingIndicator();
+                
+                const input = text.toLowerCase();
+                
+                if (sandboxState === 'expecting_name') {
+                    leadData.name = text;
+                    sandboxState = 'expecting_email';
+                    appendBotMessage(`Great to meet you, ${text}! What is your email address so we can register your lead details?`);
+                    return;
+                }
+
+                if (sandboxState === 'expecting_email') {
+                    leadData.email = text;
+                    sandboxState = 'done';
+                    appendBotMessage(`Thank you! I have successfully registered your interest in the Iceberg Birthday Campaign. 🧊 I will submit your details directly to the database. A strategist will contact you at <strong>${text}</strong> to finalize details. Happy branding!`);
+                    
+                    // Submit actual lead
+                    submitMockLead(leadData.name, leadData.email);
+                    return;
+                }
+
+                if (input.includes('birthday') || input.includes('bundle') || input.includes('claim')) {
+                    sandboxState = 'expecting_name';
+                    leadData.interest = 'Birthday Bundle / Campaign';
+                    appendBotMessage(`Awesome! Let's get you set up for our Birthday Campaign. Could you please share your full name?`);
+                } else if (input.includes('services') || input.includes('offer')) {
+                    appendBotMessage(`We provide premium digital agency solutions including:<br>
+                    - 🖥️ <strong>Web Development</strong> (custom, secure, responsive)<br>
+                    - 🔍 <strong>SEO & Visibility</strong> (authority architecture)<br>
+                    - 📣 <strong>Social Media</strong> (platform-native design)<br>
+                    - 🎯 <strong>Performance Marketing</strong> (Facebook, TikTok ads)<br>
+                    - 🎨 <strong>Branding & Identity</strong> (unforgettable systems)<br>
+                    - 🎥 <strong>Content Creation</strong> (scroll-stopping videography)<br><br>
+                    Type 'bundle' if you'd like to check our special Buy 3 Get 1 Free offer!`);
+                } else {
+                    appendBotMessage(`I parsed your request, but as a Sandbox demo, I'm specifically optimized to guide you through the campaign. Would you like to check out the **Birthday Campaign Bundle**? Just type 'claim bundle' to proceed!`);
+                }
+            }, 1000);
+        }
+
+        async function submitMockLead(name, email) {
+            const formData = {
+                name: name,
+                email: email,
+                message: `AI AGENT SANDBOX CONVERSATION: Lead qualified in live landing page sandbox. User showed interest in campaigns.`
+            };
+            try {
+                await fetch('/api/contact/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+            } catch (err) {
+                console.error("Failed to submit sandbox lead silently:", err);
+            }
+        }
+    </script>
+</body>
+
+</html>

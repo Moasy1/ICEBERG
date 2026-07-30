@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branding Services | Iceberg Marketing</title>
+    <meta name="description" content="Brand strategy, identity design, and messaging systems that make your business unforgettable.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="stylesheet" href="/parallax/style.css">
+    <link rel="stylesheet" href="/wizard-form.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+    <script src="/wizard-form.js" defer></script>
+    <script src="/campaign.js" defer></script>
+    <script src="/ai-agent-widget.js" defer></script>
+    <script src="/phone-init.js" defer></script>
+    <style>
+        :root { --brand-primary: #f59e0b; --brand-accent: #fb7185; --brand-bg: #030712; }
+        .brand-bg { background: radial-gradient(circle at 15% 20%, rgba(245, 158, 11, 0.2), transparent 42%), radial-gradient(circle at 82% 14%, rgba(251, 113, 133, 0.18), transparent 40%), radial-gradient(circle at 50% 90%, rgba(180, 83, 9, 0.35), transparent 52%), var(--brand-bg); }
+        .headline-gradient { background: linear-gradient(90deg, #ffffff 0%, #fcd34d 45%, #fda4af 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .brand-card { background: rgba(12, 17, 30, 0.76); border: 1px solid rgba(148, 163, 184, 0.2); backdrop-filter: blur(14px); }
+        .progress-track { height: 6px; border-radius: 999px; background: rgba(148, 163, 184, 0.22); overflow: hidden; }
+        .progress-fill { height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent)); }
+        .timeline-line { position: absolute; left: 31px; top: 56px; bottom: -34px; width: 2px; background: linear-gradient(180deg, rgba(245, 158, 11, 0.34), rgba(251, 113, 133, 0.22), transparent); }
+        @media (max-width: 768px) { .timeline-line { left: 27px; } }
+    </style>
+</head>
+
+<body class="brand-bg text-white overflow-x-hidden antialiased">
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 md:px-8 py-4 md:py-5 bg-slate-950/70 backdrop-blur-xl border-b border-white/10" id="main-nav">
+        <div class="flex items-center gap-3"><img src="/parallax/assets/LOGO (2).png" alt="Logo" class="h-10 w-auto"><span class="text-2xl font-black italic tracking-tighter text-amber-300">ICEBERG</span></div>
+        <nav class="hidden md:flex items-center gap-8 text-sm font-semibold tracking-widest uppercase">
+            <a href="/parallax/index.html" class="hover:text-amber-300 transition-colors">Home</a><a href="/parallax/index.html#services" class="hover:text-amber-300 transition-colors">Services</a><a href="/parallax/index.html#portfolio" class="hover:text-amber-300 transition-colors">Work</a><a href="/parallax/index.html#contact" class="px-6 py-2 border border-white/20 rounded-full hover:bg-white/10 transition-all">Contact</a>
+        </nav>
+        <button class="md:hidden text-white p-2 glass-card rounded-lg border border-white/10" onclick="toggleMobileMenu()">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 bg-[#020617]/95 backdrop-blur-xl z-[10001] hidden">
+        <div class="flex flex-col items-center justify-center h-full gap-8 text-2xl font-semibold">
+            <button class="absolute top-6 right-6 text-white p-2 glass-card rounded-lg border border-white/10" onclick="toggleMobileMenu()">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <a href="/parallax/index.html" class="hover:text-amber-300 transition-colors" onclick="toggleMobileMenu()">Home</a>
+            <a href="/parallax/index.html#services" class="hover:text-amber-300 transition-colors" onclick="toggleMobileMenu()">Services</a>
+            <a href="/parallax/index.html#portfolio" class="hover:text-amber-300 transition-colors" onclick="toggleMobileMenu()">Work</a>
+            <a href="/parallax/index.html#contact" class="px-8 py-3 border border-amber-500/30 rounded-full hover:bg-amber-500/10 text-amber-300 transition-all font-black italic tracking-wider text-lg uppercase" onclick="toggleMobileMenu()">Contact</a>
+        </div>
+    </div>
+
+    <section class="relative min-h-screen flex items-center pt-32 pb-20">
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-10 items-center">
+                <div class="hero-copy"><h1 class="text-5xl sm:text-6xl md:text-7xl font-black italic tracking-tight leading-[0.95] mb-7">BUILD A <span class="headline-gradient">BRAND THAT STICKS</span></h1><p class="text-lg md:text-xl text-slate-300 max-w-xl leading-relaxed mb-9">We craft strategic identities that communicate your value instantly and stay consistent across every customer touchpoint.</p><a href="#contact" class="px-8 py-4 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-black italic uppercase tracking-wide inline-block transition-all hover:-translate-y-0.5">Start Branding Project</a></div>
+                <div class="brand-card rounded-3xl p-7 md:p-8 space-y-6"><h2 class="text-xl font-black italic tracking-tight">Brand Impact Snapshot</h2><div class="space-y-5"><div><div class="flex items-center justify-between mb-2 text-sm"><span class="text-slate-300">Brand Recall</span><span class="font-bold text-amber-300">+63%</span></div><div class="progress-track"><div class="progress-fill" data-fill="84"></div></div></div><div><div class="flex items-center justify-between mb-2 text-sm"><span class="text-slate-300">Message Clarity</span><span class="font-bold text-amber-300">+49%</span></div><div class="progress-track"><div class="progress-fill" data-fill="75"></div></div></div><div><div class="flex items-center justify-between mb-2 text-sm"><span class="text-slate-300">Visual Consistency</span><span class="font-bold text-rose-300">92%</span></div><div class="progress-track"><div class="progress-fill" data-fill="92"></div></div></div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="process" class="py-20 border-y border-white/10 bg-slate-950/45"><div class="container mx-auto px-6"><div class="text-center mb-14 reveal-item"><h2 class="text-4xl md:text-5xl font-black italic tracking-tight">OUR BRANDING PROCESS</h2></div><div class="max-w-4xl mx-auto space-y-8"><div class="relative pl-20 reveal-item"><span class="timeline-line"></span><div class="absolute left-0 top-0 w-14 h-14 rounded-2xl border border-amber-300/40 bg-amber-500/15 text-amber-100 flex items-center justify-center text-xl font-black italic">01</div><h3 class="text-2xl font-black italic mb-2">Brand Discovery</h3><p class="text-slate-300">Clarify your market, audience, voice, and strategic brand position.</p></div><div class="relative pl-20 reveal-item"><span class="timeline-line"></span><div class="absolute left-0 top-0 w-14 h-14 rounded-2xl border border-amber-300/40 bg-amber-500/15 text-amber-100 flex items-center justify-center text-xl font-black italic">02</div><h3 class="text-2xl font-black italic mb-2">Identity System</h3><p class="text-slate-300">Build logo direction, typography, color language, and brand assets.</p></div><div class="relative pl-20 reveal-item"><span class="timeline-line"></span><div class="absolute left-0 top-0 w-14 h-14 rounded-2xl border border-rose-300/40 bg-rose-500/15 text-rose-100 flex items-center justify-center text-xl font-black italic">03</div><h3 class="text-2xl font-black italic mb-2">Messaging Framework</h3><p class="text-slate-300">Define core messaging pillars and communication style by channel.</p></div><div class="relative pl-20 reveal-item"><div class="absolute left-0 top-0 w-14 h-14 rounded-2xl border border-rose-300/40 bg-rose-500/15 text-rose-100 flex items-center justify-center text-xl font-black italic">04</div><h3 class="text-2xl font-black italic mb-2">Deployment Kit</h3><p class="text-slate-300">Deliver practical guidelines so your brand stays consistent everywhere.</p></div></div></div></section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 border-t border-white/10 bg-slate-950/70">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="text-amber-400 font-bold tracking-[0.2em] uppercase text-xs mb-3 block">Flexible Investment</span>
+                <h2 class="text-4xl md:text-5xl font-black italic tracking-tight mb-4">BRANDING <span class="headline-gradient">PACKAGES</span></h2>
+                <p class="text-slate-300 text-base max-w-xl mx-auto">Choose the identity framework designed to scale your business and outshine competition.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Basic Card -->
+                <div class="pricing-card rounded-3xl p-8 flex flex-col justify-between border border-white/10 bg-slate-900/60 hover:border-amber-500/30 transition-all">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-300 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full inline-block mb-4">Starter Identity</span>
+                        <h3 class="text-2xl font-black italic mb-2">Basic Brand</h3>
+                        <p class="text-slate-400 text-xs mb-6">Essential identity package for launching early-stage startups and lean products.</p>
+                        <div class="flex items-baseline mb-8">
+                            <span class="text-4xl md:text-5xl font-black italic tracking-tight text-white">15,000</span>
+                            <span class="text-amber-400 font-bold text-sm ml-2 uppercase">EGP</span>
+                        </div>
+                        <ul class="feature-list space-y-3 text-sm text-slate-300 mb-8">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-400"></i> Primary Logo & Icon Marks</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-400"></i> Curated Color Palette & Typography</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-400"></i> Brand Guidelines PDF</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-400"></i> Primary Social Profile Kit</li>
+                        </ul>
+                    </div>
+                    <a href="#contact" class="w-full py-3.5 rounded-xl border border-amber-500/30 hover:bg-amber-500/10 text-amber-300 font-black italic uppercase tracking-wider text-xs text-center transition-all">Select Basic Package</a>
+                </div>
+
+                <!-- Advanced Card -->
+                <div class="pricing-card popular rounded-3xl p-8 flex flex-col justify-between border-2 border-amber-500/40 bg-gradient-to-b from-amber-500/10 via-slate-900/80 to-slate-950 relative shadow-2xl">
+                    <div class="absolute -top-3 right-8 bg-amber-400 text-slate-950 font-black italic text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">Most Popular</div>
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-300 bg-amber-500/20 border border-amber-500/30 px-3 py-1 rounded-full inline-block mb-4">Complete System</span>
+                        <h3 class="text-2xl font-black italic mb-2">Advanced Brand</h3>
+                        <p class="text-slate-400 text-xs mb-6">Comprehensive identity overhaul with 3D elements and motion guidelines.</p>
+                        <div class="flex items-baseline mb-8">
+                            <span class="text-4xl md:text-5xl font-black italic tracking-tight text-white">30,000</span>
+                            <span class="text-amber-400 font-bold text-sm ml-2 uppercase">EGP</span>
+                        </div>
+                        <ul class="feature-list space-y-3 text-sm text-slate-300 mb-8">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-400"></i> Everything in Basic Package</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-400"></i> Full Identity System & Variations</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-400"></i> Motion Logo & Animated Assets</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-400"></i> Comprehensive Brand Book</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-400"></i> Social & Print Collateral Templates</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-amber-400"></i> 3D Brand Elements & Mockups</li>
+                        </ul>
+                    </div>
+                    <a href="#contact" class="w-full py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black italic uppercase tracking-wider text-xs text-center transition-all shadow-lg shadow-amber-500/20">Select Advanced Package</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Birthday Campaign Promo Callout -->
+    <section class="py-16 bg-slate-950/60 border-t border-white/10 relative overflow-hidden">
+        <div class="container mx-auto px-6 relative z-10 max-w-4xl text-center space-y-6">
+            <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Birthday Campaign special</span>
+            <h3 class="text-3xl md:text-4xl font-black italic tracking-tighter uppercase">GET THIS SERVICE FOR FREE</h3>
+            <p class="text-gray-400 text-sm max-w-xl mx-auto">
+                Celebrate our Birthday Month: Purchase any 3 solutions and get a 4th service (like this one) completely free! Or enjoy a flat 33% discount.
+            </p>
+            <div class="pt-2">
+                <a href="/birthday-campaign" class="px-8 py-3.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black italic uppercase tracking-wider text-xs rounded-full inline-block transition-all hover:scale-105 active:scale-95 shadow-lg shadow-amber-500/20">
+                    Build My Custom Bundle
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-20 border-t border-white/10 bg-slate-950/55">
+        <div class="container mx-auto px-6 max-w-4xl">
+            <div class="text-center mb-10 reveal-item">
+                <h2 class="text-4xl md:text-5xl font-black italic tracking-tight mb-4">READY TO <span class="headline-gradient">REFRESH YOUR BRAND?</span></h2>
+                <p class="text-slate-300 text-lg">Tell us about your brand and we'll craft the perfect identity strategy.</p>
+            </div>
+            <div class="brand-card rounded-3xl p-7 md:p-10 reveal-item">
+                <form id="contact-form" class="wizard-form space-y-5">
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="space-y-2">
+                            <label class="text-xs tracking-[0.2em] uppercase text-amber-200">Name</label>
+                            <input type="text" name="name" required placeholder="Your full name"
+                                class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-300 text-white transition-colors">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs tracking-[0.2em] uppercase text-amber-200">Email</label>
+                            <input type="email" name="email" required placeholder="your@email.com"
+                                class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-300 text-white transition-colors">
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="space-y-2">
+                            <label class="text-xs tracking-[0.2em] uppercase text-amber-200">Business Name</label>
+                            <input type="text" name="business_name" required placeholder="Acme Inc."
+                                class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-300 text-white transition-colors">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs tracking-[0.2em] uppercase text-amber-200">Website / Business Link</label>
+                            <input type="url" name="business_link" placeholder="https://example.com"
+                                class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-300 text-white transition-colors">
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs tracking-[0.2em] uppercase text-amber-200">Phone Number</label>
+                        <input type="tel" name="phone" required placeholder="+1 (555) 000-0000"
+                            class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-300 text-white transition-colors">
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="space-y-2">
+                            <label class="text-xs tracking-[0.2em] uppercase text-amber-200">Brand Stage</label>
+                            <select name="brand-stage"
+                                class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-300 text-white transition-colors">
+                                <option>New Brand (Starting from scratch)</option>
+                                <option>Rebrand (Refreshing existing brand)</option>
+                                <option>Brand Extension (Adding sub-brand)</option>
+                                <option>Brand Audit Only</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs tracking-[0.2em] uppercase text-amber-200">Style Direction</label>
+                            <select name="style-direction"
+                                class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-300 text-white transition-colors">
+                                <option>Minimal & Modern</option>
+                                <option>Bold & Expressive</option>
+                                <option>Luxury & Premium</option>
+                                <option>Playful & Creative</option>
+                                <option>Corporate & Professional</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs tracking-[0.2em] uppercase text-amber-200">Brand Goals & Vision</label>
+                        <textarea rows="4" name="message" placeholder="Describe your brand vision, target audience, and what you want your brand to communicate..."
+                            class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-300 text-white transition-colors"></textarea>
+                    </div>
+                    <button type="submit"
+                        class="w-full py-4 rounded-xl bg-gradient-to-r from-amber-400 to-rose-400 hover:from-amber-300 hover:to-rose-300 text-slate-950 font-black italic uppercase tracking-[0.18em] transition-all hover:-translate-y-0.5">
+                        Book Branding Session
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-white/10 text-center bg-[#01040f]">
+        <div class="flex flex-col items-center gap-6 mb-8">
+            <img src="/parallax/assets/LOGO (2).png" alt="Logo"
+                class="h-12 w-auto grayscale opacity-50 hover:opacity-100 transition-opacity">
+        </div>
+        <p class="text-gray-600 text-xs uppercase tracking-widest font-bold">&copy; 2026 Iceberg Agency. Dig Deep. Rise
+            High.</p>
+    </footer>
+
+    <script>
+        // Initialize icons immediately
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+
+        // Mobile Menu Functions with GSAP Animations
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (!menu) return;
+            const links = menu.querySelectorAll('a');
+            const closeBtn = menu.querySelector('button');
+            
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                if (window.mobileMenuTl) window.mobileMenuTl.kill();
+                window.mobileMenuTl = gsap.timeline();
+                window.mobileMenuTl.fromTo(menu, 
+                    { opacity: 0, backdropFilter: 'blur(0px)', webkitBackdropFilter: 'blur(0px)' },
+                    { opacity: 1, backdropFilter: 'blur(24px)', webkitBackdropFilter: 'blur(24px)', duration: 0.4, ease: 'power2.out' }
+                );
+                window.mobileMenuTl.fromTo(links, 
+                    { opacity: 0, y: 30, scale: 0.9 },
+                    { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.05, ease: 'power3.out', delay: 0.1 },
+                    '-=0.3'
+                );
+                if (closeBtn) {
+                    window.mobileMenuTl.fromTo(closeBtn, 
+                        { opacity: 0, rotate: -90, scale: 0.8 },
+                        { opacity: 1, rotate: 0, scale: 1, duration: 0.4, ease: 'back.out(1.7)' },
+                        '-=0.2'
+                    );
+                }
+            } else {
+                if (window.mobileMenuTl) window.mobileMenuTl.kill();
+                window.mobileMenuTl = gsap.timeline({
+                    onComplete: () => menu.classList.add('hidden')
+                });
+                window.mobileMenuTl.to(links, {
+                    opacity: 0,
+                    y: -15,
+                    duration: 0.25,
+                    stagger: 0.03,
+                    ease: 'power2.in'
+                });
+                window.mobileMenuTl.to(menu, {
+                    opacity: 0,
+                    duration: 0.3,
+                    ease: 'power2.inOut'
+                }, '-=0.15');
+            }
+        }
+
+        // Header Scroll Sticky Shrink Handler
+        document.addEventListener('DOMContentLoaded', () => {
+            const nav = document.getElementById('main-nav');
+            if (nav) {
+                const toggleScrolled = () => {
+                    if (window.scrollY > 20) {
+                        nav.classList.add('scrolled');
+                    } else {
+                        nav.classList.remove('scrolled');
+                    }
+                };
+                window.addEventListener('scroll', toggleScrolled);
+                toggleScrolled();
+            }
+        });
+
+        // Fallback: Ensure all content is visible after 3 seconds if animations fail
+        setTimeout(() => {
+            document.querySelectorAll('.brand-card, .reveal-item').forEach(el => {
+                el.style.opacity = '1';
+                el.style.transform = 'none';
+            });
+        }, 3000);
+
+        // Initialize GSAP with error handling
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                    gsap.registerPlugin(ScrollTrigger);
+                    gsap.from(".hero-copy > *", { opacity: 0, y: 26, duration: 0.65, stagger: 0.1, ease: "power3.out" });
+                    gsap.from(".brand-card", { opacity: 0, x: 30, duration: 0.9, ease: "power3.out", delay: 0.2 });
+                    gsap.utils.toArray(".progress-fill").forEach((bar) => gsap.to(bar, { width: bar.getAttribute("data-fill") + "%", duration: 1.1, ease: "power2.out", delay: 0.4 }));
+                    gsap.utils.toArray(".reveal-item").forEach((el) => gsap.from(el, { opacity: 0, y: 36, duration: 0.75, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 86%", once: true } }));
+                } else {
+                    console.warn('GSAP or ScrollTrigger not loaded');
+                }
+            } catch (error) {
+                console.error('Animation error:', error);
+            }
+        });
+    </script>
+    <script src="service-form-handler.js"></script>
+</body>
+
+</html>

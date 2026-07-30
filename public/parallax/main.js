@@ -3,7 +3,7 @@ gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 console.log("ICEBERG: Script initialized.");
 
 // --- Initialization ---
-const init = () => {
+let init = () => {
     console.log("ICEBERG: DOM and Assets loaded. Starting animations...");
 
     // Hide horizontal scroll
@@ -11,6 +11,8 @@ const init = () => {
 
     // Performance optimization
     ScrollTrigger.config({ limitCallbacks: true });
+
+    initLucideIcons();
 
     // Setup Top level event listeners within init to ensure elements exist
     setupEventListeners();
@@ -31,6 +33,15 @@ const init = () => {
             });
         }
     }, 5000);
+};
+
+const initLucideIcons = () => {
+    if (!window.lucide || typeof window.lucide.createIcons !== 'function') {
+        console.warn("ICEBERG: Lucide icons library did not load.");
+        return;
+    }
+
+    window.lucide.createIcons();
 };
 
 // --- Event Listeners ---
@@ -57,7 +68,101 @@ const setupEventListeners = () => {
             }
         });
     });
+
+    // Contact Form Submission
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn ? submitBtn.textContent : 'Submit';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
+            }
+            
+            const nameInput = this.querySelector('input[name="name"]');
+            const emailInput = this.querySelector('input[name="email"]');
+            const phoneInput = this.querySelector('input[name="phone"]');
+            const businessNameInput = this.querySelector('input[name="business_name"]');
+            const businessLinkInput = this.querySelector('input[name="business_link"]');
+            const messageInput = this.querySelector('textarea');
+            const serviceSelect = this.querySelector('select');
+            
+            const formData = {
+                name: nameInput ? nameInput.value : '',
+                email: emailInput ? emailInput.value : '',
+                phone: phoneInput ? phoneInput.value : '',
+                business_name: businessNameInput ? businessNameInput.value : '',
+                business_link: businessLinkInput ? businessLinkInput.value : '',
+                message: messageInput ? messageInput.value : '',
+                company: businessNameInput && businessNameInput.value ? businessNameInput.value : (serviceSelect ? `Service Requested: ${serviceSelect.value}` : 'Static Landing Page')
+            };
+            
+            try {
+                const response = await fetch('/api/contact/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showLocalNotification(result.message || 'Message sent successfully!', 'success');
+                    this.reset();
+                } else {
+                    showLocalNotification(result.error || 'Failed to send message', 'error');
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                showLocalNotification('Failed to send message. Please try again.', 'error');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalBtnText;
+                }
+            }
+        });
+    }
+
+    // Sticky Header Scroll Handler
+    const nav = document.getElementById('main-nav');
+    if (nav) {
+        const toggleScrolled = () => {
+            if (window.scrollY > 20) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        };
+        window.addEventListener('scroll', toggleScrolled);
+        toggleScrolled(); // Run once initially
+    }
 };
+
+// Local notification helper
+function showLocalNotification(message, type = 'info') {
+    const colors = {
+        success: 'bg-green-500',
+        error: 'bg-red-500',
+        info: 'bg-blue-500',
+        warning: 'bg-yellow-500'
+    };
+
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300`;
+    notification.textContent = message;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
 
 // --- Loader ---
 const runLoader = () => {
@@ -244,7 +349,7 @@ const initScrollAnimations = () => {
     // Portfolio Items Stagger
     gsap.from(".portfolio-item", {
         scrollTrigger: {
-            trigger: "#portfolio",
+            trigger: "#showcases",
             start: "top 70%",
         },
         scale: 0.9,
@@ -332,4 +437,57 @@ init = () => {
     if (window.icebergInitialized) return;
     window.icebergInitialized = true;
     originalInit();
+};
+
+// Global Mobile Menu Toggle with GSAP Animation
+window.toggleMobileMenu = () => {
+    const menu = document.getElementById('mobile-menu');
+    if (!menu) return;
+    
+    const links = menu.querySelectorAll('a');
+    const closeBtn = menu.querySelector('button');
+    
+    if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+        
+        // Kill any ongoing timeline
+        if (window.mobileMenuTl) window.mobileMenuTl.kill();
+        
+        window.mobileMenuTl = gsap.timeline();
+        window.mobileMenuTl.fromTo(menu, 
+            { opacity: 0, backdropFilter: 'blur(0px)', webkitBackdropFilter: 'blur(0px)' },
+            { opacity: 1, backdropFilter: 'blur(24px)', webkitBackdropFilter: 'blur(24px)', duration: 0.4, ease: 'power2.out' }
+        );
+        window.mobileMenuTl.fromTo(links, 
+            { opacity: 0, y: 30, scale: 0.9 },
+            { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.05, ease: 'power3.out', delay: 0.1 },
+            '-=0.3'
+        );
+        if (closeBtn) {
+            window.mobileMenuTl.fromTo(closeBtn, 
+                { opacity: 0, rotate: -90, scale: 0.8 },
+                { opacity: 1, rotate: 0, scale: 1, duration: 0.4, ease: 'back.out(1.7)' },
+                '-=0.2'
+            );
+        }
+    } else {
+        if (window.mobileMenuTl) window.mobileMenuTl.kill();
+        
+        window.mobileMenuTl = gsap.timeline({
+            onComplete: () => menu.classList.add('hidden')
+        });
+        
+        window.mobileMenuTl.to(links, {
+            opacity: 0,
+            y: -15,
+            duration: 0.25,
+            stagger: 0.03,
+            ease: 'power2.in'
+        });
+        window.mobileMenuTl.to(menu, {
+            opacity: 0,
+            duration: 0.3,
+            ease: 'power2.inOut'
+        }, '-=0.15');
+    }
 };

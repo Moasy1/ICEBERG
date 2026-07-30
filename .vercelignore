@@ -1,0 +1,22 @@
+# Ignore zip archives
+*.zip
+# Ignore local node packages
+node_modules
+# Ignore environment variables and local database data
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+# Ignore doc folders
+Company Profile
+# Ignore git and IDE config
+.git
+.gitignore
+.gitattributes
+.vscode
+.idea
+.gemini
+# Ignore OS generated files
+.DS_Store
+Thumbs.db

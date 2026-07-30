@@ -22,6 +22,8 @@
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="/wizard-form.css">
+    <script src="/wizard-form.js" defer></script>
 
     <style>
         :root {
@@ -825,18 +827,35 @@
                     <p class="text-gray-400" data-i18n="contact_sub">Ready to grow? Send us a message.</p>
                 </div>
 
-                <form class="space-y-6">
+                <form id="contact-form" class="wizard-form space-y-6">
                     <div class="grid md:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label class="text-sm text-gray-400" data-i18n="form_name">Name</label>
-                            <input type="text"
+                            <input type="text" name="name" required
                                 class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm text-gray-400" data-i18n="form_email">Email</label>
-                            <input type="email"
+                            <input type="email" name="email" required
                                 class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
                         </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-sm text-gray-400">Business Name</label>
+                            <input type="text" name="business_name" required placeholder="Acme Inc."
+                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm text-gray-400">Website / Business Link</label>
+                            <input type="url" name="business_link" placeholder="https://example.com"
+                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm text-gray-400 block mb-1">Phone Number</label>
+                        <input type="tel" name="phone" required
+                            class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
                     </div>
                     <div class="space-y-2">
                         <label class="text-sm text-gray-400" data-i18n="form_message">Message</label>

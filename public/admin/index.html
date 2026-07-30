@@ -354,7 +354,21 @@
 
             <!-- Contacts Section -->
             <section id="contacts" class="content-section hidden">
-                <h2 class="text-2xl font-bold text-white mb-6">Contact Messages</h2>
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">Contact Messages</h2>
+                    <div class="flex gap-3">
+                        <button onclick="exportContacts()"
+                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center">
+                            <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>
+                            Export CSV
+                        </button>
+                        <button onclick="loadContacts()"
+                            class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center">
+                            <i data-lucide="refresh-cw" class="w-4 h-4 inline mr-2"></i>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
 
                 <div class="glass-card rounded-xl overflow-hidden">
                     <div class="overflow-x-auto">
@@ -366,18 +380,27 @@
                                         Name</th>
                                     <th
                                         class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                        Email</th>
+                                        Contact Info</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Company</th>
                                     <th
                                         class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                                         Message</th>
                                     <th
                                         class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                                         Date</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="contacts-table-body" class="divide-y divide-slate-700">
                                 <tr>
-                                    <td colspan="4" class="px-6 py-8 text-center text-gray-400">No contact messages yet.
+                                    <td colspan="7" class="px-6 py-8 text-center text-gray-400">No contact messages yet.
                                     </td>
                                 </tr>
                             </tbody>
@@ -602,6 +625,61 @@
                         class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">Cancel</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Contact Details Modal -->
+    <div id="contact-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="glass-card rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-bold text-white mb-4">Contact Message Details</h3>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase">Sender Name</label>
+                        <div id="detail-name" class="mt-1 text-sm text-white bg-slate-800/50 p-2.5 rounded border border-slate-700"></div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase">Status</label>
+                        <div id="detail-status" class="mt-1 text-sm text-white bg-slate-800/50 p-2.5 rounded border border-slate-700"></div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase">Email</label>
+                        <div id="detail-email" class="mt-1 text-sm text-white bg-slate-800/50 p-2.5 rounded border border-slate-700"></div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase">Phone</label>
+                        <div id="detail-phone" class="mt-1 text-sm text-white bg-slate-800/50 p-2.5 rounded border border-slate-700 text-gray-300"></div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase">Company</label>
+                    <div id="detail-company" class="mt-1 text-sm text-white bg-slate-800/50 p-2.5 rounded border border-slate-700 text-gray-300"></div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase">Message</label>
+                    <div id="detail-message" class="mt-1 text-sm text-white bg-slate-800/50 p-2.5 rounded border border-slate-700 whitespace-pre-wrap"></div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase">Submitted Date</label>
+                    <div id="detail-date" class="mt-1 text-sm text-white bg-slate-800/50 p-2.5 rounded border border-slate-700"></div>
+                </div>
+                <div class="flex flex-wrap gap-3 pt-4">
+                    <button type="button" onclick="replyViaEmail()"
+                        class="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                        <i data-lucide="mail" class="w-4 h-4"></i>
+                        Reply via Email
+                    </button>
+                    <button type="button" onclick="replyViaWhatsApp()"
+                        class="flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                        Reply via WhatsApp
+                    </button>
+                    <button type="button" onclick="closeAllModals()"
+                        class="px-6 py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors ml-auto">Close</button>
+                </div>
+            </div>
         </div>
     </div>
 

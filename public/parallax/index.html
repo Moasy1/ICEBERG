@@ -19,6 +19,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <link rel="stylesheet" href="/parallax/style.css">
+    <link rel="stylesheet" href="/wizard-form.css">
     <style>
         /* Additional overrides for specific new sections if needed */
         .glass-card-dark {
@@ -27,6 +28,12 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+    <script src="/wizard-form.js" defer></script>
+    <script src="/campaign.js" defer></script>
+    <script src="/ai-agent-widget.js" defer></script>
+    <script src="/phone-init.js" defer></script>
 </head>
 
 <body class="bg-[#020617] text-white overflow-x-hidden antialiased">
@@ -40,7 +47,7 @@
     </div>
 
     <!-- Header -->
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 md:px-8 py-6 opacity-0 header-anim bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg"
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 md:px-8 py-4 md:py-6 header-anim bg-white/5 backdrop-blur-xl border-b border-white/10 shadow-lg"
         id="main-nav">
         <div class="flex items-center gap-3">
             <img src="/parallax/assets/LOGO%20(2).png" alt="Logo" class="h-10 w-auto">
@@ -50,8 +57,11 @@
             <a href="#home" class="hover:text-cyan-400 transition-colors">Home</a>
             <a href="#services" class="hover:text-cyan-400 transition-colors">Services</a>
             <a href="#process" class="hover:text-cyan-400 transition-colors">Process</a>
-            <a href="#portfolio" class="hover:text-cyan-400 transition-colors">Work</a>
+            <a href="#showcases" class="hover:text-cyan-400 transition-colors">Showcases</a>
             <a href="#about" class="hover:text-cyan-400 transition-colors">About</a>
+            <a href="/birthday-campaign" class="text-cyan-400 hover:text-cyan-300 font-black italic flex items-center gap-1 animate-pulse transition-all">
+                🎁 Birthday Deals
+            </a>
             <a href="#contact"
                 class="px-6 py-2 border border-white/20 rounded-full hover:bg-white/10 transition-all hover:scale-105 active:scale-95 magnetic-btn">Start
                 Project</a>
@@ -62,7 +72,7 @@
     </header>
 
     <!-- Mobile Menu -->
-    <div id="mobile-menu" class="fixed inset-0 bg-[#020617]/95 backdrop-blur-xl z-40 hidden">
+    <div id="mobile-menu" class="fixed inset-0 bg-[#020617]/95 backdrop-blur-xl z-[10001] hidden">
         <div class="flex flex-col items-center justify-center h-full gap-8 text-2xl font-semibold">
             <button class="absolute top-6 right-6 text-white p-2 glass-card rounded-lg border border-white/10" onclick="toggleMobileMenu()">
                 <i data-lucide="x" class="w-5 h-5"></i>
@@ -70,9 +80,12 @@
             <a href="#home" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Home</a>
             <a href="#services" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Services</a>
             <a href="#process" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Process</a>
-            <a href="#portfolio" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Work</a>
+            <a href="#showcases" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Showcases</a>
             <a href="#about" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">About</a>
-            <a href="#contact" class="px-6 py-2 border border-white/20 rounded-full hover:bg-white/10 transition-all" onclick="toggleMobileMenu()">Contact</a>
+            <a href="/birthday-campaign" class="text-cyan-400 hover:text-cyan-300 font-black italic flex items-center gap-1 animate-pulse transition-all" onclick="toggleMobileMenu()">
+                🎁 Birthday Deals
+            </a>
+            <a href="#contact" class="px-8 py-3 border border-cyan-500/30 rounded-full hover:bg-cyan-500/10 text-cyan-400 transition-all font-black italic tracking-wider text-lg uppercase" onclick="toggleMobileMenu()">Start Project</a>
         </div>
     </div>
 
@@ -81,7 +94,7 @@
         <!-- Multi-Layered Parallax Background -->
         <!-- Background Video -->
         <div class="absolute inset-0 z-0 h-full w-full overflow-hidden">
-            <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover">
+            <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover parallax-layer" data-depth="0.5">
                 <source src="/parallax/assets/iceberg-assets/hero_video.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
@@ -97,7 +110,7 @@
         </div>
 
         <!-- Refined Centered Stack -->
-        <div class="container mx-auto px-6 relative z-10 h-full flex flex-col items-center justify-center text-center">
+        <div class="container mx-auto px-6 relative z-10 h-full flex flex-col items-center justify-center text-center hero-scale-75">
 
             <!-- Top Badge -->
             <div class="mb-6">
@@ -181,7 +194,7 @@
     </section>
 
     <!-- Angled Showcase Section (New) -->
-    <section id="showcase" class="bg-[#020617] relative z-10 overflow-hidden py-32 border-b border-white/5">
+    <section id="clients" class="bg-[#020617] relative z-10 overflow-hidden py-32 border-b border-white/5">
         <div class="container mx-auto px-6 relative z-20 mb-16 text-center">
             <span class="text-cyan-400 font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Our Trusted
                 Partners</span>
@@ -245,8 +258,86 @@
         </div>
     </section>
 
+<!-- About / Who We Are -->
+    <section id="about" class="py-32 relative z-10 bg-[#020617] overflow-hidden">
+        <div class="container mx-auto px-6 relative z-10 text-center">
+            <div class="inline-block relative mb-12">
+                <h2 class="text-6xl md:text-8xl font-black italic tracking-tighter uppercase relative z-10">
+                    <span class="text-amber-500">WHO</span> WE ARE
+                </h2>
+                <div class="absolute -inset-4 bg-white/5 -skew-x-12 -z-0"></div>
+            </div>
+            <p class="text-2xl md:text-3xl font-bold leading-tight text-gray-300 max-w-4xl mx-auto">
+                Iceberg Marketing is a dynamic marketing agency dedicated to uncovering the hidden potential within
+                brands. Our team of passionate creatives, strategists, and innovators strives to craft unique narratives
+                that drive results.
+            </p>
+        </div>
+    </section>
 
-    <!-- Services Section (Updated Content) -->
+<!-- Mission & Vision -->
+    <section class="py-24 bg-[#020617] relative z-10">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Mission -->
+                <div
+                    class="glass-card rounded-3xl p-10 border-t-4 border-amber-500 hover:bg-white/5 transition-all duration-500 group">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-5xl font-black italic text-amber-500 uppercase tracking-tighter">MISSION</h3>
+                        <i data-lucide="target" class="w-10 h-10 text-amber-500"></i>
+                    </div>
+                    <p class="text-gray-400 text-lg leading-relaxed">
+                        At Iceberg Marketing, our mission is to be more than just a marketing agency: we are dedicated
+                        business partners. We delve deep into the essence of each business to apply the most effective
+                        innovative strategies.
+                    </p>
+                </div>
+                <!-- Vision -->
+                <div
+                    class="glass-card rounded-3xl p-10 border-t-4 border-cyan-500 hover:bg-white/5 transition-all duration-500 group">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-5xl font-black italic text-cyan-500 uppercase tracking-tighter">VISION</h3>
+                        <i data-lucide="binoculars" class="w-10 h-10 text-cyan-500"></i>
+                    </div>
+                    <p class="text-gray-400 text-lg leading-relaxed">
+                        Our vision is to be the guiding force that unveils the hidden potential in every client's
+                        digital presence, discovering unseen opportunities that lie beneath the surface.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- Showcases Marquee -->
+    <section class="py-24 bg-[#020617] overflow-hidden border-y border-white/5 relative">
+        <div
+            class="flex gap-8 items-center marquee-track-showcase opacity-70 hover:opacity-100 transition-opacity duration-700 marquee-scroll">
+            <img src="/assets/showcases/drum_shop_branding.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
+            <img src="/assets/showcases/fms_cofe_shop_branding_showcase_.png" class="h-64 md:h-80 w-auto rounded-2xl"
+                alt="Work">
+            <img src="/assets/showcases/penates_realestate_devlopments_showcase_2.png"
+                class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
+            <img src="/assets/showcases/sahel_construction_solutions_branding_showcase.png"
+                class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
+            <img src="/assets/showcases/dentaquick_showcase_1.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
+            <img src="/assets/showcases/drum_shop_branding.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
+        </div>
+    </section>
+
+<!-- Ads Showcase Marquee (Reverse) -->
+    <section class="py-12 bg-[#020617] overflow-hidden border-b border-white/5 relative">
+        <div
+            class="flex gap-8 items-center marquee-track-showcase opacity-70 hover:opacity-100 transition-opacity duration-700 marquee-scroll-reverse">
+            <img src="/parallax/assets/ads-showcase/meta_ads.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
+            <img src="/parallax/assets/ads-showcase/meta_ads_2.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
+            <img src="/parallax/assets/ads-showcase/tiktok_ads.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
+            <img src="/parallax/assets/ads-showcase/meta_ads_3.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
+            <img src="/parallax/assets/ads-showcase/meta_ads_4.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
+            <img src="/parallax/assets/ads-showcase/meta_ads.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
+        </div>
+    </section>
+
+<!-- Services Section (Updated Content) -->
     <section id="services" class="py-32 relative z-10 bg-[#020617] overflow-hidden">
         <!-- Background Elements (Floating Shards) -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
@@ -341,72 +432,8 @@
         </div>
     </section>
 
-    <!-- Process Section (New) -->
-    <section id="process" class="py-32 bg-[#020617] relative z-10 overflow-hidden border-t border-white/5">
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="flex flex-col md:flex-row gap-16 items-center">
-                <div class="md:w-1/2 space-y-12">
-                    <div>
-                        <span class="text-cyan-400 font-bold tracking-[0.3em] uppercase text-xs mb-4 block">The
-                            Methodology</span>
-                        <h2 class="text-5xl md:text-7xl font-black italic tracking-tighter mb-6 reveal-type">BELOW THE
-                            SURFACE</h2>
-                        <p class="text-xl text-gray-400 leading-relaxed">
-                            Our methodology goes deeper than aesthetics. We build systems that work.
-                        </p>
-                    </div>
-
-                    <div class="space-y-12">
-                        <div class="flex gap-8 group">
-                            <div
-                                class="flex-shrink-0 w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/50 flex items-center justify-center text-cyan-400 text-2xl font-black italic group-hover:scale-110 transition-transform duration-300">
-                                01</div>
-                            <div>
-                                <h4 class="text-2xl font-black italic tracking-tighter mb-2 text-white">DISCOVERY</h4>
-                                <p class="text-gray-400">We analyze the market depth, competitors, and your brand's core
-                                    values to find the unseen advantage.</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-8 group">
-                            <div
-                                class="flex-shrink-0 w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/50 flex items-center justify-center text-blue-400 text-2xl font-black italic group-hover:scale-110 transition-transform duration-300">
-                                02</div>
-                            <div>
-                                <h4 class="text-2xl font-black italic tracking-tighter mb-2 text-white">STRATEGY</h4>
-                                <p class="text-gray-400">Crafting a roadmap that navigates through the digital ocean
-                                    effectively, avoiding common pitfalls.</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-8 group">
-                            <div
-                                class="flex-shrink-0 w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/50 flex items-center justify-center text-indigo-400 text-2xl font-black italic group-hover:scale-110 transition-transform duration-300">
-                                03</div>
-                            <div>
-                                <h4 class="text-2xl font-black italic tracking-tighter mb-2 text-white">EXECUTION</h4>
-                                <p class="text-gray-400">Launching campaigns with precision and monitoring real-time
-                                    data to optimize performance continuously.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Visual -->
-                <div class="md:w-1/2 relative flex justify-center">
-                    <div
-                        class="relative w-full max-w-md aspect-square glass-card rounded-full flex items-center justify-center p-12 overflow-hidden animate-pulse">
-                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-600/10"></div>
-                        <div class="text-center relative z-10">
-                            <div class="text-8xl font-black italic text-cyan-500/20 mb-2">90%</div>
-                            <div class="text-sm font-bold text-cyan-400 uppercase tracking-widest">Technicals & Data
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Portfolio Section (Updated with all projects) -->
-    <section id="portfolio" class="py-32 bg-[#020617] relative z-10 overflow-hidden">
+<!-- Portfolio Section (Updated with all projects) -->
+    <section id="showcases" class="py-32 bg-[#020617] relative z-10 overflow-hidden">
         <div class="container mx-auto px-6 relative z-10">
             <div class="mb-24 flex flex-col md:flex-row items-end gap-8 justify-between">
                 <div>
@@ -418,6 +445,15 @@
                 <div class="h-px bg-white/10 flex-grow hidden md:block mx-8"></div>
                 <div class="text-[10rem] font-black italic text-white/5 leading-none select-none hidden lg:block">02
                 </div>
+            </div>
+
+            <!-- Portfolio Category Filters -->
+            <div class="flex flex-wrap justify-center gap-3 md:gap-4 mb-12" id="portfolio-filters">
+                <button onclick="filterPortfolio('all', this)" class="portfolio-filter-btn px-6 py-2 rounded-full border border-cyan-500 bg-cyan-500/10 text-cyan-400 text-xs font-bold uppercase tracking-wider transition-all duration-300">All</button>
+                <button onclick="filterPortfolio('branding', this)" class="portfolio-filter-btn px-6 py-2 rounded-full border border-white/10 hover:border-cyan-500/30 text-gray-400 hover:text-white text-xs font-bold uppercase tracking-wider transition-all duration-300">Branding</button>
+                <button onclick="filterPortfolio('videography', this)" class="portfolio-filter-btn px-6 py-2 rounded-full border border-white/10 hover:border-cyan-500/30 text-gray-400 hover:text-white text-xs font-bold uppercase tracking-wider transition-all duration-300">Videography</button>
+                <button onclick="filterPortfolio('webdev', this)" class="portfolio-filter-btn px-6 py-2 rounded-full border border-white/10 hover:border-cyan-500/30 text-gray-400 hover:text-white text-xs font-bold uppercase tracking-wider transition-all duration-300">Web Dev</button>
+                <button onclick="filterPortfolio('ads', this)" class="portfolio-filter-btn px-6 py-2 rounded-full border border-white/10 hover:border-cyan-500/30 text-gray-400 hover:text-white text-xs font-bold uppercase tracking-wider transition-all duration-300">Ads Management</button>
             </div>
 
             <div class="grid md:grid-cols-2 gap-8" id="portfolio-grid">
@@ -518,86 +554,71 @@
         </div>
     </section>
 
-    <!-- Showcases Marquee -->
-    <section class="py-24 bg-[#020617] overflow-hidden border-y border-white/5 relative">
-        <div
-            class="flex gap-8 items-center marquee-track-showcase opacity-70 hover:opacity-100 transition-opacity duration-700 marquee-scroll">
-            <img src="/assets/showcases/drum_shop_branding.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
-            <img src="/assets/showcases/fms_cofe_shop_branding_showcase_.png" class="h-64 md:h-80 w-auto rounded-2xl"
-                alt="Work">
-            <img src="/assets/showcases/penates_realestate_devlopments_showcase_2.png"
-                class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
-            <img src="/assets/showcases/sahel_construction_solutions_branding_showcase.png"
-                class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
-            <img src="/assets/showcases/dentaquick_showcase_1.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
-            <img src="/assets/showcases/drum_shop_branding.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
-        </div>
-    </section>
-
-    <!-- Ads Showcase Marquee (Reverse) -->
-    <section class="py-12 bg-[#020617] overflow-hidden border-b border-white/5 relative">
-        <div
-            class="flex gap-8 items-center marquee-track-showcase opacity-70 hover:opacity-100 transition-opacity duration-700 marquee-scroll-reverse">
-            <img src="/parallax/assets/ads-showcase/meta_ads.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
-            <img src="/parallax/assets/ads-showcase/meta_ads_2.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
-            <img src="/parallax/assets/ads-showcase/tiktok_ads.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
-            <img src="/parallax/assets/ads-showcase/meta_ads_3.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
-            <img src="/parallax/assets/ads-showcase/meta_ads_4.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
-            <img src="/parallax/assets/ads-showcase/meta_ads.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
-        </div>
-    </section>
-
-    <!-- About / Who We Are -->
-    <section id="about" class="py-32 relative z-10 bg-[#020617] overflow-hidden">
-        <div class="container mx-auto px-6 relative z-10 text-center">
-            <div class="inline-block relative mb-12">
-                <h2 class="text-6xl md:text-8xl font-black italic tracking-tighter uppercase relative z-10">
-                    <span class="text-amber-500">WHO</span> WE ARE
-                </h2>
-                <div class="absolute -inset-4 bg-white/5 -skew-x-12 -z-0"></div>
-            </div>
-            <p class="text-2xl md:text-3xl font-bold leading-tight text-gray-300 max-w-4xl mx-auto">
-                Iceberg Marketing is a dynamic marketing agency dedicated to uncovering the hidden potential within
-                brands. Our team of passionate creatives, strategists, and innovators strives to craft unique narratives
-                that drive results.
-            </p>
-        </div>
-    </section>
-
-    <!-- Mission & Vision -->
-    <section class="py-24 bg-[#020617] relative z-10">
-        <div class="container mx-auto px-6">
-            <div class="grid md:grid-cols-2 gap-12">
-                <!-- Mission -->
-                <div
-                    class="glass-card rounded-3xl p-10 border-t-4 border-amber-500 hover:bg-white/5 transition-all duration-500 group">
-                    <div class="flex items-center justify-between mb-8">
-                        <h3 class="text-5xl font-black italic text-amber-500 uppercase tracking-tighter">MISSION</h3>
-                        <i data-lucide="target" class="w-10 h-10 text-amber-500"></i>
+<!-- Process Section (New) -->
+    <section id="process" class="py-32 bg-[#020617] relative z-10 overflow-hidden border-t border-white/5">
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="flex flex-col md:flex-row gap-16 items-center">
+                <div class="md:w-1/2 space-y-12">
+                    <div>
+                        <span class="text-cyan-400 font-bold tracking-[0.3em] uppercase text-xs mb-4 block">The
+                            Methodology</span>
+                        <h2 class="text-5xl md:text-7xl font-black italic tracking-tighter mb-6 reveal-type">BELOW THE
+                            SURFACE</h2>
+                        <p class="text-xl text-gray-400 leading-relaxed">
+                            Our methodology goes deeper than aesthetics. We build systems that work.
+                        </p>
                     </div>
-                    <p class="text-gray-400 text-lg leading-relaxed">
-                        At Iceberg Marketing, our mission is to be more than just a marketing agency: we are dedicated
-                        business partners. We delve deep into the essence of each business to apply the most effective
-                        innovative strategies.
-                    </p>
+
+                    <div class="space-y-12">
+                        <div class="flex gap-8 group">
+                            <div
+                                class="flex-shrink-0 w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/50 flex items-center justify-center text-cyan-400 text-2xl font-black italic group-hover:scale-110 transition-transform duration-300">
+                                01</div>
+                            <div>
+                                <h4 class="text-2xl font-black italic tracking-tighter mb-2 text-white">DISCOVERY</h4>
+                                <p class="text-gray-400">We analyze the market depth, competitors, and your brand's core
+                                    values to find the unseen advantage.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-8 group">
+                            <div
+                                class="flex-shrink-0 w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/50 flex items-center justify-center text-blue-400 text-2xl font-black italic group-hover:scale-110 transition-transform duration-300">
+                                02</div>
+                            <div>
+                                <h4 class="text-2xl font-black italic tracking-tighter mb-2 text-white">STRATEGY</h4>
+                                <p class="text-gray-400">Crafting a roadmap that navigates through the digital ocean
+                                    effectively, avoiding common pitfalls.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-8 group">
+                            <div
+                                class="flex-shrink-0 w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/50 flex items-center justify-center text-indigo-400 text-2xl font-black italic group-hover:scale-110 transition-transform duration-300">
+                                03</div>
+                            <div>
+                                <h4 class="text-2xl font-black italic tracking-tighter mb-2 text-white">EXECUTION</h4>
+                                <p class="text-gray-400">Launching campaigns with precision and monitoring real-time
+                                    data to optimize performance continuously.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <!-- Vision -->
-                <div
-                    class="glass-card rounded-3xl p-10 border-t-4 border-cyan-500 hover:bg-white/5 transition-all duration-500 group">
-                    <div class="flex items-center justify-between mb-8">
-                        <h3 class="text-5xl font-black italic text-cyan-500 uppercase tracking-tighter">VISION</h3>
-                        <i data-lucide="binoculars" class="w-10 h-10 text-cyan-500"></i>
+                <!-- Visual -->
+                <div class="md:w-1/2 relative flex justify-center">
+                    <div
+                        class="relative w-full max-w-md aspect-square glass-card rounded-full flex items-center justify-center p-12 overflow-hidden animate-pulse">
+                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-600/10"></div>
+                        <div class="text-center relative z-10">
+                            <div class="text-8xl font-black italic text-cyan-500/20 mb-2">90%</div>
+                            <div class="text-sm font-bold text-cyan-400 uppercase tracking-widest">Technicals & Data
+                            </div>
+                        </div>
                     </div>
-                    <p class="text-gray-400 text-lg leading-relaxed">
-                        Our vision is to be the guiding force that unveils the hidden potential in every client's
-                        digital presence, discovering unseen opportunities that lie beneath the surface.
-                    </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Contact CTA (Form) -->
+<!-- Contact CTA (Form) -->
     <section id="contact" class="py-32 relative bg-[#020617] overflow-hidden">
         <div class="container mx-auto px-6 relative z-10 max-w-4xl">
             <div class="text-center mb-16">
@@ -608,18 +629,35 @@
             </div>
 
             <div class="glass-card rounded-3xl p-8 md:p-12 border-t border-cyan-500/30 shadow-2xl">
-                <form class="space-y-6">
+                <form id="contact-form" class="wizard-form space-y-6">
                     <div class="grid md:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Name</label>
-                            <input type="text"
+                            <input type="text" name="name" required
                                 class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Email</label>
-                            <input type="email"
+                            <input type="email" name="email" required
                                 class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
                         </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Business Name</label>
+                            <input type="text" name="business_name" required placeholder="Acme Inc."
+                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Website / Business Link</label>
+                            <input type="url" name="business_link" placeholder="https://example.com"
+                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider block mb-1">Phone Number</label>
+                        <input type="tel" name="phone" required
+                            class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
                     </div>
                     <div class="space-y-2">
                         <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Message</label>
@@ -634,6 +672,7 @@
             </div>
         </div>
     </section>
+
 
     <footer class="py-12 px-6 border-t border-white/5 text-center bg-[#01040f]">
         <div class="flex flex-col items-center gap-6 mb-8">
@@ -655,13 +694,83 @@
     <script src="/parallax/main.js"></script>
     <script>
         lucide.createIcons();
-        
-        // Mobile menu toggle function
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
+
+        // Portfolio Filtering logic with category mapping
+        function initPortfolioFiltering() {
+            const items = document.querySelectorAll('.portfolio-item');
+            const mapping = {
+                'fms': ['branding', 'videography', 'ads'],
+                'drum': ['branding', 'videography', 'ads'],
+                'denta': ['branding', 'videography', 'ads'],
+                'ghost': ['branding', 'videography', 'ads'],
+                'crown': ['branding', 'videography', 'ads'],
+                'scs': ['branding', 'videography', 'ads']
+            };
+
+            items.forEach(item => {
+                const titleElement = item.querySelector('h4');
+                const title = titleElement ? titleElement.innerText.toLowerCase() : '';
+                let categories = ['all'];
+                
+                for (const [key, cats] of Object.entries(mapping)) {
+                    if (title.includes(key)) {
+                        categories.push(...cats);
+                        break;
+                    }
+                }
+                
+                if (categories.length === 1) {
+                    const subtitleElement = item.querySelector('span');
+                    const subtitle = subtitleElement ? subtitleElement.innerText.toLowerCase() : '';
+                    if (subtitle.includes('branding')) categories.push('branding');
+                    if (subtitle.includes('videography')) categories.push('videography');
+                    if (subtitle.includes('ads') || subtitle.includes('management')) categories.push('ads');
+                    if (subtitle.includes('web') || subtitle.includes('dev')) categories.push('webdev');
+                }
+                
+                item.setAttribute('data-cats', categories.join(' '));
+            });
         }
+
+        function filterPortfolio(category, btn) {
+            // Update active button styles
+            document.querySelectorAll('.portfolio-filter-btn').forEach(b => {
+                b.className = 'portfolio-filter-btn px-6 py-2 rounded-full border border-white/10 hover:border-cyan-500/30 text-gray-400 hover:text-white text-xs font-bold uppercase tracking-wider transition-all duration-300';
+            });
+            btn.className = 'portfolio-filter-btn px-6 py-2 rounded-full border border-cyan-500 bg-cyan-500/10 text-cyan-400 text-xs font-bold uppercase tracking-wider transition-all duration-300';
+
+            const items = document.querySelectorAll('.portfolio-item');
+            
+            // GSAP transition
+            gsap.to(items, {
+                opacity: 0,
+                scale: 0.85,
+                duration: 0.25,
+                onComplete: () => {
+                    items.forEach(item => {
+                        const cats = (item.getAttribute('data-cats') || '').split(' ');
+                        if (category === 'all' || cats.includes(category)) {
+                            item.style.display = 'block';
+                            gsap.to(item, {
+                                opacity: 1,
+                                scale: 1,
+                                duration: 0.35,
+                                delay: 0.05
+                            });
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        }
+
+        // Initialize on DOM load
+        document.addEventListener('DOMContentLoaded', () => {
+            initPortfolioFiltering();
+        });
     </script>
 </body>
 
 </html>
+

@@ -381,12 +381,26 @@ class CMSManager {
     // Handle contact form submission
     async submitContactForm(formData) {
         try {
-            const response = await fetch(`${ this.apiBase } / contact / submit`, {
+            const metaEventId = `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            const payload = { ...formData, eventId: metaEventId };
+
+            if (typeof window.trackMetaEvent === 'function') {
+                window.trackMetaEvent('Contact', {
+                    content_name: 'General Contact Form'
+                }, {
+                    email: formData.email,
+                    phone: formData.phone,
+                    name: formData.name,
+                    company: formData.company
+                }, metaEventId);
+            }
+
+            const response = await fetch(`${this.apiBase}/contact/submit`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(payload)
             });
 
             const result = await response.json();
@@ -415,7 +429,7 @@ class CMSManager {
         };
 
         const notification = document.createElement('div');
-        notification.className = `fixed top - 4 right - 4 ${ colors[type]} text - white px - 6 py - 3 rounded - lg shadow - lg z - 50 transition - all duration - 300`;
+        notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300`;
         notification.textContent = message;
 
         document.body.appendChild(notification);

@@ -1,13 +1,10 @@
 {
   "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "public",
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index.js"
-    },
-    {
-      "source": "/parallax",
-      "destination": "/parallax/index.html"
-    }
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/parallax", "destination": "/parallax/index.html" },
+    { "source": "/birthday-campaign", "destination": "/birthday-campaign.html" }
   ]
 }

@@ -511,7 +511,219 @@ async function deleteService(id) {
     }
 }
 
-// Contacts Functions... (existing)
+// Contacts Functions
+async function loadContacts() {
+    try {
+        const response = await fetch(`${API_BASE}/contact/submissions`);
+        const result = await response.json();
+        const tbody = document.getElementById('contacts-table-body');
+
+        if (result.success && result.data && result.data.length > 0) {
+            tbody.innerHTML = result.data.map(msg => {
+                const date = new Date(msg.createdAt).toLocaleString();
+                const statusColors = {
+                    new: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+                    read: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
+                    replied: 'bg-green-500/20 text-green-400 border-green-500/30',
+                    archived: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+                };
+                const statusClass = statusColors[msg.status] || 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+                
+                return `
+                    <tr class="table-row">
+                        <td class="px-6 py-4 text-sm text-gray-300 font-medium">${msg.name}</td>
+                        <td class="px-6 py-4 text-sm text-gray-300">
+                            <div>${msg.email}</div>
+                            ${msg.phone ? `<div class="text-xs text-gray-500 mt-0.5">${msg.phone}</div>` : ''}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-300">${msg.company || 'N/A'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-300 max-w-xs truncate">${msg.message}</td>
+                        <td class="px-6 py-4 text-sm text-gray-300">${date}</td>
+                        <td class="px-6 py-4 text-sm">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full border ${statusClass}">
+                                ${msg.status}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <button onclick="viewContactDetails('${msg._id}')" class="text-cyan-400 hover:text-cyan-300" title="View Details">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                                <select onchange="updateContactStatus('${msg._id}', this.value)" class="bg-slate-800 border border-slate-700 text-gray-300 text-xs rounded px-1 py-0.5 focus:outline-none focus:border-cyan-500">
+                                    <option value="new" ${msg.status === 'new' ? 'selected' : ''}>New</option>
+                                    <option value="read" ${msg.status === 'read' ? 'selected' : ''}>Read</option>
+                                    <option value="replied" ${msg.status === 'replied' ? 'selected' : ''}>Replied</option>
+                                    <option value="archived" ${msg.status === 'archived' ? 'selected' : ''}>Archived</option>
+                                </select>
+                                <button onclick="deleteContactSubmission('${msg._id}')" class="text-red-400 hover:text-red-300" title="Delete">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        } else {
+            tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-gray-400">No contact messages yet.</td></tr>';
+        }
+        lucide.createIcons();
+    } catch (error) {
+        console.error('Error loading contacts:', error);
+        document.getElementById('contacts-table-body').innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-red-400">Error loading messages</td></tr>';
+    }
+}
+
+// Store currently viewed contact for reply actions
+let currentContactData = null;
+
+async function viewContactDetails(id) {
+    try {
+        const response = await fetch(`${API_BASE}/contact/submissions`);
+        const result = await response.json();
+        if (result.success && result.data) {
+            const msg = result.data.find(m => m._id === id);
+            if (msg) {
+                // Store for reply functions
+                currentContactData = msg;
+
+                document.getElementById('detail-name').textContent = msg.name;
+                document.getElementById('detail-status').textContent = msg.status.toUpperCase();
+                document.getElementById('detail-email').textContent = msg.email;
+                document.getElementById('detail-phone').textContent = msg.phone || 'N/A';
+                document.getElementById('detail-company').textContent = msg.company || 'N/A';
+                document.getElementById('detail-message').textContent = msg.message;
+                document.getElementById('detail-date').textContent = new Date(msg.createdAt).toLocaleString();
+                
+                // Open modal
+                document.getElementById('contact-modal').classList.remove('hidden');
+                document.getElementById('modal-overlay').classList.remove('hidden');
+                lucide.createIcons();
+                
+                // Mark as read automatically when viewed
+                if (msg.status === 'new') {
+                    await updateContactStatus(id, 'read', false); // silent update
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error viewing contact details:', error);
+        showNotification('Error viewing contact details', 'error');
+    }
+}
+
+function replyViaEmail() {
+    if (!currentContactData) return;
+    const subject = encodeURIComponent(`Re: Your enquiry — Iceberg Agency`);
+    const body = encodeURIComponent(`Hi ${currentContactData.name},\n\nThank you for reaching out to Iceberg Agency!\n\n`);
+    window.open(`mailto:${currentContactData.email}?subject=${subject}&body=${body}`, '_blank');
+}
+
+function replyViaWhatsApp() {
+    if (!currentContactData) return;
+    const phone = currentContactData.phone;
+    if (!phone || phone === 'N/A') {
+        showNotification('No phone number available for this contact.', 'warning');
+        return;
+    }
+    // Strip non-numeric characters for wa.me link
+    const cleanPhone = phone.replace(/\D/g, '');
+    const message = encodeURIComponent(`Hi ${currentContactData.name}, this is Iceberg Agency following up on your enquiry. How can we help you?`);
+    window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
+}
+
+async function updateContactStatus(id, status, reload = true) {
+    try {
+        const response = await fetch(`${API_BASE}/contact/submissions/${id}/status`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status })
+        });
+        const result = await response.json();
+        if (result.success) {
+            if (reload) {
+                loadContacts();
+                loadDashboardData();
+                showNotification('Status updated successfully!', 'success');
+            }
+        } else {
+            showNotification('Error updating status: ' + result.error, 'error');
+        }
+    } catch (error) {
+        console.error('Error updating status:', error);
+        showNotification('Error updating status', 'error');
+    }
+}
+
+async function deleteContactSubmission(id) {
+    if (confirm('Are you sure you want to delete this contact submission?')) {
+        try {
+            const response = await fetch(`${API_BASE}/contact/submissions/${id}`, {
+                method: 'DELETE'
+            });
+            const result = await response.json();
+            if (result.success) {
+                loadContacts();
+                loadDashboardData();
+                showNotification('Submission deleted successfully!', 'success');
+            } else {
+                showNotification('Error deleting submission: ' + result.error, 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting submission:', error);
+            showNotification('Error deleting submission', 'error');
+        }
+    }
+}
+
+async function exportContacts() {
+    try {
+        const response = await fetch(`${API_BASE}/contact/submissions`);
+        const result = await response.json();
+        
+        if (result.success && result.data && result.data.length > 0) {
+            // Define CSV headers
+            const headers = ['Name', 'Email', 'Phone', 'Company', 'Message', 'Status', 'Date'];
+            
+            // Format rows
+            const csvRows = [
+                headers.join(','), // header row
+                ...result.data.map(msg => {
+                    const name = `"${(msg.name || '').replace(/"/g, '""')}"`;
+                    const email = `"${(msg.email || '').replace(/"/g, '""')}"`;
+                    const phone = `"${(msg.phone || '').replace(/"/g, '""')}"`;
+                    const company = `"${(msg.company || '').replace(/"/g, '""')}"`;
+                    const message = `"${(msg.message || '').replace(/"/g, '""').replace(/\r?\n|\r/g, ' ')}"`;
+                    const status = `"${(msg.status || '').replace(/"/g, '""')}"`;
+                    const date = `"${new Date(msg.createdAt).toLocaleString().replace(/"/g, '""')}"`;
+                    
+                    return [name, email, phone, company, message, status, date].join(',');
+                })
+            ];
+            
+            const csvContent = csvRows.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `contact_submissions_${new Date().toISOString().slice(0,10)}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('CSV exported successfully!', 'success');
+        } else {
+            showNotification('No messages to export.', 'warning');
+        }
+    } catch (error) {
+        console.error('Error exporting contacts:', error);
+        showNotification('Error exporting CSV', 'error');
+    }
+}
 
 // Showcase Marquee Functions
 async function loadShowcase() {

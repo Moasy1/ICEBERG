@@ -17,12 +17,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- GSAP -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-
+    <link rel="stylesheet" href="/parallax/style.css">
+    <link rel="stylesheet" href="/wizard-form.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+    <script src="/wizard-form.js" defer></script>
+    <script src="/campaign.js" defer></script>
+    <script src="/ai-agent-widget.js" defer></script>
+    <script src="/phone-init.js" defer></script>
     <style>
         :root {
             --primary: #00d4ff;
@@ -163,6 +165,7 @@
             width: max-content;
         }
     </style>
+    <script src="/meta-pixel.js" defer></script>
 </head>
 
 <body class="antialiased selection:bg-cyan-500 selection:text-white">
@@ -299,6 +302,11 @@
     <section class="hero-section relative min-h-screen flex items-center justify-center pt-32 md:pt-32 overflow-hidden">
         <!-- Background Elements -->
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+            <!-- Parallax Video Background -->
+            <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover opacity-50">
+                <source src="/parallax/assets/iceberg-assets/hero_video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
             <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] float-anim"></div>
             <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-600/20 rounded-full blur-[100px] float-anim"
                 style="animation-delay: 2s"></div>
@@ -374,7 +382,7 @@
         </div>
     </section>
 
-    <!-- Client Logo Marquee -->
+<!-- Client Logo Marquee -->
     <section class="py-10 border-y border-white/5 bg-[#03091e] overflow-hidden">
         <div class="marquee relative w-full overflow-hidden">
             <div
@@ -413,7 +421,108 @@
         </div>
     </section>
 
-    <!-- Services Section -->
+<!-- Who We Are Section -->
+    <section id="about" class="py-24 relative overflow-hidden bg-[#020617]">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto text-center space-y-12">
+                <!-- Who We Are Graphic/Header -->
+                <div class="relative inline-block">
+                    <div class="absolute -inset-4 bg-white/5 skew-x-12 -z-10"></div>
+                    <div
+                        class="absolute inset-0 bg-gradient-to-r from-amber-500 to-yellow-600 skew-x-12 -z-10 translate-y-2 translate-x-2 opacity-50">
+                    </div>
+                    <h2
+                        class="text-6xl md:text-8xl font-black italic tracking-tighter text-white uppercase relative px-8 py-2">
+                        <span class="text-amber-500">WHO</span> WE ARE
+                    </h2>
+                </div>
+
+                <div class="space-y-8">
+                    <p class="text-2xl md:text-3xl font-bold leading-tight text-gray-200" data-i18n="who_we_are_text">
+                        Iceberg Marketing is a dynamic marketing agency dedicated to uncovering the hidden potential
+                        within brands. Our team of passionate creatives, strategists, and innovators strives to craft
+                        unique narratives that drive results.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- Showcases Section -->
+    <section id="showcases" class="py-12 bg-[#051021] overflow-hidden border-b border-white/5">
+        <div class="marquee relative w-full overflow-hidden">
+            <div class="showcase-track flex gap-8 items-center">
+                <!-- Showcase Images -->
+                <img src="showcases/drum_shop_branding.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/drum_shop_egypt_showcase_2.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/drum_shop_egypt_showcase_reels.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/fms_cofe_shop_branding_showcase_.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/fms_cofeshop_showcase_1.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/ghost_note_showcase_1.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/penates_realestate_devlopments_showcase_2.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/penates_realestate_devlopments_showcase_reels_.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/sahel_construction_solutions_branding_showcase.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/dentaquick_showcase_1.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <!-- Repeat for infinite effect -->
+                <img src="showcases/drum_shop_branding.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/drum_shop_egypt_showcase_2.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/drum_shop_egypt_showcase_reels.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/fms_cofe_shop_branding_showcase_.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/fms_cofeshop_showcase_1.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/ghost_note_showcase_1.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/penates_realestate_devlopments_showcase_2.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/penates_realestate_devlopments_showcase_reels_.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/sahel_construction_solutions_branding_showcase.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="showcases/dentaquick_showcase_1.png" alt="Showcase"
+                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+            </div>
+        </div>
+    </section>
+
+<!-- Ads Showcase Section (Opposite Direction) -->
+    <section id="ads-showcase" class="py-12 bg-[#051021] overflow-hidden border-b border-white/5">
+        <div class="marquee relative w-full overflow-hidden">
+            <div class="ads-track flex gap-8 items-center">
+                <!-- Ads Images -->
+                <img src="ads-showcase/meta_ads.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_2.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_3.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_4.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_5.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_6.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/tiktok_ads.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <!-- Repeat for infinite effect -->
+                <img src="ads-showcase/meta_ads.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_2.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_3.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_4.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_5.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/meta_ads_6.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+                <img src="ads-showcase/tiktok_ads.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
+            </div>
+        </div>
+    </section>
+
+<!-- Services Section -->
     <section id="services" class="py-24 bg-[#020617] relative overflow-hidden">
         <div class="container mx-auto px-6 relative z-10">
             <div class="text-center max-w-3xl mx-auto mb-20">
@@ -422,10 +531,9 @@
                 <h2 class="text-4xl md:text-6xl font-bold mt-4 mb-6" data-i18n="services_title">Deep Dive Solutions</h2>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- SEO -->
-                <div
-                    class="glass-card p-10 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-blue-500">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">                <!-- SEO -->
+                <a href="/parallax/services/seo.html"
+                    class="glass-card h-full p-10 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-blue-500 block">
                     <div
                         class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 mb-8 group-hover:scale-110 transition-transform duration-500">
                         <i data-lucide="search" class="w-8 h-8"></i>
@@ -433,11 +541,9 @@
                     <h3 class="text-2xl font-bold mb-4" data-i18n="serv_seo_title">SEO & Visibility</h3>
                     <p class="text-gray-400 leading-relaxed text-lg" data-i18n="serv_seo_desc">Get found by the right
                         people. We optimize your structure deep down to dominate search results.</p>
-                </div>
-
-                <!-- Social -->
-                <div
-                    class="glass-card p-10 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-cyan-500 md:translate-y-8">
+                </a>                <!-- Social -->
+                <a href="/parallax/services/social-media.html"
+                    class="glass-card h-full p-10 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-cyan-500 block">
                     <div
                         class="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-400 mb-8 group-hover:scale-110 transition-transform duration-500">
                         <i data-lucide="megaphone" class="w-8 h-8"></i>
@@ -445,11 +551,21 @@
                     <h3 class="text-2xl font-bold mb-4" data-i18n="serv_social_title">Social Media</h3>
                     <p class="text-gray-400 leading-relaxed text-lg" data-i18n="serv_social_desc">Engaging content that
                         floats to the top of the feed. Build a loyal community around your brand.</p>
-                </div>
+                </a>
 
-                <!-- Web Dev -->
-                <div
-                    class="glass-card p-10 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-purple-500">
+                <!-- Performance Marketing -->
+                <a href="/parallax/services/performance.html"
+                    class="glass-card h-full p-10 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-indigo-500 block">
+                    <div
+                        class="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-400 mb-8 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="crosshair" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4" data-i18n="serv_perf_title">Performance Marketing</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg" data-i18n="serv_perf_desc">Data-driven paid media
+                        campaigns focused on scalable growth, lower acquisition cost, and stronger ROI.</p>
+                </a>                <!-- Web Dev -->
+                <a href="/parallax/services/web-dev.html"
+                    class="glass-card h-full p-10 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-purple-500 block">
                     <div
                         class="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400 mb-8 group-hover:scale-110 transition-transform duration-500">
                         <i data-lucide="code" class="w-8 h-8"></i>
@@ -457,74 +573,36 @@
                     <h3 class="text-2xl font-bold mb-4" data-i18n="serv_dev_title">Web Development</h3>
                     <p class="text-gray-400 leading-relaxed text-lg" data-i18n="serv_dev_desc">Fast, secure, and
                         beautiful websites built on solid foundations, just like an iceberg.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+                </a>
 
-    <!-- Process Section -->
-    <section id="process" class="py-24 bg-[#051021] relative overflow-hidden border-y border-white/5">
-        <div class="container mx-auto px-6">
-            <div class="flex flex-col md:flex-row gap-16 items-center">
-                <div class="md:w-1/2 space-y-8">
-                    <span class="text-cyan-400 font-semibold tracking-wider text-sm" data-i18n="section_process">THE
-                        PROCESS</span>
-                    <h2 class="text-4xl md:text-6xl font-bold" data-i18n="process_title">Below the Surface</h2>
-                    <p class="text-xl text-gray-400 leading-relaxed" data-i18n="process_desc">Our methodology goes
-                        deeper than aesthetics. We build systems that work.</p>
-
-                    <div class="space-y-12 pt-8">
-                        <div class="flex gap-6">
-                            <div
-                                class="flex-shrink-0 w-12 h-12 rounded-full border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-bold">
-                                1</div>
-                            <div>
-                                <h4 class="text-xl font-bold mb-2" data-i18n="step_1_title">01. Discovery</h4>
-                                <p class="text-gray-400" data-i18n="step_1_desc">We analyze the market depth,
-                                    competitors, and your brand's core values.</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-6">
-                            <div
-                                class="flex-shrink-0 w-12 h-12 rounded-full border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-bold">
-                                2</div>
-                            <div>
-                                <h4 class="text-xl font-bold mb-2" data-i18n="step_2_title">02. Strategy</h4>
-                                <p class="text-gray-400" data-i18n="step_2_desc">Crafting a roadmap that navigates
-                                    through the digital ocean effectively.</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-6">
-                            <div
-                                class="flex-shrink-0 w-12 h-12 rounded-full border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-bold">
-                                3</div>
-                            <div>
-                                <h4 class="text-xl font-bold mb-2" data-i18n="step_3_title">03. Execution</h4>
-                                <p class="text-gray-400" data-i18n="step_3_desc">Launching campaigns with precision and
-                                    monitoring real-time data.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Visual for Process -->
-                <div class="md:w-1/2 relative">
+                <!-- Branding -->
+                <a href="/parallax/services/branding.html"
+                    class="glass-card h-full p-10 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-amber-500 block">
                     <div
-                        class="relative w-full aspect-square glass-card rounded-full flex items-center justify-center p-12 overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 animate-pulse">
-                        </div>
-                        <i data-lucide="layers" class="w-48 h-48 text-cyan-500/20 absolute"></i>
-                        <div class="relative z-10 text-center">
-                            <div class="text-6xl font-black text-white/10 mb-2">90%</div>
-                            <div class="text-sm font-bold text-cyan-400 uppercase tracking-widest">Technicals & Data
-                            </div>
-                        </div>
+                        class="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400 mb-8 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="badge-check" class="w-8 h-8"></i>
                     </div>
-                </div>
+                    <h3 class="text-2xl font-bold mb-4">Branding</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">Positioning, identity, and messaging systems that
+                        make your brand instantly recognizable and trusted.</p>
+                </a>
+
+                <!-- Videography & Reel Creation -->
+                <a href="/parallax/services/videography-reel-creation.html"
+                    class="glass-card h-full p-10 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-rose-500 block">
+                    <div
+                        class="w-16 h-16 bg-rose-500/10 rounded-2xl flex items-center justify-center text-rose-400 mb-8 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="clapperboard" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Videography & Reel Creation</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">High-impact videos and reels designed for
+                        attention, retention, and conversion across social platforms.</p>
+                </a>
             </div>
         </div>
     </section>
 
-    <!-- Portfolio Section -->
+<!-- Portfolio Section -->
     <section id="portfolio" class="py-24 bg-[#051021]">
         <div class="container mx-auto px-6">
             <div class="flex flex-wrap justify-between items-end mb-12 gap-6">
@@ -625,186 +703,69 @@
         </div>
     </section>
 
-    <!-- Showcases Section -->
-    <section id="showcases" class="py-12 bg-[#051021] overflow-hidden border-b border-white/5">
-        <div class="marquee relative w-full overflow-hidden">
-            <div class="showcase-track flex gap-8 items-center">
-                <!-- Showcase Images -->
-                <img src="showcases/drum_shop_branding.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/drum_shop_egypt_showcase_2.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/drum_shop_egypt_showcase_reels.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/fms_cofe_shop_branding_showcase_.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/fms_cofeshop_showcase_1.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/ghost_note_showcase_1.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/penates_realestate_devlopments_showcase_2.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/penates_realestate_devlopments_showcase_reels_.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/sahel_construction_solutions_branding_showcase.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/dentaquick_showcase_1.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <!-- Repeat for infinite effect -->
-                <img src="showcases/drum_shop_branding.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/drum_shop_egypt_showcase_2.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/drum_shop_egypt_showcase_reels.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/fms_cofe_shop_branding_showcase_.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/fms_cofeshop_showcase_1.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/ghost_note_showcase_1.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/penates_realestate_devlopments_showcase_2.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/penates_realestate_devlopments_showcase_reels_.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/sahel_construction_solutions_branding_showcase.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="showcases/dentaquick_showcase_1.png" alt="Showcase"
-                    class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-            </div>
-        </div>
-    </section>
-
-    <!-- Ads Showcase Section (Opposite Direction) -->
-    <section id="ads-showcase" class="py-12 bg-[#051021] overflow-hidden border-b border-white/5">
-        <div class="marquee relative w-full overflow-hidden">
-            <div class="ads-track flex gap-8 items-center">
-                <!-- Ads Images -->
-                <img src="ads-showcase/meta_ads.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="ads-showcase/meta_ads_2.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="ads-showcase/meta_ads_3.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="ads-showcase/meta_ads_4.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="ads-showcase/meta_ads_5.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="ads-showcase/meta_ads_6.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="ads-showcase/tiktok_ads.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <!-- Repeat for infinite effect -->
-                <img src="ads-showcase/meta_ads.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="ads-showcase/meta_ads_2.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="ads-showcase/meta_ads_3.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="ads-showcase/meta_ads_4.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="ads-showcase/meta_ads_5.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="ads-showcase/meta_ads_6.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-                <img src="ads-showcase/tiktok_ads.png" alt="Ads" class="h-64 md:h-80 w-auto rounded-xl shadow-2xl">
-            </div>
-        </div>
-    </section>
-
-    <!-- Who We Are Section -->
-    <section id="about" class="py-24 relative overflow-hidden bg-[#020617]">
+<!-- Process Section -->
+    <section id="process" class="py-24 bg-[#051021] relative overflow-hidden border-y border-white/5">
         <div class="container mx-auto px-6">
-            <div class="max-w-4xl mx-auto text-center space-y-12">
-                <!-- Who We Are Graphic/Header -->
-                <div class="relative inline-block">
-                    <div class="absolute -inset-4 bg-white/5 skew-x-12 -z-10"></div>
+            <div class="flex flex-col md:flex-row gap-16 items-center">
+                <div class="md:w-1/2 space-y-8">
+                    <span class="text-cyan-400 font-semibold tracking-wider text-sm" data-i18n="section_process">THE
+                        PROCESS</span>
+                    <h2 class="text-4xl md:text-6xl font-bold" data-i18n="process_title">Below the Surface</h2>
+                    <p class="text-xl text-gray-400 leading-relaxed" data-i18n="process_desc">Our methodology goes
+                        deeper than aesthetics. We build systems that work.</p>
+
+                    <div class="space-y-12 pt-8">
+                        <div class="flex gap-6">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-full border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-bold">
+                                1</div>
+                            <div>
+                                <h4 class="text-xl font-bold mb-2" data-i18n="step_1_title">01. Discovery</h4>
+                                <p class="text-gray-400" data-i18n="step_1_desc">We analyze the market depth,
+                                    competitors, and your brand's core values.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-full border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-bold">
+                                2</div>
+                            <div>
+                                <h4 class="text-xl font-bold mb-2" data-i18n="step_2_title">02. Strategy</h4>
+                                <p class="text-gray-400" data-i18n="step_2_desc">Crafting a roadmap that navigates
+                                    through the digital ocean effectively.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-full border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-bold">
+                                3</div>
+                            <div>
+                                <h4 class="text-xl font-bold mb-2" data-i18n="step_3_title">03. Execution</h4>
+                                <p class="text-gray-400" data-i18n="step_3_desc">Launching campaigns with precision and
+                                    monitoring real-time data.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Visual for Process -->
+                <div class="md:w-1/2 relative">
                     <div
-                        class="absolute inset-0 bg-gradient-to-r from-amber-500 to-yellow-600 skew-x-12 -z-10 translate-y-2 translate-x-2 opacity-50">
-                    </div>
-                    <h2
-                        class="text-6xl md:text-8xl font-black italic tracking-tighter text-white uppercase relative px-8 py-2">
-                        <span class="text-amber-500">WHO</span> WE ARE
-                    </h2>
-                </div>
-
-                <div class="space-y-8">
-                    <p class="text-2xl md:text-3xl font-bold leading-tight text-gray-200" data-i18n="who_we_are_text">
-                        Iceberg Marketing is a dynamic marketing agency dedicated to uncovering the hidden potential
-                        within brands. Our team of passionate creatives, strategists, and innovators strives to craft
-                        unique narratives that drive results.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Mission & Vision Section -->
-    <section class="py-24 relative overflow-hidden bg-[#051021]">
-        <!-- Decorative Background -->
-        <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-            <div
-                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-amber-500/20 rounded-full blur-[120px]">
-            </div>
-        </div>
-
-        <div class="container mx-auto px-6">
-            <div class="grid md:grid-cols-2 gap-12 items-stretch">
-                <!-- Mission Card -->
-                <div
-                    class="glass-card rounded-3xl p-10 md:p-14 border-t-4 border-amber-500 space-y-8 group hover:bg-white/5 transition-all duration-500">
-                    <div class="flex items-center justify-between">
-                        <div class="relative">
-                            <div class="absolute -inset-2 bg-amber-500/20 skew-x-12 -z-10"></div>
-                            <h3
-                                class="text-4xl md:text-6xl font-black italic text-amber-500 uppercase tracking-tighter">
-                                MISSION</h3>
+                        class="relative w-full aspect-square glass-card rounded-full flex items-center justify-center p-12 overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 animate-pulse">
                         </div>
-                        <div
-                            class="w-20 h-20 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform duration-500">
-                            <i data-lucide="target" class="w-10 h-10"></i>
+                        <i data-lucide="layers" class="w-48 h-48 text-cyan-500/20 absolute"></i>
+                        <div class="relative z-10 text-center">
+                            <div class="text-6xl font-black text-white/10 mb-2">90%</div>
+                            <div class="text-sm font-bold text-cyan-400 uppercase tracking-widest">Technicals & Data
+                            </div>
                         </div>
-                    </div>
-                    <div class="space-y-6">
-                        <p class="text-lg md:text-xl font-semibold text-gray-300 leading-relaxed"
-                            data-i18n="mission_text">
-                            At Iceberg Marketing, our mission is to be more than just a marketing agency: we are
-                            dedicated business partners to every client we serve. We are committed to delving deep into
-                            the essence of each business we handle, constantly seeking the most effective and innovative
-                            strategies to market and develop their unique brand.
-                        </p>
-                        <p class="text-lg md:text-xl font-semibold text-gray-300 leading-relaxed"
-                            data-i18n="mission_text_2">
-                            Our goal is to foster long-term success for our clients by aligning our expertise with their
-                            vision, and together, breaking through the surface to reveal the full potential of their
-                            business.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Vision Card -->
-                <div
-                    class="glass-card rounded-3xl p-10 md:p-14 border-t-4 border-cyan-500 space-y-8 group hover:bg-white/5 transition-all duration-500">
-                    <div class="flex items-center justify-between">
-                        <div class="relative">
-                            <div class="absolute -inset-2 bg-cyan-500/20 skew-x-12 -z-10"></div>
-                            <h3 class="text-4xl md:text-6xl font-black italic text-cyan-500 uppercase tracking-tighter">
-                                VISION</h3>
-                        </div>
-                        <div
-                            class="w-20 h-20 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform duration-500">
-                            <i data-lucide="binoculars" class="w-10 h-10"></i>
-                        </div>
-                    </div>
-                    <div class="space-y-6">
-                        <p class="text-lg md:text-xl font-semibold text-gray-300 leading-relaxed"
-                            data-i18n="vision_text">
-                            At Iceberg Marketing, our vision is to be the guiding force that unveils the hidden
-                            potential in every client's digital presence. With our extensive knowledge and expertise in
-                            digital marketing, we aim to lead our clients to discover the unseen opportunities that lie
-                            beneath the surface.
-                        </p>
-                        <p class="text-lg md:text-xl font-semibold text-gray-300 leading-relaxed"
-                            data-i18n="vision_text_2">
-                            We strive to be the catalyst for their success, revealing the hidden depths of their brand
-                            and propelling them to new heights in the digital landscape.
-                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-
-
-    <!-- Contact Section -->
+<!-- Contact Section -->
     <section id="contact" class="py-24 relative">
         <div class="container mx-auto px-6 max-w-4xl">
             <div class="glass-card rounded-3xl p-8 md:p-12 border-t border-cyan-500/30 shadow-2xl shadow-cyan-900/20">
@@ -813,18 +774,35 @@
                     <p class="text-gray-400" data-i18n="contact_sub">Ready to grow? Send us a message.</p>
                 </div>
 
-                <form class="space-y-6">
+                <form id="contact-form" class="wizard-form space-y-6">
                     <div class="grid md:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label class="text-sm text-gray-400" data-i18n="form_name">Name</label>
-                            <input type="text"
+                            <input type="text" name="name" required
                                 class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm text-gray-400" data-i18n="form_email">Email</label>
-                            <input type="email"
+                            <input type="email" name="email" required
                                 class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
                         </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-sm text-gray-400">Business Name</label>
+                            <input type="text" name="business_name" required placeholder="Acme Inc."
+                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm text-gray-400">Website / Business Link</label>
+                            <input type="url" name="business_link" placeholder="https://example.com"
+                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm text-gray-400 block mb-1">Phone Number</label>
+                        <input type="tel" name="phone" required
+                            class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
                     </div>
                     <div class="space-y-2">
                         <label class="text-sm text-gray-400" data-i18n="form_message">Message</label>
@@ -840,6 +818,7 @@
             </div>
         </div>
     </section>
+
 
     <!-- Footer -->
     <footer class="py-12 border-t border-white/5 bg-[#01040f]">
@@ -915,6 +894,8 @@
                 serv_seo_desc: "Get found by the right people. We optimize your structure deep down to dominate search results.",
                 serv_social_title: "Social Media",
                 serv_social_desc: "Engaging content that floats to the top of the feed. Build a loyal community around your brand.",
+                serv_perf_title: "Performance Marketing",
+                serv_perf_desc: "Data-driven paid media campaigns focused on scalable growth, lower acquisition cost, and stronger ROI.",
                 serv_dev_title: "Web Development",
                 serv_dev_desc: "Fast, secure, and beautiful websites built on solid foundations, just like an iceberg.",
                 section_process: "THE PROCESS",
@@ -948,7 +929,7 @@
                 footer_quick: "Quick Links",
                 footer_legal: "Legal",
                 footer_social: "Social",
-                lang_btn: "العربية",
+                lang_btn: "Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©",
                 p1_cat: "Video & Photography",
                 p1_title: "Drum Shop Egypt",
                 p1_desc: "Professional video production and high-end instrument photography.",
@@ -966,73 +947,73 @@
                 p5_desc: "Unique identity crafting for premium coffee brands."
             },
             ar: {
-                nav_services: "خدماتنا",
-                nav_about: "عن الشركة",
-                nav_work: "أعمالنا",
-                nav_contact: "تواصل معنا",
-                nav_process: "كيف نعمل",
-                hero_badge: "وكالة نمو رقمي",
-                hero_title_1: "نحن نكشف عن",
-                hero_title_2: "إمكاناتك الكامنة.",
-                hero_subtitle: "مثل الجبل الجليدي، علامتك التجارية لها عمق. نحن نساعدك على إظهار القيمة الهائلة الكامنة تحت السطح.",
-                cta_start: "ابدأ الآن",
-                cta_explore: "شاهد أعمالنا",
-                stat_roi: "زيادة العائد",
-                section_services: "خدماتنا",
-                services_title: "حلول عميقة",
-                serv_seo_title: "تحسين محركات البحث",
-                serv_seo_desc: "اجعل عملاءك يجدونك بسهولة. نحن نحسن هيكل موقعك للسيطرة على نتائج البحث.",
-                serv_social_title: "التسويق الاجتماعي",
-                serv_social_desc: "محتوى جذاب يطفو على قمة المنشورات. ابني مجتمعاً مخلصاً حول علامتك التجارية.",
-                serv_dev_title: "تطوير المواقع",
-                serv_dev_desc: "مواقع سريعة وآمنة وجميلة مبنية على أسس متينة، تماماً مثل الجبل الجليدي.",
-                section_process: "عملية العمل",
-                process_title: "ما تحت السطح",
-                process_desc: "منهجيتنا تتجاوز الجماليات. نحن نبني أنظمة تعمل بكفاءة.",
-                step_1_title: "٠١. الاكتشاف",
-                step_1_desc: "نحلل عمق السوق والمنافسين والقيم الجوهرية لعلامتك التجارية.",
-                step_2_title: "٠٢. الاستراتيجية",
-                step_2_desc: "صياغة خارطة طريق تبحر عبر المحيط الرقمي بفعالية.",
-                step_3_title: "٠٣. التنفيذ",
-                step_3_desc: "إطلاق الحملات بدقة ومراقبة البيانات في الوقت الفعلي.",
-                section_work: "أعمالنا",
-                work_title: "أحدث الرحلات",
-                view_all: "عرض كل المشاريع",
-                about_title: "من نحن",
-                who_we_are_text: "آيسبرج للتسويق هي وكالة تسويق ديناميكية مكرسة للكشف عن الإمكانات الكامنة داخل العلامات التجارية. يسعى فريقنا من المبدعين والاستراتيجيين والمبتكرين المتحمسين لصياغة روايات فريدة تحقق النتائج.",
-                mission_text: "في آيسبرج للتسويق، مهمتنا هي أن نكون أكثر من مجرد وكالة تسويق: نحن شركاء عمل مخلصون لكل عميل نخدمه. نحن ملتزمون بالتعمق في جوهر كل عمل نتعامل معه، والبحث باستمرار عن أكثر الاستراتيجيات فعالية وابتكاراً لتسويق وتطوير علامتهم التجارية الفريدة.",
-                mission_text_2: "هدفنا هو تعزيز النجاح طويل الأمد لعملائنا من خلال مواءمة خبرتنا مع رؤيتهم، ومعاً، اختراق السطح للكشف عن الإمكانات الكاملة لأعمالهم.",
-                vision_text: "في آيسبرج للتسويق، رؤيتنا هي أن نكون القوة الموجهة التي تكشف عن الإمكانات الكامنة في التواجد الرقمي لكل عميل. من خلال معرفتنا وخبرتنا الواسعة في التسويق الرقمي، نهدف إلى قيادة عملائنا لاكتشاف الفرص غير المرئية التي تكمن تحت السطح.",
-                vision_text_2: "نحن نسعى جاهدين لنكون المحفز لنجاحهم، ونكشف عن الأعماق الخفية لعلامتهم التجارية وندفعهم إلى آفاق جديدة في المشهد الرقمي.",
-                about_p1: "ما يراه عملاؤك هو فقط 10% من الواقع. يعتمد نجاح الحملة الرقمية على 90% من الاستراتيجية وتحليل البيانات والتحسين التقني الذي يحدث تحت السطح.",
-                about_p2: "في آيسبرج، نتولى المهام الصعبة في الخلفية لكي تتألق أنت في المقدمة.",
-                stat_clients: "عميل",
-                stat_growth: "متوسط نمو",
-                contact_title: "لنكسر الجليد",
-                contact_sub: "مستعد للنمو؟ أرسل لنا رسالة.",
-                form_name: "الاسم",
-                form_email: "البريد الإلكتروني",
-                form_message: "الرسالة",
-                form_submit: "إرسال",
-                footer_quick: "روابط سريعة",
-                footer_legal: "قانوني",
-                footer_social: "تواصل اجتماعي",
+                nav_services: "Ø®Ø¯Ù…Ø§ØªÙ†Ø§",
+                nav_about: "Ø¹Ù† Ø§Ù„Ø´Ø±ÙƒØ©",
+                nav_work: "Ø£Ø¹Ù…Ø§Ù„Ù†Ø§",
+                nav_contact: "ØªÙˆØ§ØµÙ„ Ù…Ø¹Ù†Ø§",
+                nav_process: "ÙƒÙŠÙ Ù†Ø¹Ù…Ù„",
+                hero_badge: "ÙˆÙƒØ§Ù„Ø© Ù†Ù…Ùˆ Ø±Ù‚Ù…ÙŠ",
+                hero_title_1: "Ù†Ø­Ù† Ù†ÙƒØ´Ù Ø¹Ù†",
+                hero_title_2: "Ø¥Ù…ÙƒØ§Ù†Ø§ØªÙƒ Ø§Ù„ÙƒØ§Ù…Ù†Ø©.",
+                hero_subtitle: "Ù…Ø«Ù„ Ø§Ù„Ø¬Ø¨Ù„ Ø§Ù„Ø¬Ù„ÙŠØ¯ÙŠØŒ Ø¹Ù„Ø§Ù…ØªÙƒ Ø§Ù„ØªØ¬Ø§Ø±ÙŠØ© Ù„Ù‡Ø§ Ø¹Ù…Ù‚. Ù†Ø­Ù† Ù†Ø³Ø§Ø¹Ø¯Ùƒ Ø¹Ù„Ù‰ Ø¥Ø¸Ù‡Ø§Ø± Ø§Ù„Ù‚ÙŠÙ…Ø© Ø§Ù„Ù‡Ø§Ø¦Ù„Ø© Ø§Ù„ÙƒØ§Ù…Ù†Ø© ØªØ­Øª Ø§Ù„Ø³Ø·Ø­.",
+                cta_start: "Ø§Ø¨Ø¯Ø£ Ø§Ù„Ø¢Ù†",
+                cta_explore: "Ø´Ø§Ù‡Ø¯ Ø£Ø¹Ù…Ø§Ù„Ù†Ø§",
+                stat_roi: "Ø²ÙŠØ§Ø¯Ø© Ø§Ù„Ø¹Ø§Ø¦Ø¯",
+                section_services: "Ø®Ø¯Ù…Ø§ØªÙ†Ø§",
+                services_title: "Ø­Ù„ÙˆÙ„ Ø¹Ù…ÙŠÙ‚Ø©",
+                serv_seo_title: "ØªØ­Ø³ÙŠÙ† Ù…Ø­Ø±ÙƒØ§Øª Ø§Ù„Ø¨Ø­Ø«",
+                serv_seo_desc: "Ø§Ø¬Ø¹Ù„ Ø¹Ù…Ù„Ø§Ø¡Ùƒ ÙŠØ¬Ø¯ÙˆÙ†Ùƒ Ø¨Ø³Ù‡ÙˆÙ„Ø©. Ù†Ø­Ù† Ù†Ø­Ø³Ù† Ù‡ÙŠÙƒÙ„ Ù…ÙˆÙ‚Ø¹Ùƒ Ù„Ù„Ø³ÙŠØ·Ø±Ø© Ø¹Ù„Ù‰ Ù†ØªØ§Ø¦Ø¬ Ø§Ù„Ø¨Ø­Ø«.",
+                serv_social_title: "Ø§Ù„ØªØ³ÙˆÙŠÙ‚ Ø§Ù„Ø§Ø¬ØªÙ…Ø§Ø¹ÙŠ",
+                serv_social_desc: "Ù…Ø­ØªÙˆÙ‰ Ø¬Ø°Ø§Ø¨ ÙŠØ·ÙÙˆ Ø¹Ù„Ù‰ Ù‚Ù…Ø© Ø§Ù„Ù…Ù†Ø´ÙˆØ±Ø§Øª. Ø§Ø¨Ù†ÙŠ Ù…Ø¬ØªÙ…Ø¹Ø§Ù‹ Ù…Ø®Ù„ØµØ§Ù‹ Ø­ÙˆÙ„ Ø¹Ù„Ø§Ù…ØªÙƒ Ø§Ù„ØªØ¬Ø§Ø±ÙŠØ©.",
+                serv_dev_title: "ØªØ·ÙˆÙŠØ± Ø§Ù„Ù…ÙˆØ§Ù‚Ø¹",
+                serv_dev_desc: "Ù…ÙˆØ§Ù‚Ø¹ Ø³Ø±ÙŠØ¹Ø© ÙˆØ¢Ù…Ù†Ø© ÙˆØ¬Ù…ÙŠÙ„Ø© Ù…Ø¨Ù†ÙŠØ© Ø¹Ù„Ù‰ Ø£Ø³Ø³ Ù…ØªÙŠÙ†Ø©ØŒ ØªÙ…Ø§Ù…Ø§Ù‹ Ù…Ø«Ù„ Ø§Ù„Ø¬Ø¨Ù„ Ø§Ù„Ø¬Ù„ÙŠØ¯ÙŠ.",
+                section_process: "Ø¹Ù…Ù„ÙŠØ© Ø§Ù„Ø¹Ù…Ù„",
+                process_title: "Ù…Ø§ ØªØ­Øª Ø§Ù„Ø³Ø·Ø­",
+                process_desc: "Ù…Ù†Ù‡Ø¬ÙŠØªÙ†Ø§ ØªØªØ¬Ø§ÙˆØ² Ø§Ù„Ø¬Ù…Ø§Ù„ÙŠØ§Øª. Ù†Ø­Ù† Ù†Ø¨Ù†ÙŠ Ø£Ù†Ø¸Ù…Ø© ØªØ¹Ù…Ù„ Ø¨ÙƒÙØ§Ø¡Ø©.",
+                step_1_title: "Ù Ù¡. Ø§Ù„Ø§ÙƒØªØ´Ø§Ù",
+                step_1_desc: "Ù†Ø­Ù„Ù„ Ø¹Ù…Ù‚ Ø§Ù„Ø³ÙˆÙ‚ ÙˆØ§Ù„Ù…Ù†Ø§ÙØ³ÙŠÙ† ÙˆØ§Ù„Ù‚ÙŠÙ… Ø§Ù„Ø¬ÙˆÙ‡Ø±ÙŠØ© Ù„Ø¹Ù„Ø§Ù…ØªÙƒ Ø§Ù„ØªØ¬Ø§Ø±ÙŠØ©.",
+                step_2_title: "Ù Ù¢. Ø§Ù„Ø§Ø³ØªØ±Ø§ØªÙŠØ¬ÙŠØ©",
+                step_2_desc: "ØµÙŠØ§ØºØ© Ø®Ø§Ø±Ø·Ø© Ø·Ø±ÙŠÙ‚ ØªØ¨Ø­Ø± Ø¹Ø¨Ø± Ø§Ù„Ù…Ø­ÙŠØ· Ø§Ù„Ø±Ù‚Ù…ÙŠ Ø¨ÙØ¹Ø§Ù„ÙŠØ©.",
+                step_3_title: "Ù Ù£. Ø§Ù„ØªÙ†ÙÙŠØ°",
+                step_3_desc: "Ø¥Ø·Ù„Ø§Ù‚ Ø§Ù„Ø­Ù…Ù„Ø§Øª Ø¨Ø¯Ù‚Ø© ÙˆÙ…Ø±Ø§Ù‚Ø¨Ø© Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª ÙÙŠ Ø§Ù„ÙˆÙ‚Øª Ø§Ù„ÙØ¹Ù„ÙŠ.",
+                section_work: "Ø£Ø¹Ù…Ø§Ù„Ù†Ø§",
+                work_title: "Ø£Ø­Ø¯Ø« Ø§Ù„Ø±Ø­Ù„Ø§Øª",
+                view_all: "Ø¹Ø±Ø¶ ÙƒÙ„ Ø§Ù„Ù…Ø´Ø§Ø±ÙŠØ¹",
+                about_title: "Ù…Ù† Ù†Ø­Ù†",
+                who_we_are_text: "Ø¢ÙŠØ³Ø¨Ø±Ø¬ Ù„Ù„ØªØ³ÙˆÙŠÙ‚ Ù‡ÙŠ ÙˆÙƒØ§Ù„Ø© ØªØ³ÙˆÙŠÙ‚ Ø¯ÙŠÙ†Ø§Ù…ÙŠÙƒÙŠØ© Ù…ÙƒØ±Ø³Ø© Ù„Ù„ÙƒØ´Ù Ø¹Ù† Ø§Ù„Ø¥Ù…ÙƒØ§Ù†Ø§Øª Ø§Ù„ÙƒØ§Ù…Ù†Ø© Ø¯Ø§Ø®Ù„ Ø§Ù„Ø¹Ù„Ø§Ù…Ø§Øª Ø§Ù„ØªØ¬Ø§Ø±ÙŠØ©. ÙŠØ³Ø¹Ù‰ ÙØ±ÙŠÙ‚Ù†Ø§ Ù…Ù† Ø§Ù„Ù…Ø¨Ø¯Ø¹ÙŠÙ† ÙˆØ§Ù„Ø§Ø³ØªØ±Ø§ØªÙŠØ¬ÙŠÙŠÙ† ÙˆØ§Ù„Ù…Ø¨ØªÙƒØ±ÙŠÙ† Ø§Ù„Ù…ØªØ­Ù…Ø³ÙŠÙ† Ù„ØµÙŠØ§ØºØ© Ø±ÙˆØ§ÙŠØ§Øª ÙØ±ÙŠØ¯Ø© ØªØ­Ù‚Ù‚ Ø§Ù„Ù†ØªØ§Ø¦Ø¬.",
+                mission_text: "ÙÙŠ Ø¢ÙŠØ³Ø¨Ø±Ø¬ Ù„Ù„ØªØ³ÙˆÙŠÙ‚ØŒ Ù…Ù‡Ù…ØªÙ†Ø§ Ù‡ÙŠ Ø£Ù† Ù†ÙƒÙˆÙ† Ø£ÙƒØ«Ø± Ù…Ù† Ù…Ø¬Ø±Ø¯ ÙˆÙƒØ§Ù„Ø© ØªØ³ÙˆÙŠÙ‚: Ù†Ø­Ù† Ø´Ø±ÙƒØ§Ø¡ Ø¹Ù…Ù„ Ù…Ø®Ù„ØµÙˆÙ† Ù„ÙƒÙ„ Ø¹Ù…ÙŠÙ„ Ù†Ø®Ø¯Ù…Ù‡. Ù†Ø­Ù† Ù…Ù„ØªØ²Ù…ÙˆÙ† Ø¨Ø§Ù„ØªØ¹Ù…Ù‚ ÙÙŠ Ø¬ÙˆÙ‡Ø± ÙƒÙ„ Ø¹Ù…Ù„ Ù†ØªØ¹Ø§Ù…Ù„ Ù…Ø¹Ù‡ØŒ ÙˆØ§Ù„Ø¨Ø­Ø« Ø¨Ø§Ø³ØªÙ…Ø±Ø§Ø± Ø¹Ù† Ø£ÙƒØ«Ø± Ø§Ù„Ø§Ø³ØªØ±Ø§ØªÙŠØ¬ÙŠØ§Øª ÙØ¹Ø§Ù„ÙŠØ© ÙˆØ§Ø¨ØªÙƒØ§Ø±Ø§Ù‹ Ù„ØªØ³ÙˆÙŠÙ‚ ÙˆØªØ·ÙˆÙŠØ± Ø¹Ù„Ø§Ù…ØªÙ‡Ù… Ø§Ù„ØªØ¬Ø§Ø±ÙŠØ© Ø§Ù„ÙØ±ÙŠØ¯Ø©.",
+                mission_text_2: "Ù‡Ø¯ÙÙ†Ø§ Ù‡Ùˆ ØªØ¹Ø²ÙŠØ² Ø§Ù„Ù†Ø¬Ø§Ø­ Ø·ÙˆÙŠÙ„ Ø§Ù„Ø£Ù…Ø¯ Ù„Ø¹Ù…Ù„Ø§Ø¦Ù†Ø§ Ù…Ù† Ø®Ù„Ø§Ù„ Ù…ÙˆØ§Ø¡Ù…Ø© Ø®Ø¨Ø±ØªÙ†Ø§ Ù…Ø¹ Ø±Ø¤ÙŠØªÙ‡Ù…ØŒ ÙˆÙ…Ø¹Ø§Ù‹ØŒ Ø§Ø®ØªØ±Ø§Ù‚ Ø§Ù„Ø³Ø·Ø­ Ù„Ù„ÙƒØ´Ù Ø¹Ù† Ø§Ù„Ø¥Ù…ÙƒØ§Ù†Ø§Øª Ø§Ù„ÙƒØ§Ù…Ù„Ø© Ù„Ø£Ø¹Ù…Ø§Ù„Ù‡Ù….",
+                vision_text: "ÙÙŠ Ø¢ÙŠØ³Ø¨Ø±Ø¬ Ù„Ù„ØªØ³ÙˆÙŠÙ‚ØŒ Ø±Ø¤ÙŠØªÙ†Ø§ Ù‡ÙŠ Ø£Ù† Ù†ÙƒÙˆÙ† Ø§Ù„Ù‚ÙˆØ© Ø§Ù„Ù…ÙˆØ¬Ù‡Ø© Ø§Ù„ØªÙŠ ØªÙƒØ´Ù Ø¹Ù† Ø§Ù„Ø¥Ù…ÙƒØ§Ù†Ø§Øª Ø§Ù„ÙƒØ§Ù…Ù†Ø© ÙÙŠ Ø§Ù„ØªÙˆØ§Ø¬Ø¯ Ø§Ù„Ø±Ù‚Ù…ÙŠ Ù„ÙƒÙ„ Ø¹Ù…ÙŠÙ„. Ù…Ù† Ø®Ù„Ø§Ù„ Ù…Ø¹Ø±ÙØªÙ†Ø§ ÙˆØ®Ø¨Ø±ØªÙ†Ø§ Ø§Ù„ÙˆØ§Ø³Ø¹Ø© ÙÙŠ Ø§Ù„ØªØ³ÙˆÙŠÙ‚ Ø§Ù„Ø±Ù‚Ù…ÙŠØŒ Ù†Ù‡Ø¯Ù Ø¥Ù„Ù‰ Ù‚ÙŠØ§Ø¯Ø© Ø¹Ù…Ù„Ø§Ø¦Ù†Ø§ Ù„Ø§ÙƒØªØ´Ø§Ù Ø§Ù„ÙØ±Øµ ØºÙŠØ± Ø§Ù„Ù…Ø±Ø¦ÙŠØ© Ø§Ù„ØªÙŠ ØªÙƒÙ…Ù† ØªØ­Øª Ø§Ù„Ø³Ø·Ø­.",
+                vision_text_2: "Ù†Ø­Ù† Ù†Ø³Ø¹Ù‰ Ø¬Ø§Ù‡Ø¯ÙŠÙ† Ù„Ù†ÙƒÙˆÙ† Ø§Ù„Ù…Ø­ÙØ² Ù„Ù†Ø¬Ø§Ø­Ù‡Ù…ØŒ ÙˆÙ†ÙƒØ´Ù Ø¹Ù† Ø§Ù„Ø£Ø¹Ù…Ø§Ù‚ Ø§Ù„Ø®ÙÙŠØ© Ù„Ø¹Ù„Ø§Ù…ØªÙ‡Ù… Ø§Ù„ØªØ¬Ø§Ø±ÙŠØ© ÙˆÙ†Ø¯ÙØ¹Ù‡Ù… Ø¥Ù„Ù‰ Ø¢ÙØ§Ù‚ Ø¬Ø¯ÙŠØ¯Ø© ÙÙŠ Ø§Ù„Ù…Ø´Ù‡Ø¯ Ø§Ù„Ø±Ù‚Ù…ÙŠ.",
+                about_p1: "Ù…Ø§ ÙŠØ±Ø§Ù‡ Ø¹Ù…Ù„Ø§Ø¤Ùƒ Ù‡Ùˆ ÙÙ‚Ø· 10% Ù…Ù† Ø§Ù„ÙˆØ§Ù‚Ø¹. ÙŠØ¹ØªÙ…Ø¯ Ù†Ø¬Ø§Ø­ Ø§Ù„Ø­Ù…Ù„Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ© Ø¹Ù„Ù‰ 90% Ù…Ù† Ø§Ù„Ø§Ø³ØªØ±Ø§ØªÙŠØ¬ÙŠØ© ÙˆØªØ­Ù„ÙŠÙ„ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª ÙˆØ§Ù„ØªØ­Ø³ÙŠÙ† Ø§Ù„ØªÙ‚Ù†ÙŠ Ø§Ù„Ø°ÙŠ ÙŠØ­Ø¯Ø« ØªØ­Øª Ø§Ù„Ø³Ø·Ø­.",
+                about_p2: "ÙÙŠ Ø¢ÙŠØ³Ø¨Ø±Ø¬ØŒ Ù†ØªÙˆÙ„Ù‰ Ø§Ù„Ù…Ù‡Ø§Ù… Ø§Ù„ØµØ¹Ø¨Ø© ÙÙŠ Ø§Ù„Ø®Ù„ÙÙŠØ© Ù„ÙƒÙŠ ØªØªØ£Ù„Ù‚ Ø£Ù†Øª ÙÙŠ Ø§Ù„Ù…Ù‚Ø¯Ù…Ø©.",
+                stat_clients: "Ø¹Ù…ÙŠÙ„",
+                stat_growth: "Ù…ØªÙˆØ³Ø· Ù†Ù…Ùˆ",
+                contact_title: "Ù„Ù†ÙƒØ³Ø± Ø§Ù„Ø¬Ù„ÙŠØ¯",
+                contact_sub: "Ù…Ø³ØªØ¹Ø¯ Ù„Ù„Ù†Ù…ÙˆØŸ Ø£Ø±Ø³Ù„ Ù„Ù†Ø§ Ø±Ø³Ø§Ù„Ø©.",
+                form_name: "Ø§Ù„Ø§Ø³Ù…",
+                form_email: "Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ",
+                form_message: "Ø§Ù„Ø±Ø³Ø§Ù„Ø©",
+                form_submit: "Ø¥Ø±Ø³Ø§Ù„",
+                footer_quick: "Ø±ÙˆØ§Ø¨Ø· Ø³Ø±ÙŠØ¹Ø©",
+                footer_legal: "Ù‚Ø§Ù†ÙˆÙ†ÙŠ",
+                footer_social: "ØªÙˆØ§ØµÙ„ Ø§Ø¬ØªÙ…Ø§Ø¹ÙŠ",
                 lang_btn: "English",
-                p1_cat: "فيديو وتصوير",
-                p1_title: "درام شوب مصر",
-                p1_desc: "إنتاج فيديو احترافي وتصوير فوتوغرافي عالي الجودة للآلات الموسيقية.",
-                p2_cat: "العلامة التجارية والهوية",
-                p2_title: "سهيل للمقاولات",
-                p2_desc: "أنظمة هوية بصرية شاملة لقادة الصناعة.",
-                p3_cat: "إعلانات ميتا",
-                p3_title: "حملات الأداء",
-                p3_desc: "استراتيجيات إعلانية قائمة على البيانات تحقق تفاعلاً أكبر بـ ٥ أضعاف.",
-                p4_cat: "التصميم المرئي",
-                p4_title: "جوست نوت ميوزيك",
-                p4_desc: "مرئيات إبداعية وأصول رقمية لقطاع تجارة الموسيقى.",
-                p5_cat: "الشعار والهوية",
-                p5_title: "إف إم إس كوفي شوب",
-                p5_desc: "صناعة هوية فريدة لعلامات القهوة الفاخرة."
+                p1_cat: "ÙÙŠØ¯ÙŠÙˆ ÙˆØªØµÙˆÙŠØ±",
+                p1_title: "Ø¯Ø±Ø§Ù… Ø´ÙˆØ¨ Ù…ØµØ±",
+                p1_desc: "Ø¥Ù†ØªØ§Ø¬ ÙÙŠØ¯ÙŠÙˆ Ø§Ø­ØªØ±Ø§ÙÙŠ ÙˆØªØµÙˆÙŠØ± ÙÙˆØªÙˆØºØ±Ø§ÙÙŠ Ø¹Ø§Ù„ÙŠ Ø§Ù„Ø¬ÙˆØ¯Ø© Ù„Ù„Ø¢Ù„Ø§Øª Ø§Ù„Ù…ÙˆØ³ÙŠÙ‚ÙŠØ©.",
+                p2_cat: "Ø§Ù„Ø¹Ù„Ø§Ù…Ø© Ø§Ù„ØªØ¬Ø§Ø±ÙŠØ© ÙˆØ§Ù„Ù‡ÙˆÙŠØ©",
+                p2_title: "Ø³Ù‡ÙŠÙ„ Ù„Ù„Ù…Ù‚Ø§ÙˆÙ„Ø§Øª",
+                p2_desc: "Ø£Ù†Ø¸Ù…Ø© Ù‡ÙˆÙŠØ© Ø¨ØµØ±ÙŠØ© Ø´Ø§Ù…Ù„Ø© Ù„Ù‚Ø§Ø¯Ø© Ø§Ù„ØµÙ†Ø§Ø¹Ø©.",
+                p3_cat: "Ø¥Ø¹Ù„Ø§Ù†Ø§Øª Ù…ÙŠØªØ§",
+                p3_title: "Ø­Ù…Ù„Ø§Øª Ø§Ù„Ø£Ø¯Ø§Ø¡",
+                p3_desc: "Ø§Ø³ØªØ±Ø§ØªÙŠØ¬ÙŠØ§Øª Ø¥Ø¹Ù„Ø§Ù†ÙŠØ© Ù‚Ø§Ø¦Ù…Ø© Ø¹Ù„Ù‰ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª ØªØ­Ù‚Ù‚ ØªÙØ§Ø¹Ù„Ø§Ù‹ Ø£ÙƒØ¨Ø± Ø¨Ù€ Ù¥ Ø£Ø¶Ø¹Ø§Ù.",
+                p4_cat: "Ø§Ù„ØªØµÙ…ÙŠÙ… Ø§Ù„Ù…Ø±Ø¦ÙŠ",
+                p4_title: "Ø¬ÙˆØ³Øª Ù†ÙˆØª Ù…ÙŠÙˆØ²ÙŠÙƒ",
+                p4_desc: "Ù…Ø±Ø¦ÙŠØ§Øª Ø¥Ø¨Ø¯Ø§Ø¹ÙŠØ© ÙˆØ£ØµÙˆÙ„ Ø±Ù‚Ù…ÙŠØ© Ù„Ù‚Ø·Ø§Ø¹ ØªØ¬Ø§Ø±Ø© Ø§Ù„Ù…ÙˆØ³ÙŠÙ‚Ù‰.",
+                p5_cat: "Ø§Ù„Ø´Ø¹Ø§Ø± ÙˆØ§Ù„Ù‡ÙˆÙŠØ©",
+                p5_title: "Ø¥Ù Ø¥Ù… Ø¥Ø³ ÙƒÙˆÙÙŠ Ø´ÙˆØ¨",
+                p5_desc: "ØµÙ†Ø§Ø¹Ø© Ù‡ÙˆÙŠØ© ÙØ±ÙŠØ¯Ø© Ù„Ø¹Ù„Ø§Ù…Ø§Øª Ø§Ù„Ù‚Ù‡ÙˆØ© Ø§Ù„ÙØ§Ø®Ø±Ø©."
             }
         };
 
@@ -1187,3 +1168,4 @@
 </body>
 
 </html>
+

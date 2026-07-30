@@ -5,272 +5,474 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Social Media Management | Iceberg Marketing</title>
+    <meta name="description"
+        content="Strategic social media systems that build audience loyalty, increase qualified engagement, and turn content into measurable growth.">
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
 
-    <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <link rel="stylesheet" href="/parallax/style.css">
+    <link rel="stylesheet" href="/wizard-form.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+    <script src="/wizard-form.js" defer></script>
+    <script src="/campaign.js" defer></script>
+    <script src="/ai-agent-widget.js" defer></script>
+    <script src="/phone-init.js" defer></script>
+    <style>
+        :root {
+            --social-primary: #0ea5e9;
+            --social-accent: #fb7185;
+            --social-bg: #030712;
+        }
+
+        .social-bg {
+            background:
+                radial-gradient(circle at 12% 20%, rgba(14, 165, 233, 0.2), transparent 42%),
+                radial-gradient(circle at 84% 16%, rgba(251, 113, 133, 0.2), transparent 40%),
+                radial-gradient(circle at 52% 92%, rgba(15, 118, 110, 0.55), transparent 50%),
+                var(--social-bg);
+        }
+
+        .feed-grid {
+            background-image:
+                linear-gradient(rgba(14, 165, 233, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(14, 165, 233, 0.08) 1px, transparent 1px);
+            background-size: 36px 36px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 88%);
+        }
+
+        .headline-gradient {
+            background: linear-gradient(90deg, #ffffff 0%, #7dd3fc 42%, #fda4af 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .social-card {
+            background: rgba(9, 18, 37, 0.74);
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            backdrop-filter: blur(14px);
+        }
+
+        .social-outline {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-outline::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.4), rgba(251, 113, 133, 0.28), rgba(45, 212, 191, 0.25));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .progress-track {
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.22);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--social-primary), var(--social-accent));
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 31px;
+            top: 56px;
+            bottom: -34px;
+            width: 2px;
+            background: linear-gradient(180deg, rgba(14, 165, 233, 0.34), rgba(251, 113, 133, 0.24), transparent);
+        }
+
+        @media (max-width: 768px) {
+            .timeline-line {
+                left: 27px;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-[#020617] text-white overflow-x-hidden antialiased">
-
-    <!-- Header -->
+<body class="social-bg text-white overflow-x-hidden antialiased">
     <header
-        class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-6 bg-[#020617]/80 backdrop-blur-md border-b border-white/5"
+        class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 md:px-8 py-4 md:py-5 bg-slate-950/70 backdrop-blur-xl border-b border-white/10"
         id="main-nav">
         <div class="flex items-center gap-3">
             <img src="/parallax/assets/LOGO (2).png" alt="Logo" class="h-10 w-auto">
-            <span class="text-2xl font-black italic tracking-tighter text-cyan-400">ICEBERG</span>
+            <span class="text-2xl font-black italic tracking-tighter text-sky-300">ICEBERG</span>
         </div>
         <nav class="hidden md:flex items-center gap-8 text-sm font-semibold tracking-widest uppercase">
-            <a href="/parallax/index.html" class="hover:text-cyan-400 transition-colors">Home</a>
-            <a href="/parallax/index.html#services" class="hover:text-cyan-400 transition-colors">Services</a>
-            <a href="/parallax/index.html#portfolio" class="hover:text-cyan-400 transition-colors">Work</a>
+            <a href="/parallax/index.html" class="hover:text-sky-300 transition-colors">Home</a>
+            <a href="/parallax/index.html#services" class="hover:text-sky-300 transition-colors">Services</a>
+            <a href="/parallax/index.html#portfolio" class="hover:text-sky-300 transition-colors">Work</a>
             <a href="/parallax/index.html#contact"
                 class="px-6 py-2 border border-white/20 rounded-full hover:bg-white/10 transition-all">Contact</a>
         </nav>
-        <button class="md:hidden text-white"><i data-lucide="menu"></i></button>
+        <button class="md:hidden text-white p-2 rounded-lg border border-white/15 bg-white/5" onclick="toggleMobileMenu()">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
     </header>
 
-    <!-- Hero Section -->
-    <section class="relative min-h-screen w-full flex items-center justify-center overflow-hidden pt-24">
-        <!-- Background -->
-        <div class="absolute inset-0 z-0">
-            <div class="absolute inset-0 bg-gradient-to-b from-cyan-900/20 via-[#020617] to-[#020617]"></div>
-            <div class="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[150px]"></div>
+    <div id="mobile-menu" class="fixed inset-0 bg-[#020617]/95 backdrop-blur-xl z-[10001] hidden">
+        <div class="flex flex-col items-center justify-center h-full gap-8 text-2xl font-semibold">
+            <button class="absolute top-6 right-6 text-white p-2 rounded-lg border border-white/15 bg-white/5" onclick="toggleMobileMenu()">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <a href="/parallax/index.html" class="hover:text-sky-300 transition-colors" onclick="toggleMobileMenu()">Home</a>
+            <a href="/parallax/index.html#services" class="hover:text-sky-300 transition-colors" onclick="toggleMobileMenu()">Services</a>
+            <a href="/parallax/index.html#portfolio" class="hover:text-sky-300 transition-colors" onclick="toggleMobileMenu()">Work</a>
+            <a href="/parallax/index.html#contact" class="px-8 py-3 border border-sky-400/30 rounded-full hover:bg-sky-400/10 text-sky-300 transition-all font-black italic tracking-wider text-lg uppercase" onclick="toggleMobileMenu()">Start Project</a>
         </div>
+    </div>
 
-        <!-- Content -->
-        <div class="container mx-auto px-6 relative z-10 text-center">
-            <div class="max-w-4xl mx-auto">
-                <!-- Icon -->
-                <div
-                    class="mb-8 inline-flex items-center justify-center w-24 h-24 bg-cyan-500/10 rounded-3xl border border-cyan-500/30">
-                    <i data-lucide="megaphone" class="w-12 h-12 text-cyan-400"></i>
+    <section class="relative min-h-screen flex items-center pt-32 pb-20">
+        <div class="absolute inset-0 feed-grid pointer-events-none"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-10 items-center">
+                <div class="hero-copy">
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-7 text-xs uppercase tracking-[0.25em] text-sky-200 border border-sky-400/30 rounded-full bg-sky-400/10">
+                        <span class="w-2 h-2 rounded-full bg-rose-300"></span> Social Growth Engine
+                    </div>
+                    <h1 class="text-5xl sm:text-6xl md:text-7xl font-black italic tracking-tight leading-[0.95] mb-7">
+                        TURN CONTENT INTO <span class="headline-gradient">CUSTOMERS</span>
+                    </h1>
+                    <p class="text-lg md:text-xl text-slate-300 max-w-xl leading-relaxed mb-9">
+                        We build platform-native social systems that increase reach, strengthen brand trust, and convert
+                        audience attention into revenue.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#contact"
+                            class="px-8 py-4 rounded-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-black italic uppercase tracking-wide text-center transition-all hover:-translate-y-0.5 shadow-lg shadow-sky-500/30">
+                            Start Social Plan
+                        </a>
+                        <a href="#process"
+                            class="px-8 py-4 rounded-full border border-white/25 hover:bg-white/10 font-black italic uppercase tracking-wide text-center transition-all">
+                            See Content System
+                        </a>
+                    </div>
                 </div>
 
-                <!-- Title -->
-                <h1 class="text-6xl md:text-8xl font-black italic tracking-tighter mb-6 leading-none">
-                    SOCIAL <span class="text-cyan-400">MEDIA</span>
-                </h1>
-
-                <!-- Subtitle -->
-                <p class="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed max-w-3xl mx-auto">
-                    Engaging content that floats to the top of the feed. Build a loyal community around your brand and
-                    drive meaningful engagement.
-                </p>
-
-                <!-- CTA -->
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="#contact"
-                        class="px-10 py-5 bg-cyan-500 hover:bg-cyan-400 text-white font-black italic rounded-full inline-block transition-all hover:scale-105 shadow-lg shadow-cyan-500/30">
-                        <span class="uppercase tracking-tighter text-lg">Get Started</span>
-                    </a>
-                    <a href="#process"
-                        class="px-10 py-5 border border-white/20 hover:bg-white/10 text-white font-black italic rounded-full inline-block transition-all">
-                        <span class="uppercase tracking-tighter text-lg">Our Process</span>
-                    </a>
-                </div>
-
-                <!-- Stats -->
-                <div class="grid grid-cols-3 gap-8 mt-20 max-w-2xl mx-auto">
-                    <div class="glass-card p-6 rounded-2xl">
-                        <div class="text-4xl font-black italic text-cyan-400 mb-2">500%</div>
-                        <div class="text-sm text-gray-400 uppercase tracking-wider">Engagement Boost</div>
+                <div class="hero-panel social-card social-outline rounded-3xl p-7 md:p-8 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-black italic tracking-tight">Channel Performance Snapshot</h2>
+                        <span
+                            class="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-emerald-300 bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 rounded-full">
+                            <span class="w-2 h-2 rounded-full bg-emerald-300"></span> Live
+                        </span>
                     </div>
-                    <div class="glass-card p-6 rounded-2xl">
-                        <div class="text-4xl font-black italic text-cyan-400 mb-2">50K+</div>
-                        <div class="text-sm text-gray-400 uppercase tracking-wider">Followers Grown</div>
+                    <div class="space-y-5">
+                        <div>
+                            <div class="flex items-center justify-between mb-2 text-sm">
+                                <span class="text-slate-300">Engagement Rate Lift</span>
+                                <span class="font-bold text-sky-300">+58%</span>
+                            </div>
+                            <div class="progress-track"><div class="progress-fill" data-fill="86"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-2 text-sm">
+                                <span class="text-slate-300">Follower Growth Quality</span>
+                                <span class="font-bold text-sky-300">+41%</span>
+                            </div>
+                            <div class="progress-track"><div class="progress-fill" data-fill="72"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-2 text-sm">
+                                <span class="text-slate-300">Inbound Leads from Social</span>
+                                <span class="font-bold text-rose-300">+33%</span>
+                            </div>
+                            <div class="progress-track"><div class="progress-fill" data-fill="67"></div></div>
+                        </div>
                     </div>
-                    <div class="glass-card p-6 rounded-2xl">
-                        <div class="text-4xl font-black italic text-cyan-400 mb-2">24/7</div>
-                        <div class="text-sm text-gray-400 uppercase tracking-wider">Community Care</div>
+                    <div class="grid grid-cols-3 gap-3 text-center">
+                        <div class="rounded-2xl border border-white/10 bg-slate-900/70 p-4">
+                            <div class="text-2xl font-black italic text-sky-300">50K+</div>
+                            <div class="text-[11px] uppercase tracking-[0.2em] text-slate-500 mt-1">Followers Added</div>
+                        </div>
+                        <div class="rounded-2xl border border-white/10 bg-slate-900/70 p-4">
+                            <div class="text-2xl font-black italic text-sky-300">1.9M</div>
+                            <div class="text-[11px] uppercase tracking-[0.2em] text-slate-500 mt-1">Monthly Reach</div>
+                        </div>
+                        <div class="rounded-2xl border border-white/10 bg-slate-900/70 p-4">
+                            <div class="text-2xl font-black italic text-sky-300">310+</div>
+                            <div class="text-[11px] uppercase tracking-[0.2em] text-slate-500 mt-1">Campaign Assets</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Benefits Section -->
-    <section class="py-32 bg-[#020617] relative z-10">
+    <section class="py-20 border-y border-white/10 bg-slate-950/45">
         <div class="container mx-auto px-6">
-            <div class="text-center mb-20">
-                <span class="text-cyan-400 font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Why Choose Us</span>
-                <h2 class="text-5xl md:text-7xl font-black italic tracking-tighter">SOCIAL BENEFITS</h2>
+            <div class="text-center mb-12 reveal-item">
+                <span class="text-sky-300 font-bold tracking-[0.32em] uppercase text-xs mb-3 block">Content Framework</span>
+                <h2 class="text-4xl md:text-5xl font-black italic tracking-tight">CREATE, DISTRIBUTE, CONVERT</h2>
             </div>
-
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Benefit 1 -->
-                <div class="glass-card border-morphism p-10 rounded-3xl group hover:bg-white/5 transition-all">
-                    <div
-                        class="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-400 mb-6">
-                        <i data-lucide="users" class="w-8 h-8"></i>
+            <div class="grid md:grid-cols-3 gap-6">
+                <article class="social-card rounded-3xl p-8 reveal-item">
+                    <div class="w-14 h-14 rounded-2xl bg-sky-500/15 border border-sky-300/40 flex items-center justify-center mb-5">
+                        <i data-lucide="palette" class="w-7 h-7 text-sky-200"></i>
                     </div>
-                    <h3 class="text-2xl font-black italic tracking-tighter mb-4">Community Building</h3>
-                    <p class="text-gray-400 leading-relaxed">Foster a loyal, engaged community that advocates for your
-                        brand organically.</p>
-                </div>
+                    <h3 class="text-2xl font-black italic mb-4">Creative Direction</h3>
+                    <p class="text-slate-300 mb-4">Define visual language, hooks, and content themes that align with audience psychology and brand voice.</p>
+                    <p class="text-sm text-slate-400">Concept boards, campaign ideas, format planning.</p>
+                </article>
 
-                <!-- Benefit 2 -->
-                <div class="glass-card border-morphism p-10 rounded-3xl group hover:bg-white/5 transition-all">
-                    <div
-                        class="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-400 mb-6">
-                        <i data-lucide="zap" class="w-8 h-8"></i>
+                <article class="social-card rounded-3xl p-8 reveal-item">
+                    <div class="w-14 h-14 rounded-2xl bg-sky-500/15 border border-sky-300/40 flex items-center justify-center mb-5">
+                        <i data-lucide="clapperboard" class="w-7 h-7 text-sky-200"></i>
                     </div>
-                    <h3 class="text-2xl font-black italic tracking-tighter mb-4">Viral Potential</h3>
-                    <p class="text-gray-400 leading-relaxed">Strategic content designed to maximize reach, shares, and
-                        organic amplification.</p>
-                </div>
+                    <h3 class="text-2xl font-black italic mb-4">Production Pipeline</h3>
+                    <p class="text-slate-300 mb-4">Build a repeatable weekly production cycle for reels, stories, static posts, and short-form video variants.</p>
+                    <p class="text-sm text-slate-400">Shoot plans, edit workflow, cadence management.</p>
+                </article>
 
-                <!-- Benefit 3 -->
-                <div class="glass-card border-morphism p-10 rounded-3xl group hover:bg-white/5 transition-all">
-                    <div
-                        class="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-400 mb-6">
-                        <i data-lucide="heart" class="w-8 h-8"></i>
+                <article class="social-card rounded-3xl p-8 reveal-item">
+                    <div class="w-14 h-14 rounded-2xl bg-rose-500/15 border border-rose-300/40 flex items-center justify-center mb-5">
+                        <i data-lucide="message-circle-heart" class="w-7 h-7 text-rose-200"></i>
                     </div>
-                    <h3 class="text-2xl font-black italic tracking-tighter mb-4">Brand Loyalty</h3>
-                    <p class="text-gray-400 leading-relaxed">Turn followers into customers and customers into lifelong
-                        brand advocates.</p>
-                </div>
+                    <h3 class="text-2xl font-black italic mb-4">Community Conversion</h3>
+                    <p class="text-slate-300 mb-4">Turn engagement into pipeline with inbox frameworks, comment strategy, and call-to-action sequencing.</p>
+                    <p class="text-sm text-slate-400">Community management, DM scripts, lead routing.</p>
+                </article>
             </div>
         </div>
     </section>
 
-    <!-- Process Section -->
-    <section id="process" class="py-32 bg-[#020617] relative z-10 border-t border-white/5">
+    <section id="process" class="py-20">
         <div class="container mx-auto px-6">
-            <div class="text-center mb-20">
-                <span class="text-cyan-400 font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Our
-                    Methodology</span>
-                <h2 class="text-5xl md:text-7xl font-black italic tracking-tighter">THE SOCIAL PROCESS</h2>
+            <div class="text-center mb-14 reveal-item">
+                <span class="text-rose-300 font-bold tracking-[0.3em] uppercase text-xs mb-3 block">Execution Loop</span>
+                <h2 class="text-4xl md:text-5xl font-black italic tracking-tight">THE SOCIAL SPRINT CYCLE</h2>
             </div>
-
-            <div class="max-w-4xl mx-auto space-y-12">
-                <!-- Step 1 -->
-                <div class="flex gap-8 group">
-                    <div
-                        class="flex-shrink-0 w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/50 flex items-center justify-center text-cyan-400 text-2xl font-black italic group-hover:scale-110 transition-transform duration-300">
-                        01
-                    </div>
-                    <div>
-                        <h4 class="text-2xl font-black italic tracking-tighter mb-2 text-white">BRAND VOICE DEVELOPMENT
-                        </h4>
-                        <p class="text-gray-400">Define your unique tone, personality, and messaging that resonates with
-                            your target audience.</p>
-                    </div>
+            <div class="max-w-4xl mx-auto space-y-8">
+                <div class="relative pl-20 reveal-item">
+                    <span class="timeline-line"></span>
+                    <div class="absolute left-0 top-0 w-14 h-14 rounded-2xl border border-sky-300/40 bg-sky-500/15 text-sky-100 flex items-center justify-center text-xl font-black italic">01</div>
+                    <h3 class="text-2xl font-black italic mb-2">Audience + Content Audit</h3>
+                    <p class="text-slate-300">We map audience clusters, review previous content performance, and identify the highest upside content angles.</p>
                 </div>
 
-                <!-- Step 2 -->
-                <div class="flex gap-8 group">
-                    <div
-                        class="flex-shrink-0 w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/50 flex items-center justify-center text-cyan-400 text-2xl font-black italic group-hover:scale-110 transition-transform duration-300">
-                        02
-                    </div>
-                    <div>
-                        <h4 class="text-2xl font-black italic tracking-tighter mb-2 text-white">CONTENT CALENDAR</h4>
-                        <p class="text-gray-400">Strategic planning of posts, stories, and campaigns aligned with your
-                            business goals and trending topics.</p>
-                    </div>
+                <div class="relative pl-20 reveal-item">
+                    <span class="timeline-line"></span>
+                    <div class="absolute left-0 top-0 w-14 h-14 rounded-2xl border border-sky-300/40 bg-sky-500/15 text-sky-100 flex items-center justify-center text-xl font-black italic">02</div>
+                    <h3 class="text-2xl font-black italic mb-2">Weekly Content Production</h3>
+                    <p class="text-slate-300">Produce and schedule platform-native assets with clear hooks, message hierarchy, and conversion intent.</p>
                 </div>
 
-                <!-- Step 3 -->
-                <div class="flex gap-8 group">
-                    <div
-                        class="flex-shrink-0 w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/50 flex items-center justify-center text-cyan-400 text-2xl font-black italic group-hover:scale-110 transition-transform duration-300">
-                        03
-                    </div>
-                    <div>
-                        <h4 class="text-2xl font-black italic tracking-tighter mb-2 text-white">CREATIVE PRODUCTION</h4>
-                        <p class="text-gray-400">High-quality graphics, videos, and copy that stop the scroll and drive
-                            engagement.</p>
-                    </div>
+                <div class="relative pl-20 reveal-item">
+                    <span class="timeline-line"></span>
+                    <div class="absolute left-0 top-0 w-14 h-14 rounded-2xl border border-rose-300/40 bg-rose-500/15 text-rose-100 flex items-center justify-center text-xl font-black italic">03</div>
+                    <h3 class="text-2xl font-black italic mb-2">Engagement + Community Action</h3>
+                    <p class="text-slate-300">Activate comment and DM playbooks to increase trust signals and turn conversations into qualified opportunities.</p>
                 </div>
 
-                <!-- Step 4 -->
-                <div class="flex gap-8 group">
-                    <div
-                        class="flex-shrink-0 w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/50 flex items-center justify-center text-cyan-400 text-2xl font-black italic group-hover:scale-110 transition-transform duration-300">
-                        04
-                    </div>
-                    <div>
-                        <h4 class="text-2xl font-black italic tracking-tighter mb-2 text-white">COMMUNITY MANAGEMENT
-                        </h4>
-                        <p class="text-gray-400">Active engagement with your audience through comments, DMs, and
-                            real-time interactions.</p>
-                    </div>
-                </div>
-
-                <!-- Step 5 -->
-                <div class="flex gap-8 group">
-                    <div
-                        class="flex-shrink-0 w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/50 flex items-center justify-center text-cyan-400 text-2xl font-black italic group-hover:scale-110 transition-transform duration-300">
-                        05
-                    </div>
-                    <div>
-                        <h4 class="text-2xl font-black italic tracking-tighter mb-2 text-white">ANALYTICS & GROWTH</h4>
-                        <p class="text-gray-400">Data-driven insights to refine strategy and maximize ROI across all
-                            platforms.</p>
-                    </div>
+                <div class="relative pl-20 reveal-item">
+                    <div class="absolute left-0 top-0 w-14 h-14 rounded-2xl border border-rose-300/40 bg-rose-500/15 text-rose-100 flex items-center justify-center text-xl font-black italic">04</div>
+                    <h3 class="text-2xl font-black italic mb-2">Performance Review + Iteration</h3>
+                    <p class="text-slate-300">We review retention, engagement depth, and conversion actions weekly, then refine formats and offers for next sprint.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Contact CTA -->
-    <section id="contact" class="py-32 relative bg-[#020617] overflow-hidden border-t border-white/5">
-        <div class="container mx-auto px-6 relative z-10 max-w-4xl">
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 border-t border-white/10 bg-slate-950/70">
+        <div class="container mx-auto px-6">
             <div class="text-center mb-16">
-                <h2 class="text-5xl md:text-8xl font-black italic tracking-tighter leading-none mb-6">
-                    READY TO <span class="text-cyan-500">ENGAGE?</span>
-                </h2>
-                <p class="text-xl text-gray-400">Let's build a community that loves your brand.</p>
+                <span class="text-sky-300 font-bold tracking-[0.2em] uppercase text-xs mb-3 block">Monthly Retainers</span>
+                <h2 class="text-4xl md:text-5xl font-black italic tracking-tight mb-4">SOCIAL MEDIA <span class="headline-gradient">PACKAGES</span></h2>
+                <p class="text-slate-300 text-base max-w-xl mx-auto">Consistent, high-impact content packages tailored for brand authority and organic reach.</p>
             </div>
 
-            <div class="glass-card rounded-3xl p-8 md:p-12 border-t border-cyan-500/30 shadow-2xl">
-                <form class="space-y-6">
-                    <div class="grid md:grid-cols-2 gap-6">
+            <div class="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Saver Card -->
+                <div class="pricing-card rounded-3xl p-8 flex flex-col justify-between border border-white/10 bg-slate-900/60 hover:border-sky-500/30 transition-all">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-sky-300 bg-sky-500/10 border border-sky-500/20 px-3 py-1 rounded-full inline-block mb-4">Starter Plan</span>
+                        <h3 class="text-2xl font-black italic mb-2">Saver Package</h3>
+                        <p class="text-slate-400 text-xs mb-6">Consistent baseline presence for small businesses & growing brands.</p>
+                        <div class="flex items-baseline mb-8">
+                            <span class="text-4xl md:text-5xl font-black italic tracking-tight text-white">12,000</span>
+                            <span class="text-sky-300 font-bold text-sm ml-2 uppercase">EGP / mo</span>
+                        </div>
+                        <ul class="feature-list space-y-3 text-sm text-slate-300 mb-8">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-sky-300"></i> 12 High-Impact Posts / Reels</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-sky-300"></i> Custom Content Calendar & Strategy</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-sky-300"></i> Basic Community Management</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-sky-300"></i> Monthly Performance & Growth Report</li>
+                        </ul>
+                    </div>
+                    <a href="#contact" class="w-full py-3.5 rounded-xl border border-sky-500/30 hover:bg-sky-500/10 text-sky-300 font-black italic uppercase tracking-wider text-xs text-center transition-all">Select Saver Plan</a>
+                </div>
+
+                <!-- Pro Card (Popular) -->
+                <div class="pricing-card popular rounded-3xl p-8 flex flex-col justify-between border-2 border-sky-400/40 bg-gradient-to-b from-sky-500/10 via-slate-900/80 to-slate-950 relative shadow-2xl">
+                    <div class="absolute -top-3 right-8 bg-sky-400 text-slate-950 font-black italic text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">Most Popular</div>
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-sky-300 bg-sky-500/20 border border-sky-500/30 px-3 py-1 rounded-full inline-block mb-4">Growth Engine</span>
+                        <h3 class="text-2xl font-black italic mb-2">Pro Package</h3>
+                        <p class="text-slate-400 text-xs mb-6">Aggressive content engine for brands seeking market dominance.</p>
+                        <div class="flex items-baseline mb-8">
+                            <span class="text-4xl md:text-5xl font-black italic tracking-tight text-white">16,000</span>
+                            <span class="text-sky-300 font-bold text-sm ml-2 uppercase">EGP / mo</span>
+                        </div>
+                        <ul class="feature-list space-y-3 text-sm text-slate-300 mb-8">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-sky-300"></i> 20 Posts & Premium Reels</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-sky-300"></i> Motion Graphics & Animated Story Assets</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-sky-300"></i> Active Community & Inbox Management</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-sky-300"></i> Bi-weekly Strategy & Ads Support</li>
+                        </ul>
+                    </div>
+                    <a href="#contact" class="w-full py-3.5 rounded-xl bg-sky-400 hover:bg-sky-300 text-slate-950 font-black italic uppercase tracking-wider text-xs text-center transition-all shadow-lg shadow-sky-500/20">Select Pro Plan</a>
+                </div>
+
+                <!-- Plus Card -->
+                <div class="pricing-card rounded-3xl p-8 flex flex-col justify-between border border-white/10 bg-slate-900/60 hover:border-purple-500/30 transition-all">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-purple-300 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full inline-block mb-4">Enterprise Suite</span>
+                        <h3 class="text-2xl font-black italic mb-2">Plus Package</h3>
+                        <p class="text-slate-400 text-xs mb-6">Full-scale production, on-location shoots, and dedicated management team.</p>
+                        <div class="flex items-baseline mb-8">
+                            <span class="text-4xl md:text-5xl font-black italic tracking-tight text-white">22,000</span>
+                            <span class="text-purple-300 font-bold text-sm ml-2 uppercase">EGP / mo</span>
+                        </div>
+                        <ul class="feature-list space-y-3 text-sm text-slate-300 mb-8">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-300"></i> 30+ Multi-format Posts & Reels</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-300"></i> Monthly On-Location Video Shoot</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-300"></i> 24/7 Community & Lead Management</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-300"></i> Weekly Strategy Calls & Dedicated Account Manager</li>
+                        </ul>
+                    </div>
+                    <a href="#contact" class="w-full py-3.5 rounded-xl border border-purple-500/30 hover:bg-purple-500/10 text-purple-300 font-black italic uppercase tracking-wider text-xs text-center transition-all">Select Plus Plan</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Birthday Campaign Promo Callout -->
+    <section class="py-16 bg-slate-950/60 border-t border-white/10 relative overflow-hidden">
+        <div class="container mx-auto px-6 relative z-10 max-w-4xl text-center space-y-6">
+            <span class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Birthday Campaign special</span>
+            <h3 class="text-3xl md:text-4xl font-black italic tracking-tighter uppercase">GET THIS SERVICE FOR FREE</h3>
+            <p class="text-gray-400 text-sm max-w-xl mx-auto">
+                Celebrate our Birthday Month: Purchase any 3 solutions and get a 4th service (like this one) completely free! Or enjoy a flat 33% discount.
+            </p>
+            <div class="pt-2">
+                <a href="/birthday-campaign" class="px-8 py-3.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black italic uppercase tracking-wider text-xs rounded-full inline-block transition-all hover:scale-105 active:scale-95 shadow-lg shadow-cyan-500/25">
+                    Build My Custom Bundle
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-20 border-t border-white/10 bg-slate-950/55">
+        <div class="container mx-auto px-6 max-w-4xl">
+            <div class="text-center mb-10 reveal-item">
+                <h2 class="text-4xl md:text-6xl font-black italic tracking-tight mb-4">
+                    READY TO <span class="headline-gradient">GROW SOCIAL?</span>
+                </h2>
+                <p class="text-slate-300 text-lg">Share your brand goals and we will build your 30-day social action plan.</p>
+            </div>
+
+            <div class="social-card social-outline rounded-3xl p-7 md:p-10 reveal-item">
+                <form id="contact-form" class="wizard-form space-y-5">
+                    <div class="grid md:grid-cols-2 gap-5">
                         <div class="space-y-2">
-                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Name</label>
-                            <input type="text"
-                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                            <label class="text-xs tracking-[0.2em] uppercase text-sky-200">Name</label>
+                            <input type="text" name="name" required placeholder="Your full name"
+                                class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-300 text-white transition-colors">
                         </div>
                         <div class="space-y-2">
-                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Email</label>
-                            <input type="email"
-                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                            <label class="text-xs tracking-[0.2em] uppercase text-sky-200">Email</label>
+                            <input type="email" name="email" required placeholder="your@email.com"
+                                class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-300 text-white transition-colors">
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="space-y-2">
+                            <label class="text-xs tracking-[0.2em] uppercase text-sky-200">Business Name</label>
+                            <input type="text" name="business_name" required placeholder="Acme Inc."
+                                class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-300 text-white transition-colors">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs tracking-[0.2em] uppercase text-sky-200">Website / Business Link</label>
+                            <input type="url" name="business_link" placeholder="https://example.com"
+                                class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-300 text-white transition-colors">
                         </div>
                     </div>
                     <div class="space-y-2">
-                        <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Social Media
-                            Handles</label>
-                        <input type="text"
-                            class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
-                            placeholder="@yourbrand">
+                        <label class="text-xs tracking-[0.2em] uppercase text-sky-200">Phone Number</label>
+                        <input type="tel" name="phone" required placeholder="+1 (555) 000-0000"
+                            class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-300 text-white transition-colors">
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="space-y-2">
+                            <label class="text-xs tracking-[0.2em] uppercase text-sky-200">Primary Platform</label>
+                            <select name="primary-platform"
+                                class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-300 text-white transition-colors">
+                                <option>Instagram</option>
+                                <option>TikTok</option>
+                                <option>Facebook</option>
+                                <option>LinkedIn</option>
+                                <option>Multi-platform strategy</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs tracking-[0.2em] uppercase text-sky-200">Monthly Content Budget</label>
+                            <select name="content-budget"
+                                class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-300 text-white transition-colors">
+                                <option>$1,500 - $4,000</option>
+                                <option>$4,000 - $10,000</option>
+                                <option>$10,000 - $20,000</option>
+                                <option>$20,000+</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="space-y-2">
-                        <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Tell us about your
-                            social media goals</label>
-                        <textarea rows="4"
-                            class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"></textarea>
+                        <label class="text-xs tracking-[0.2em] uppercase text-sky-200">Current Follower Count</label>
+                        <select name="follower-count"
+                            class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-300 text-white transition-colors">
+                            <option>0 - 1,000 followers</option>
+                            <option>1,000 - 10,000 followers</option>
+                            <option>10,000 - 100,000 followers</option>
+                            <option>100,000+ followers</option>
+                        </select>
                     </div>
-                    <button type="button"
-                        class="w-full py-4 bg-cyan-600 hover:bg-cyan-500 rounded-lg font-black italic text-white uppercase tracking-widest hover:shadow-lg hover:shadow-cyan-500/25 transition-all transform hover:-translate-y-1">
-                        Start Growing
+                    <div class="space-y-2">
+                        <label class="text-xs tracking-[0.2em] uppercase text-sky-200">Current Social Goals</label>
+                        <textarea rows="4" name="message" placeholder="Describe your brand tone, target audience, content style preferences, and key growth goals..."
+                            class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-300 text-white transition-colors"></textarea>
+                    </div>
+                    <button type="submit"
+                        class="w-full py-4 rounded-xl bg-gradient-to-r from-sky-400 to-rose-400 hover:from-sky-300 hover:to-rose-300 text-slate-950 font-black italic uppercase tracking-[0.18em] transition-all hover:-translate-y-0.5">
+                        Build My Social Plan
                     </button>
                 </form>
             </div>
         </div>
     </section>
 
-    <footer class="py-12 px-6 border-t border-white/5 text-center bg-[#01040f]">
+    <footer class="py-12 px-6 border-t border-white/10 text-center bg-[#01040f]">
         <div class="flex flex-col items-center gap-6 mb-8">
             <img src="/parallax/assets/LOGO (2).png" alt="Logo"
                 class="h-12 w-auto grayscale opacity-50 hover:opacity-100 transition-opacity">
@@ -280,8 +482,143 @@
     </footer>
 
     <script>
-        lucide.createIcons();
+        // Initialize icons immediately
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+
+        // Mobile Menu Functions with GSAP Animations
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (!menu) return;
+            const links = menu.querySelectorAll('a');
+            const closeBtn = menu.querySelector('button');
+            
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                if (window.mobileMenuTl) window.mobileMenuTl.kill();
+                window.mobileMenuTl = gsap.timeline();
+                window.mobileMenuTl.fromTo(menu, 
+                    { opacity: 0, backdropFilter: 'blur(0px)', webkitBackdropFilter: 'blur(0px)' },
+                    { opacity: 1, backdropFilter: 'blur(24px)', webkitBackdropFilter: 'blur(24px)', duration: 0.4, ease: 'power2.out' }
+                );
+                window.mobileMenuTl.fromTo(links, 
+                    { opacity: 0, y: 30, scale: 0.9 },
+                    { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.05, ease: 'power3.out', delay: 0.1 },
+                    '-=0.3'
+                );
+                if (closeBtn) {
+                    window.mobileMenuTl.fromTo(closeBtn, 
+                        { opacity: 0, rotate: -90, scale: 0.8 },
+                        { opacity: 1, rotate: 0, scale: 1, duration: 0.4, ease: 'back.out(1.7)' },
+                        '-=0.2'
+                    );
+                }
+            } else {
+                if (window.mobileMenuTl) window.mobileMenuTl.kill();
+                window.mobileMenuTl = gsap.timeline({
+                    onComplete: () => menu.classList.add('hidden')
+                });
+                window.mobileMenuTl.to(links, {
+                    opacity: 0,
+                    y: -15,
+                    duration: 0.25,
+                    stagger: 0.03,
+                    ease: 'power2.in'
+                });
+                window.mobileMenuTl.to(menu, {
+                    opacity: 0,
+                    duration: 0.3,
+                    ease: 'power2.inOut'
+                }, '-=0.15');
+            }
+        }
+
+        // Header Scroll Sticky Shrink Handler
+        document.addEventListener('DOMContentLoaded', () => {
+            const nav = document.getElementById('main-nav');
+            if (nav) {
+                const toggleScrolled = () => {
+                    if (window.scrollY > 20) {
+                        nav.classList.add('scrolled');
+                    } else {
+                        nav.classList.remove('scrolled');
+                    }
+                };
+                window.addEventListener('scroll', toggleScrolled);
+                toggleScrolled();
+            }
+        });
+
+        // Fallback: Ensure all content is visible after 3 seconds if animations fail
+        setTimeout(() => {
+            document.querySelectorAll('.hero-panel, .reveal-item').forEach(el => {
+                el.style.opacity = '1';
+                el.style.transform = 'none';
+            });
+        }, 3000);
+
+        // Initialize GSAP with error handling
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                    gsap.registerPlugin(ScrollTrigger);
+
+                    gsap.from(".hero-copy > *", {
+                        opacity: 0,
+                        y: 26,
+                        duration: 0.65,
+                        stagger: 0.1,
+                        ease: "power3.out"
+                    });
+
+                    gsap.from(".hero-panel", {
+                        opacity: 0,
+                        x: 30,
+                        duration: 0.9,
+                        ease: "power3.out",
+                        delay: 0.25
+                    });
+
+                    gsap.utils.toArray(".progress-fill").forEach((bar) => {
+                        gsap.to(bar, {
+                            width: bar.getAttribute("data-fill") + "%",
+                            duration: 1.1,
+                            ease: "power2.out",
+                            delay: 0.45
+                        });
+                    });
+
+                    gsap.utils.toArray(".reveal-item").forEach((el) => {
+                        gsap.from(el, {
+                            opacity: 0,
+                            y: 36,
+                            duration: 0.75,
+                            ease: "power3.out",
+                            scrollTrigger: {
+                                trigger: el,
+                                start: "top 86%",
+                                once: true
+                            }
+                        });
+                    });
+                } else {
+                    console.warn('GSAP or ScrollTrigger not loaded');
+                }
+            } catch (error) {
+                console.error('Animation error:', error);
+            }
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+            anchor.addEventListener("click", function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute("href"));
+                if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+        });
     </script>
+    <script src="service-form-handler.js"></script>
 </body>
 
 </html>

@@ -1,15 +1,520 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting to Iceberg Agency...</title>
-    <script>
-        // Redirect to Home.html
-        window.location.href = '/Home.html';
-    </script>
+    <title>Iceberg | Marketing Agency</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="stylesheet" href="/parallax/style.css">
+    <link rel="stylesheet" href="/wizard-form.css">
+    <style>
+        /* Additional overrides for specific new sections if needed */
+        .glass-card-dark {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+    <script src="/wizard-form.js" defer></script>
+    <script src="/campaign.js" defer></script>
+    <script src="/ai-agent-widget.js" defer></script>
+    <script src="/phone-init.js" defer></script>
+    <script src="/meta-pixel.js" defer></script>
 </head>
-<body>
-    <p>Redirecting to <a href="/Home.html">Iceberg Agency</a>...</p>
+
+<body class="bg-[#020617] text-white overflow-x-hidden antialiased">
+
+    <!-- Loader -->
+    <div id="loader" class="fixed inset-0 z-[100] bg-[#020617] flex items-center justify-center">
+        <div class="relative">
+            <h1 class="text-4xl font-black italic tracking-tighter opacity-0" id="loader-text">ICEBERG</h1>
+            <div class="absolute bottom-0 left-0 w-0 h-1 bg-cyan-500 rounded-full" id="loader-bar"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 md:px-8 py-4 md:py-6 header-anim bg-white/5 backdrop-blur-xl border-b border-white/10 shadow-lg"
+        id="main-nav">
+        <div class="flex items-center gap-3">
+            <img src="/parallax/assets/LOGO%20(2).png" alt="Logo" class="h-10 w-auto">
+            <span class="text-2xl font-black italic tracking-tighter text-cyan-400">ICEBERG</span>
+        </div>
+        <nav class="hidden md:flex items-center gap-8 text-sm font-semibold tracking-widest uppercase">
+            <a href="#home" class="hover:text-cyan-400 transition-colors">Home</a>
+            <a href="#services" class="hover:text-cyan-400 transition-colors">Services</a>
+            <a href="#process" class="hover:text-cyan-400 transition-colors">Process</a>
+            <a href="#showcases" class="hover:text-cyan-400 transition-colors">Showcases</a>
+            <a href="#about" class="hover:text-cyan-400 transition-colors">About</a>
+            <a href="/birthday-campaign" class="text-cyan-400 hover:text-cyan-300 font-black italic flex items-center gap-1 animate-pulse transition-all">
+                🎁 Birthday Deals
+            </a>
+            <a href="#contact"
+                class="px-6 py-2 border border-white/20 rounded-full hover:bg-white/10 transition-all hover:scale-105 active:scale-95 magnetic-btn">Start
+                Project</a>
+        </nav>
+        <button class="md:hidden text-white p-2 glass-card rounded-lg border border-white/10" onclick="toggleMobileMenu()">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 bg-[#020617]/95 backdrop-blur-xl z-[10001] hidden">
+        <div class="flex flex-col items-center justify-center h-full gap-8 text-2xl font-semibold">
+            <button class="absolute top-6 right-6 text-white p-2 glass-card rounded-lg border border-white/10" onclick="toggleMobileMenu()">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <a href="#home" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Home</a>
+            <a href="#services" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Services</a>
+            <a href="#process" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Process</a>
+            <a href="#showcases" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Showcases</a>
+            <a href="#about" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">About</a>
+            <a href="/birthday-campaign" class="text-cyan-400 hover:text-cyan-300 font-black italic flex items-center gap-1 animate-pulse transition-all" onclick="toggleMobileMenu()">
+                🎁 Birthday Deals
+            </a>
+            <a href="#contact" class="px-8 py-3 border border-cyan-500/30 rounded-full hover:bg-cyan-500/10 text-cyan-400 transition-all font-black italic tracking-wider text-lg uppercase" onclick="toggleMobileMenu()">Start Project</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative h-[100vh] w-full flex items-center justify-center overflow-hidden pt-24">
+        <!-- Multi-Layered Parallax Background -->
+        <!-- Background Video -->
+        <div class="absolute inset-0 z-0 h-full w-full overflow-hidden">
+            <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover parallax-layer" data-depth="0.5">
+                <source src="/parallax/assets/iceberg-assets/hero_video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <!-- Overlay for readability -->
+            <div class="absolute inset-0 bg-gradient-to-b from-[#020617]/40 via-transparent to-[#020617]"></div>
+            <div class="absolute inset-0 bg-black/20"></div>
+
+            <!-- Light Orbs / Atmosphere -->
+            <div class="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[150px] orb">
+            </div>
+            <div class="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[120px] orb">
+            </div>
+        </div>
+
+        <!-- Refined Centered Stack -->
+        <div class="container mx-auto px-6 relative z-10 h-full flex flex-col items-center justify-center text-center hero-scale-75">
+
+            <!-- Top Badge -->
+            <div class="mb-6">
+                <span class="block text-cyan-400 font-bold tracking-[0.3em] text-xs md:text-sm uppercase opacity-0"
+                    id="hero-badge">Deep Value Revealed</span>
+            </div>
+
+            <!-- Main Title (One Line, Piercing) -->
+            <div class="relative w-full mb-6 z-10">
+                <h1 class="font-black italic tracking-tighter leading-[0.9] reveal-type pierce-text" id="hero-title"
+                    style="font-size: clamp(1.5rem, 6vw, 6rem); color: white; text-transform: uppercase;">
+                    DEPTH DRIVES GROWTH
+                </h1>
+            </div>
+
+            <!-- Giant Central Iceberg & Logo -->
+            <div class="hero-visual-wrapper mt-[-4vh] md:mt-[-6vh] mb-8">
+                <div class="relative w-[300px] h-[300px] md:w-[600px] md:h-[600px]">
+                    <!-- Stylized Iceberg -->
+                    <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-[0_0_80px_rgba(6,182,212,0.5)]">
+                        <defs>
+                            <linearGradient id="iceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#caf0f8;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0077b6;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M70 80 L100 40 L130 80 L110 85 L90 85 Z" fill="url(#iceGrad)" opacity="0.9"
+                            class="float-anim" />
+                        <!-- Floating Waterline -->
+                        <path d="M30 85 Q100 95 170 85" stroke="#0ea5e9" stroke-width="0.5" fill="none" opacity="0.6"
+                            class="float-anim" style="animation-delay: -1s;" />
+                        <path d="M70 80 L60 140 L100 170 L140 140 L130 80 Z" fill="#023e8a" opacity="0.5"
+                            class="float-anim" style="animation-delay: -2s;" />
+                    </svg>
+
+                    <!-- ROI Stat Card -->
+                    <div class="absolute top-1/4 -right-12 md:-right-24 p-5 glass-card rounded-2xl shadow-2xl float-anim roi-card"
+                        style="animation-delay: 1.5s;">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center text-green-400">
+                                <i data-lucide="trending-up" class="w-6 h-6"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">ROI Increase
+                                </p>
+                                <p class="text-2xl font-black italic text-white">+150%</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Centered Logo Overlay -->
+                    <div class="absolute inset-0 flex items-center justify-center p-16 md:p-24 float-anim z-20">
+                        <img src="/parallax/assets/LOGO%20(2).png" alt="Logo"
+                            class="w-full h-auto drop-shadow-[0_0_50px_rgba(6,182,212,0.7)]">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description & CTA -->
+            <div class="max-w-3xl space-y-6 relative z-50">
+                <p class="text-gray-300 text-base md:text-lg leading-relaxed opacity-0 font-medium" id="hero-desc">
+                    90% of your brand's potential is hidden beneath surface. We engineer strategy to bring it to
+                    light.
+                </p>
+                <div class="opacity-0 pb-6" id="hero-cta">
+                    <a href="#services"
+                        class="group relative px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-white font-black italic rounded-full inline-block transition-all hover:scale-105 active:scale-95 shadow-lg shadow-cyan-500/30">
+                        <span class="relative z-10 uppercase tracking-tighter text-base">Explore the Depth</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-0"
+            id="scroll-hint">
+            <span class="text-[8px] uppercase tracking-[0.3em] font-bold text-gray-500 rotate-90">Dive</span>
+            <div class="w-px h-8 bg-gradient-to-b from-cyan-500 to-transparent"></div>
+        </div>
+    </section>
+
+    <!-- Angled Showcase Section (New) -->
+    <section id="clients" class="bg-[#020617] relative z-10 overflow-hidden py-32 border-b border-white/5">
+        <div class="container mx-auto px-6 relative z-20 mb-16 text-center">
+            <span class="text-cyan-400 font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Our Trusted
+                Partners</span>
+            <h2 class="text-4xl md:text-6xl font-black italic tracking-tighter mb-6">DOMINATING THE OCEAN</h2>
+        </div>
+
+        <div class="angled-wrapper">
+            <div class="angled-marquee-container">
+                <!-- Lane 1 (Fast Right) -->
+                <div class="marquee-lane">
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/crown_eterna.png" alt="Client">
+                    </div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/denta_quick_.png" alt="Client">
+                    </div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/drum_shop_egypt.png"
+                            alt="Client"></div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/fms_coffe_shop.png"
+                            alt="Client"></div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/ghost_note_.png" alt="Client">
+                    </div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/crown_eterna.png" alt="Client">
+                    </div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/denta_quick_.png" alt="Client">
+                    </div>
+                </div>
+                <!-- Lane 2 (Fast Left) -->
+                <div class="marquee-lane reverse">
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/lazy_pajama.png" alt="Client">
+                    </div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/nelo_merkato.png" alt="Client">
+                    </div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/penates_developments.png"
+                            alt="Client"></div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/pronto_book_store.png"
+                            alt="Client"></div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/remondas_store.png"
+                            alt="Client"></div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/the_call_for_worship.png"
+                            alt="Client"></div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/lazy_pajama.png" alt="Client">
+                    </div>
+                </div>
+                <!-- Lane 3 (Fast Right) -->
+                <div class="marquee-lane">
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/nelo_merkato.png" alt="Client">
+                    </div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/drum_shop_egypt.png"
+                            alt="Client"></div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/fms_coffe_shop.png"
+                            alt="Client"></div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/ghost_note_.png" alt="Client">
+                    </div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/crown_eterna.png" alt="Client">
+                    </div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/remondas_store.png"
+                            alt="Client"></div>
+                    <div class="showcase-card"><img src="/parallax/assets/clients-logos/nelo_merkato.png" alt="Client">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- About / Who We Are -->
+    <section id="about" class="py-32 relative z-10 bg-[#020617] overflow-hidden">
+        <div class="container mx-auto px-6 relative z-10 text-center">
+            <div class="inline-block relative mb-12">
+                <h2 class="text-6xl md:text-8xl font-black italic tracking-tighter uppercase relative z-10">
+                    <span class="text-amber-500">WHO</span> WE ARE
+                </h2>
+                <div class="absolute -inset-4 bg-white/5 -skew-x-12 -z-0"></div>
+            </div>
+            <p class="text-2xl md:text-3xl font-bold leading-tight text-gray-300 max-w-4xl mx-auto">
+                Iceberg Marketing is a dynamic marketing agency dedicated to uncovering the hidden potential within
+                brands. Our team of passionate creatives, strategists, and innovators strives to craft unique narratives
+                that drive results.
+            </p>
+        </div>
+    </section>
+
+<!-- Mission & Vision -->
+    <section class="py-24 bg-[#020617] relative z-10">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Mission -->
+                <div
+                    class="glass-card p-8 rounded-3xl group hover:bg-white/5 transition-all duration-500 border-t-2 border-transparent hover:border-cyan-500">
+                    <div
+                        class="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-400 mb-8 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="target" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Mission</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">To dive deep into your brand's essence and
+                        surface the hidden value that drives meaningful connections and measurable growth.</p>
+                </div>
+
+                <!-- Vision -->
+                <div
+                    class="glass-card p-8 rounded-3xl group hover:bg-white/5 transition-all duration-500 border-t-2 border-transparent hover:border-amber-500">
+                    <div
+                        class="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400 mb-8 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="eye" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Vision</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">To become the most trusted agency for
+                        brands seeking to reveal their true potential and dominate their markets.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-32 bg-[#020617] relative z-10 overflow-hidden">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-20">
+                <span class="text-cyan-400 font-bold tracking-[0.3em] uppercase text-xs mb-4 block">What We Do</span>
+                <h2 class="text-6xl md:text-8xl font-black italic tracking-tighter mb-6">OUR SERVICES</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Web Development -->
+                <a href="/parallax/services/web-dev.html"
+                    class="glass-card p-8 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-cyan-500 block">
+                    <div
+                        class="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-400 mb-8 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="code" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Web Development</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">Fast, secure, and beautiful websites
+                        built on solid foundations that convert visitors into customers.</p>
+                </a>
+
+                <!-- SEO & Visibility -->
+                <a href="/parallax/services/seo.html"
+                    class="glass-card p-8 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-blue-500 block">
+                    <div
+                        class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 mb-8 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="search" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">SEO & Visibility</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">Optimize your digital structure to
+                        dominate search results and drive organic growth.</p>
+                </a>
+
+                <!-- Social Media -->
+                <a href="/parallax/services/social-media.html"
+                    class="glass-card p-8 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-green-500 block">
+                    <div
+                        class="w-16 h-16 bg-green-500/10 rounded-2xl flex items-center justify-center text-green-400 mb-8 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="share-2" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Social Media</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">Engage your audience with compelling
+                        content that builds community and drives action.</p>
+                </a>
+
+                <!-- Performance Marketing -->
+                <a href="/parallax/services/performance.html"
+                    class="glass-card p-8 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-purple-500 block">
+                    <div
+                        class="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400 mb-8 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="trending-up" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Performance Marketing</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">Data-driven campaigns that maximize ROI
+                        and scale your business efficiently.</p>
+                </a>
+
+                <!-- Branding -->
+                <a href="#contact"
+                    class="glass-card p-8 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-amber-500 block">
+                    <div
+                        class="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400 mb-8 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="palette" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Branding</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">Create memorable brand identities that
+                        resonate with your target audience and stand the test of time.</p>
+                </a>
+
+                <!-- Content Creation -->
+                <a href="#contact"
+                    class="glass-card p-8 rounded-3xl hover:bg-white/5 transition-all duration-500 group border-t-2 border-transparent hover:border-rose-500 block">
+                    <div
+                        class="w-16 h-16 bg-rose-500/10 rounded-2xl flex items-center justify-center text-rose-400 mb-8 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="video" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Content Creation</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">High-impact videos and content that
+                        capture attention and drive engagement across all platforms.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process" class="py-32 bg-[#020617] relative z-10 overflow-hidden">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-20">
+                <span class="text-cyan-400 font-bold tracking-[0.3em] uppercase text-xs mb-4 block">How We Work</span>
+                <h2 class="text-6xl md:text-8xl font-black italic tracking-tighter mb-6">OUR PROCESS</h2>
+            </div>
+
+            <div class="max-w-6xl mx-auto">
+                <!-- Process Timeline -->
+                <div class="grid md:grid-cols-4 gap-8">
+                    <!-- Step 1 -->
+                    <div class="text-center group">
+                        <div
+                            class="w-20 h-20 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-2xl border border-cyan-500/50 flex items-center justify-center text-cyan-400 text-2xl font-black italic mx-auto mb-6 hover:scale-110 transition-transform">
+                            01
+                        </div>
+                        <h4 class="text-xl font-black italic tracking-tighter mb-4 text-white">DISCOVERY</h4>
+                        <p class="text-gray-400">Understanding your brand's essence and uncovering hidden opportunities.</p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="text-center group">
+                        <div
+                            class="w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl border border-blue-500/50 flex items-center justify-center text-blue-400 text-2xl font-black italic mx-auto mb-6 hover:scale-110 transition-transform">
+                            02
+                        </div>
+                        <h4 class="text-xl font-black italic tracking-tighter mb-4 text-white">STRATEGY</h4>
+                        <p class="text-gray-400">Crafting deep strategies that surface your true potential.</p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="text-center group">
+                        <div
+                            class="w-20 h-20 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl border border-purple-500/50 flex items-center justify-center text-purple-400 text-2xl font-black italic mx-auto mb-6 hover:scale-110 transition-transform">
+                            03
+                        </div>
+                        <h4 class="text-xl font-black italic tracking-tighter mb-4 text-white">EXECUTION</h4>
+                        <p class="text-gray-400">Implementing with precision and measuring every impact.</p>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="text-center group">
+                        <div
+                            class="w-20 h-20 bg-gradient-to-br from-pink-500/20 to-amber-500/20 rounded-2xl border border-pink-500/50 flex items-center justify-center text-pink-400 text-2xl font-black italic mx-auto mb-6 hover:scale-110 transition-transform">
+                            04
+                        </div>
+                        <h4 class="text-xl font-black italic tracking-tighter mb-4 text-white">OPTIMIZATION</h4>
+                        <p class="text-gray-400">Continuously refining to maximize results and growth.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-32 bg-[#020617] relative z-10 overflow-hidden">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-20">
+                <span class="text-cyan-400 font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Let's Connect</span>
+                <h2 class="text-6xl md:text-8xl font-black italic tracking-tighter mb-6">START YOUR PROJECT</h2>
+            </div>
+
+            <div class="max-w-2xl mx-auto">
+                <div class="glass-card rounded-3xl p-8 md:p-12 border-t border-cyan-500/30 shadow-2xl">
+                    <form id="contact-form" class="wizard-form space-y-6">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Name</label>
+                                <input type="text" name="name" required class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors" placeholder="John Doe">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Email</label>
+                                <input type="email" name="email" required class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors" placeholder="john@example.com">
+                            </div>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Business Name</label>
+                                <input type="text" name="business_name" required class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors" placeholder="Acme Inc.">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Website / Business Link</label>
+                                <input type="url" name="business_link" class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors" placeholder="https://example.com">
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider block mb-1">Phone Number</label>
+                            <input type="tel" name="phone" required class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Service</label>
+                            <select class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                                <option>Web Development</option>
+                                <option>SEO & Visibility</option>
+                                <option>Social Media</option>
+                                <option>Performance Marketing</option>
+                                <option>Branding</option>
+                                <option>Content Creation</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Tell us about your project</label>
+                            <textarea rows="4" required class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors" placeholder="Describe your project requirements..."></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 rounded-lg font-black italic text-white uppercase tracking-widest hover:shadow-lg hover:shadow-cyan-500/25 transition-all transform hover:-translate-y-1">
+                            Start Your Project
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t border-white/5 text-center bg-[#01040f]">
+        <div class="flex flex-col items-center gap-6 mb-8">
+            <img src="/parallax/assets/LOGO%20(2).png" alt="Logo" class="h-12 w-auto grayscale opacity-50 hover:opacity-100 transition-opacity">
+        </div>
+        <p class="text-gray-600 text-xs uppercase tracking-widest font-bold">&copy; 2026 Iceberg Agency. Dig Deep. Rise High.</p>
+    </footer>
+
+    <script src="/parallax/main.js"></script>
+
 </body>
+
 </html>

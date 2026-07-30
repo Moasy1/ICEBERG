@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iceberg | Brand Excellence</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=Inter:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="/parallax/style.css">
+    <link rel="stylesheet" href="/wizard-form.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+    <script src="/wizard-form.js" defer></script>
+    <script src="/campaign.js" defer></script>
+    <script src="/ai-agent-widget.js" defer></script>
+    <script src="/phone-init.js" defer></script>
+    <style>
+        :root {
+            --primary: #00d4ff;
+            --secondary: #0a192f;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Outfit', 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0ea5e9;
+        }
+
+        /* Glassmorphism */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .ice-gradient-text {
+            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .float-anim {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Marquee Animations */
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        @keyframes scroll-reverse {
+            0% {
+                transform: translateX(-50%);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .marquee-scroll {
+            animation: scroll 40s linear infinite;
+            display: flex;
+            width: max-content;
+        }
+
+        .marquee-scroll-reverse {
+            animation: scroll-reverse 40s linear infinite;
+            display: flex;
+            width: max-content;
+        }
+
+        /* GSAP Reveal */
+        .reveal-type {
+            opacity: 0;
+        }
+
+        /* Glowing hover effect */
+        .glow-hover {
+            transition: all 0.3s ease;
+        }
+
+        .glow-hover:hover {
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Skewed section */
+        .skewed-bg {
+            position: relative;
+            transform: skewY(-2deg);
+            transform-origin: top left;
+        }
+
+        .skewed-content {
+            transform: skewY(2deg);
+        }
+
+        /* Hero wave effect */
+        .wave-divider {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+
+        .wave-divider svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 80px;
+        }
+
+        /* Animated gradient background */
+        @keyframes gradient-shift {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .animated-gradient {
+            background: linear-gradient(270deg, #020617, #0a192f, #051525);
+            background-size: 600% 600%;
+            animation: gradient-shift 15s ease infinite;
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-cyan-500 selection:text-white">
+
+    <!-- Header -->
+    <header
+        class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 md:px-8 py-4 md:py-6 bg-white/5 backdrop-blur-xl border-b border-white/10 shadow-lg"
+        id="main-nav">
+        <div class="flex items-center gap-3">
+            <img src="/parallax/assets/LOGO%20(2).png" alt="Logo" class="h-10 w-auto">
+            <span class="text-2xl font-black italic tracking-tighter text-cyan-400">ICEBERG</span>
+        </div>
+        <nav class="hidden md:flex items-center gap-8 text-sm font-semibold tracking-widest uppercase">
+            <a href="#home" class="hover:text-cyan-400 transition-colors">Home</a>
+            <a href="#expertise" class="hover:text-cyan-400 transition-colors">Expertise</a>
+            <a href="#portfolio" class="hover:text-cyan-400 transition-colors">Portfolio</a>
+            <a href="#vision" class="hover:text-cyan-400 transition-colors">Vision</a>
+            <a href="#contact"
+                class="px-6 py-2 border border-white/20 rounded-full hover:bg-white/10 transition-all hover:scale-105 active:scale-95">Get
+                Started</a>
+        </nav>
+        <button class="md:hidden text-white p-2 glass-card rounded-lg border border-white/10"
+            onclick="toggleMobileMenu()">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 bg-[#020617]/95 backdrop-blur-xl z-[10001] hidden">
+        <div class="flex flex-col items-center justify-center h-full gap-8 text-2xl font-semibold">
+            <button class="absolute top-6 right-6 text-white p-2 glass-card rounded-lg border border-white/10"
+                onclick="toggleMobileMenu()">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <a href="#home" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Home</a>
+            <a href="#expertise" class="hover:text-cyan-400 transition-colors"
+                onclick="toggleMobileMenu()">Expertise</a>
+            <a href="#portfolio" class="hover:text-cyan-400 transition-colors"
+                onclick="toggleMobileMenu()">Portfolio</a>
+            <a href="#vision" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Vision</a>
+            <a href="#contact" class="px-8 py-3 border border-cyan-500/30 rounded-full hover:bg-cyan-500/10 text-cyan-400 transition-all font-black italic tracking-wider text-lg uppercase"
+                onclick="toggleMobileMenu()">Contact</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home"
+        class="relative min-h-screen w-full flex items-center justify-center overflow-hidden pt-24 animated-gradient">
+        <!-- Background Elements -->
+        <div class="absolute inset-0 z-0 overflow-hidden">
+            <!-- Floating Orbs -->
+            <div
+                class="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[150px] float-anim">
+            </div>
+            <div class="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-[120px] float-anim"
+                style="animation-delay: 2s;"></div>
+            <div class="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[180px] float-anim"
+                style="animation-delay: 4s;"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container mx-auto px-6 relative z-10 text-center">
+
+            <!-- Badge -->
+            <div class="mb-8">
+                <span
+                    class="inline-block px-6 py-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-xs md:text-sm uppercase font-bold tracking-[0.3em]">
+                    Premium Brand Experience
+                </span>
+            </div>
+
+            <!-- Main Title -->
+            <div class="mb-8">
+                <h1 class="font-black italic tracking-tighter leading-[0.85] reveal-type text-white uppercase"
+                    style="font-size: clamp(2.5rem, 8vw, 8rem);">
+                    ELEVATE YOUR<br>
+                    <span class="ice-gradient-text">BRAND PRESENCE</span>
+                </h1>
+            </div>
+
+            <!-- Central Visual Element -->
+            <div class="flex justify-center mb-12">
+                <div class="relative w-[250px] h-[250px] md:w-[400px] md:h-[400px]">
+                    <!-- Stylized Iceberg -->
+                    <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-[0_0_80px_rgba(6,182,212,0.5)]">
+                        <defs>
+                            <linearGradient id="brandIceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#caf0f8;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#06b6d4;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0077b6;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M70 80 L100 40 L130 80 L110 85 L90 85 Z" fill="url(#brandIceGrad)" opacity="0.9"
+                            class="float-anim" />
+                        <path d="M30 85 Q100 95 170 85" stroke="#0ea5e9" stroke-width="0.5" fill="none" opacity="0.6"
+                            class="float-anim" style="animation-delay: -1s;" />
+                        <path d="M70 80 L60 140 L100 170 L140 140 L130 80 Z" fill="#023e8a" opacity="0.5"
+                            class="float-anim" style="animation-delay: -2s;" />
+                    </svg>
+
+                    <!-- Logo Overlay -->
+                    <div class="absolute inset-0 flex items-center justify-center p-16 md:p-24 float-anim z-20">
+                        <img src="/parallax/assets/LOGO%20(2).png" alt="Logo"
+                            class="w-full h-auto drop-shadow-[0_0_50px_rgba(6,182,212,0.7)]">
+                    </div>
+
+                    <!-- Floating Stats -->
+                    <div class="absolute top-0 -right-12 md:-right-24 p-4 glass-card rounded-2xl shadow-2xl float-anim"
+                        style="animation-delay: 1s;">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center text-amber-400">
+                                <i data-lucide="star" class="w-5 h-5"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="text-[9px] uppercase tracking-widest text-gray-400 font-bold">Premium</p>
+                                <p class="text-xl font-black italic text-white">100%</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-4 -left-12 md:-left-24 p-4 glass-card rounded-2xl shadow-2xl float-anim"
+                        style="animation-delay: 2.5s;">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center text-green-400">
+                                <i data-lucide="trending-up" class="w-5 h-5"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="text-[9px] uppercase tracking-widest text-gray-400 font-bold">Growth</p>
+                                <p class="text-xl font-black italic text-white">+200%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="max-w-3xl mx-auto space-y-6">
+                <p class="text-gray-300 text-lg md:text-xl leading-relaxed font-medium">
+                    Where strategy meets creativity. We don't just market—we engineer brand dominance through
+                    data-driven innovation.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                    <a href="#portfolio"
+                        class="group relative px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-white font-black italic rounded-full inline-block transition-all hover:scale-105 active:scale-95 shadow-lg shadow-cyan-500/30">
+                        <span class="relative z-10 uppercase tracking-tighter text-base">View Our Work</span>
+                    </a>
+                    <a href="#contact"
+                        class="px-8 py-4 border border-white/20 hover:border-cyan-400/50 text-white font-bold rounded-full inline-block transition-all hover:bg-white/5">
+                        <span class="uppercase tracking-wider text-sm">Start a Project</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wave Divider -->
+        <div class="wave-divider">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"
+                preserveAspectRatio="none">
+                <path
+                    d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+                    fill="#020617"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Trusted Partners / Clients Section -->
+    <section class="bg-[#020617] relative z-10 overflow-hidden py-20 border-b border-white/5">
+        <div class="container mx-auto px-6 relative z-20 mb-12 text-center">
+            <span class="text-cyan-400 font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Trusted By
+                Leaders</span>
+            <h2 class="text-4xl md:text-6xl font-black italic tracking-tighter mb-6">BRANDS WE'VE ELEVATED</h2>
+        </div>
+
+        <div class="relative w-full overflow-hidden">
+            <div
+                class="marquee-scroll flex gap-16 items-center opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
+                <img src="/clients-logos/crown_eterna.png" alt="Client" class="h-16 w-auto object-contain">
+                <img src="/clients-logos/denta_quick_.png" alt="Client" class="h-16 w-auto object-contain">
+                <img src="/clients-logos/drum_shop_egypt.png" alt="Client" class="h-16 w-auto object-contain">
+                <img src="/clients-logos/fms_coffe_shop.png" alt="Client" class="h-16 w-auto object-contain">
+                <img src="/clients-logos/ghost_note_.png" alt="Client" class="h-16 w-auto object-contain">
+                <img src="/clients-logos/lazy_pajama.png" alt="Client" class="h-16 w-auto object-contain">
+                <img src="/clients-logos/nelo_merkato.png" alt="Client" class="h-16 w-auto object-contain">
+                <img src="/clients-logos/penates_developments.png" alt="Client" class="h-16 w-auto object-contain">
+                <img src="/clients-logos/pronto_book_store.png" alt="Client" class="h-16 w-auto object-contain">
+                <img src="/clients-logos/remondas_store.png" alt="Client" class="h-16 w-auto object-contain">
+                <img src="/clients-logos/the_call_for_worship.png" alt="Client" class="h-16 w-auto object-contain">
+                <!-- Repeat -->
+                <img src="/clients-logos/crown_eterna.png" alt="Client" class="h-16 w-auto object-contain">
+                <img src="/clients-logos/denta_quick_.png" alt="Client" class="h-16 w-auto object-contain">
+                <img src="/clients-logos/drum_shop_egypt.png" alt="Client" class="h-16 w-auto object-contain">
+                <img src="/clients-logos/fms_coffe_shop.png" alt="Client" class="h-16 w-auto object-contain">
+                <img src="/clients-logos/ghost_note_.png" alt="Client" class="h-16 w-auto object-contain">
+            </div>
+        </div>
+    </section>
+
+    <!-- Expertise Section -->
+    <section id="expertise" class="py-32 bg-[#020617] relative z-10 overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <img src="/parallax/assets/iceberg-assets/ice_pieces_1.png"
+                class="absolute top-1/4 -left-20 w-64 h-auto opacity-20 float-anim" alt="Ice Shard">
+            <img src="/parallax/assets/iceberg-assets/ice_pieces_2.png"
+                class="absolute bottom-1/4 -right-20 w-80 h-auto opacity-20 float-anim" style="animation-delay: 2s;"
+                alt="Ice Shard">
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-20">
+                <span class="text-cyan-400 font-bold tracking-[0.3em] uppercase text-xs mb-4 block">What We Do</span>
+                <h2 class="text-5xl md:text-7xl font-black italic tracking-tighter mb-6 reveal-type">OUR EXPERTISE</h2>
+                <p class="text-gray-400 text-xl font-medium leading-relaxed max-w-3xl mx-auto">
+                    Full-spectrum digital marketing solutions crafted to make your brand unforgettable.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- SEO -->
+                <div
+                    class="glass-card p-10 rounded-3xl group transition-all duration-700 hover:scale-105 glow-hover border-t-4 border-blue-500">
+                    <div
+                        class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 mb-8 group-hover:scale-110 transition-transform">
+                        <i data-lucide="search" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-black italic tracking-tighter mb-4 text-white">SEO & VISIBILITY</h3>
+                    <p class="text-gray-400 leading-relaxed">Get found by the right people. We optimize your structure
+                        deep down to dominate search results.</p>
+                </div>
+
+                <!-- Social Media -->
+                <div
+                    class="glass-card p-10 rounded-3xl group transition-all duration-700 hover:scale-105 glow-hover border-t-4 border-cyan-500">
+                    <div
+                        class="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-400 mb-8 group-hover:scale-110 transition-transform">
+                        <i data-lucide="megaphone" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-black italic tracking-tighter mb-4 text-white">SOCIAL MEDIA</h3>
+                    <p class="text-gray-400 leading-relaxed">Engaging content that floats to the top of the feed. Build
+                        a loyal community around your brand.</p>
+                </div>
+
+                <!-- Performance -->
+                <div
+                    class="glass-card p-10 rounded-3xl group transition-all duration-700 hover:scale-105 glow-hover border-t-4 border-indigo-500">
+                    <div
+                        class="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-400 mb-8 group-hover:scale-110 transition-transform">
+                        <i data-lucide="crosshair" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-black italic tracking-tighter mb-4 text-white">PERFORMANCE</h3>
+                    <p class="text-gray-400 leading-relaxed">Data-driven advertising strategies on Meta & TikTok
+                        yielding 5x higher engagement and ROI.</p>
+                </div>
+
+                <!-- Web Dev -->
+                <div
+                    class="glass-card p-10 rounded-3xl group transition-all duration-700 hover:scale-105 glow-hover border-t-4 border-purple-500">
+                    <div
+                        class="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400 mb-8 group-hover:scale-110 transition-transform">
+                        <i data-lucide="code" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-black italic tracking-tighter mb-4 text-white">WEB DEV</h3>
+                    <p class="text-gray-400 leading-relaxed">Fast, secure, and beautiful websites built on solid
+                        foundations, just like an iceberg.</p>
+                </div>
+
+                <!-- Branding -->
+                <div
+                    class="glass-card p-10 rounded-3xl group transition-all duration-700 hover:scale-105 glow-hover border-t-4 border-amber-500">
+                    <div
+                        class="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400 mb-8 group-hover:scale-110 transition-transform">
+                        <i data-lucide="award" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-black italic tracking-tighter mb-4 text-white">BRANDING</h3>
+                    <p class="text-gray-400 leading-relaxed">Identity systems that make your brand instantly
+                        recognizable and trusted across all channels.</p>
+                </div>
+
+                <!-- Videography -->
+                <div
+                    class="glass-card p-10 rounded-3xl group transition-all duration-700 hover:scale-105 glow-hover border-t-4 border-rose-500">
+                    <div
+                        class="w-16 h-16 bg-rose-500/10 rounded-2xl flex items-center justify-center text-rose-400 mb-8 group-hover:scale-110 transition-transform">
+                        <i data-lucide="video" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-black italic tracking-tighter mb-4 text-white">VIDEOGRAPHY</h3>
+                    <p class="text-gray-400 leading-relaxed">High-impact videos and reels designed for attention,
+                        retention, and conversion.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Showcase Section -->
+    <section id="portfolio" class="py-32 bg-[#051021] relative z-10 overflow-hidden border-t border-white/5">
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="mb-24 text-center">
+                <span class="text-cyan-400 font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Recent Work</span>
+                <h2 class="text-5xl md:text-7xl font-black italic tracking-tighter reveal-type mb-8">FEATURED PROJECTS
+                </h2>
+                <p class="text-gray-400 text-xl max-w-3xl mx-auto">
+                    Explore our portfolio of brand transformations and digital success stories.
+                </p>
+            </div>
+
+            <!-- Project Grid -->
+            <div class="grid md:grid-cols-2 gap-8 mb-16">
+                <!-- FMS -->
+                <a href="/showcase/fms.html"
+                    class="group relative rounded-3xl overflow-hidden aspect-video shadow-2xl border border-white/5 block">
+                    <img src="/assets/showcases/fms/30.png"
+                        class="absolute inset-0 w-full h-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-110"
+                        alt="FMS">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-10 flex flex-col justify-end">
+                        <span class="text-orange-500 font-bold uppercase tracking-widest text-xs mb-2">Branding &
+                            Marketing</span>
+                        <h4 class="text-3xl font-black italic tracking-tighter text-white">FMS Coffee</h4>
+                    </div>
+                </a>
+
+                <!-- Drum Shop -->
+                <a href="/showcase/drum-shop-egypt.html"
+                    class="group relative rounded-3xl overflow-hidden aspect-video shadow-2xl border border-white/5 md:translate-y-8 block">
+                    <img src="/assets/showcases/drum-shop-egypt/8.png"
+                        class="absolute inset-0 w-full h-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-110"
+                        alt="Drum Shop">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-10 flex flex-col justify-end">
+                        <span class="text-cyan-400 font-bold uppercase tracking-widest text-xs mb-2">Full Brand
+                            Suite</span>
+                        <h4 class="text-3xl font-black italic tracking-tighter text-white">The Drum Shop</h4>
+                    </div>
+                </a>
+
+                <!-- Dentaquick -->
+                <a href="/showcase/dentaquick.html"
+                    class="group relative rounded-3xl overflow-hidden aspect-video shadow-2xl border border-white/5 block">
+                    <img src="/assets/showcases/dentaquick/14.png"
+                        class="absolute inset-0 w-full h-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-110"
+                        alt="Dentaquick">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-10 flex flex-col justify-end">
+                        <span class="text-blue-400 font-bold uppercase tracking-widest text-xs mb-2">Medical
+                            Branding</span>
+                        <h4 class="text-3xl font-black italic tracking-tighter text-white">Dentaquick</h4>
+                    </div>
+                </a>
+
+                <!-- Crown Eterna -->
+                <a href="/showcase/crown-eterna.html"
+                    class="group relative rounded-3xl overflow-hidden aspect-video shadow-2xl border border-white/5 md:translate-y-8 block">
+                    <img src="/assets/showcases/crown-eterna/73.png"
+                        class="absolute inset-0 w-full h-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-110"
+                        alt="Crown Eterna">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-10 flex flex-col justify-end">
+                        <span class="text-amber-400 font-bold uppercase tracking-widest text-xs mb-2">Luxury
+                            Brand</span>
+                        <h4 class="text-3xl font-black italic tracking-tighter text-white">Crown Eterna</h4>
+                    </div>
+                </a>
+            </div>
+
+            <!-- View All Button -->
+            <div class="text-center">
+                <a href="/projects.html"
+                    class="inline-flex items-center gap-3 px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full transition-all duration-300 group backdrop-blur-sm">
+                    <span class="text-white font-semibold tracking-wider">VIEW ALL PROJECTS</span>
+                    <i data-lucide="arrow-right"
+                        class="w-5 h-5 text-cyan-400 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision & Mission Section -->
+    <section id="vision" class="py-32 bg-[#020617] relative z-10">
+        <div class="container mx-auto px-6">
+            <!-- Header -->
+            <div class="text-center mb-20">
+                <div class="inline-block relative mb-12">
+                    <h2 class="text-6xl md:text-8xl font-black italic tracking-tighter uppercase relative z-10">
+                        <span class="text-amber-500">OUR</span> VISION
+                    </h2>
+                    <div class="absolute -inset-4 bg-white/5 -skew-x-12 -z-0"></div>
+                </div>
+            </div>
+
+            <!-- Mission & Vision Cards -->
+            <div class="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                <!-- Mission -->
+                <div
+                    class="glass-card rounded-3xl p-10 border-t-4 border-amber-500 hover:bg-white/5 transition-all duration-500 group">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-5xl font-black italic text-amber-500 uppercase tracking-tighter">MISSION</h3>
+                        <i data-lucide="target" class="w-10 h-10 text-amber-500"></i>
+                    </div>
+                    <p class="text-gray-400 text-lg leading-relaxed">
+                        At Iceberg Marketing, we are dedicated business partners. We delve deep into the essence of each
+                        business to apply the most effective innovative strategies, ensuring sustainable growth and
+                        market dominance.
+                    </p>
+                </div>
+
+                <!-- Vision -->
+                <div
+                    class="glass-card rounded-3xl p-10 border-t-4 border-cyan-500 hover:bg-white/5 transition-all duration-500 group">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-5xl font-black italic text-cyan-500 uppercase tracking-tighter">VISION</h3>
+                        <i data-lucide="eye" class="w-10 h-10 text-cyan-500"></i>
+                    </div>
+                    <p class="text-gray-400 text-lg leading-relaxed">
+                        To be the guiding force that unveils the hidden potential in every client's digital presence,
+                        discovering unseen opportunities that lie beneath the surface and transforming them into
+                        measurable success.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Showcases Marquee -->
+    <section class="py-24 bg-[#020617] overflow-hidden border-y border-white/5 relative">
+        <div
+            class="flex gap-8 items-center marquee-scroll opacity-70 hover:opacity-100 transition-opacity duration-700">
+            <img src="/assets/showcases/drum_shop_branding.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
+            <img src="/assets/showcases/fms_cofe_shop_branding_showcase_.png" class="h-64 md:h-80 w-auto rounded-2xl"
+                alt="Work">
+            <img src="/assets/showcases/penates_realestate_devlopments_showcase_2.png"
+                class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
+            <img src="/assets/showcases/sahel_construction_solutions_branding_showcase.png"
+                class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
+            <img src="/assets/showcases/dentaquick_showcase_1.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
+            <img src="/assets/showcases/drum_shop_branding.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Work">
+        </div>
+    </section>
+
+    <!-- Ads Showcase (Reverse) -->
+    <section class="py-12 bg-[#020617] overflow-hidden border-b border-white/5 relative">
+        <div
+            class="flex gap-8 items-center marquee-scroll-reverse opacity-70 hover:opacity-100 transition-opacity duration-700">
+            <img src="/parallax/assets/ads-showcase/meta_ads.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
+            <img src="/parallax/assets/ads-showcase/meta_ads_2.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
+            <img src="/parallax/assets/ads-showcase/tiktok_ads.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
+            <img src="/parallax/assets/ads-showcase/meta_ads_3.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
+            <img src="/parallax/assets/ads-showcase/meta_ads_4.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
+            <img src="/parallax/assets/ads-showcase/meta_ads.png" class="h-64 md:h-80 w-auto rounded-2xl" alt="Ads">
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-32 relative bg-[#020617] overflow-hidden">
+        <div class="container mx-auto px-6 relative z-10 max-w-4xl">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl md:text-8xl font-black italic tracking-tighter leading-none mb-6">
+                    LET'S CREATE <span class="text-cyan-500">MAGIC</span>
+                </h2>
+                <p class="text-xl text-gray-400">Ready to elevate your brand? Let's start the conversation.</p>
+            </div>
+
+            <div class="glass-card rounded-3xl p-8 md:p-12 border-t border-cyan-500/30 shadow-2xl">
+                <form id="contact-form" class="wizard-form space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Name</label>
+                            <input type="text" name="name" required
+                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Email</label>
+                            <input type="email" name="email" required
+                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Business Name</label>
+                            <input type="text" name="business_name" required placeholder="Acme Inc."
+                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Website / Business Link</label>
+                            <input type="url" name="business_link" placeholder="https://example.com"
+                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider block mb-1">Phone Number</label>
+                        <input type="tel" name="phone" required
+                            class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Project Details</label>
+                        <textarea rows="4"
+                            class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"></textarea>
+                    </div>
+                    <button type="button"
+                        class="w-full py-4 bg-cyan-600 hover:bg-cyan-500 rounded-lg font-black italic text-white uppercase tracking-widest hover:shadow-lg hover:shadow-cyan-500/25 transition-all transform hover:-translate-y-1">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t border-white/5 text-center bg-[#01040f]">
+        <div class="flex flex-col items-center gap-6 mb-8">
+            <img src="/parallax/assets/LOGO%20(2).png" alt="Logo"
+                class="h-12 w-auto grayscale opacity-50 hover:opacity-100 transition-opacity">
+            <div class="flex gap-4">
+                <a href="#" class="p-2 bg-white/5 rounded-full hover:bg-cyan-500 hover:text-white transition-colors"><i
+                        data-lucide="facebook" class="w-4 h-4"></i></a>
+                <a href="#" class="p-2 bg-white/5 rounded-full hover:bg-cyan-500 hover:text-white transition-colors"><i
+                        data-lucide="instagram" class="w-4 h-4"></i></a>
+                <a href="#" class="p-2 bg-white/5 rounded-full hover:bg-cyan-500 hover:text-white transition-colors"><i
+                        data-lucide="linkedin" class="w-4 h-4"></i></a>
+            </div>
+        </div>
+        <p class="text-gray-600 text-xs uppercase tracking-widest font-bold">&copy; 2026 Iceberg Agency. Elevate Beyond
+            Limits.</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Mobile Menu Functions with GSAP Animations
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (!menu) return;
+            const links = menu.querySelectorAll('a');
+            const closeBtn = menu.querySelector('button');
+            
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                if (window.mobileMenuTl) window.mobileMenuTl.kill();
+                window.mobileMenuTl = gsap.timeline();
+                window.mobileMenuTl.fromTo(menu, 
+                    { opacity: 0, backdropFilter: 'blur(0px)', webkitBackdropFilter: 'blur(0px)' },
+                    { opacity: 1, backdropFilter: 'blur(24px)', webkitBackdropFilter: 'blur(24px)', duration: 0.4, ease: 'power2.out' }
+                );
+                window.mobileMenuTl.fromTo(links, 
+                    { opacity: 0, y: 30, scale: 0.9 },
+                    { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.05, ease: 'power3.out', delay: 0.1 },
+                    '-=0.3'
+                );
+                if (closeBtn) {
+                    window.mobileMenuTl.fromTo(closeBtn, 
+                        { opacity: 0, rotate: -90, scale: 0.8 },
+                        { opacity: 1, rotate: 0, scale: 1, duration: 0.4, ease: 'back.out(1.7)' },
+                        '-=0.2'
+                    );
+                }
+            } else {
+                if (window.mobileMenuTl) window.mobileMenuTl.kill();
+                window.mobileMenuTl = gsap.timeline({
+                    onComplete: () => menu.classList.add('hidden')
+                });
+                window.mobileMenuTl.to(links, {
+                    opacity: 0,
+                    y: -15,
+                    duration: 0.25,
+                    stagger: 0.03,
+                    ease: 'power2.in'
+                });
+                window.mobileMenuTl.to(menu, {
+                    opacity: 0,
+                    duration: 0.3,
+                    ease: 'power2.inOut'
+                }, '-=0.15');
+            }
+        }
+
+        // Header Scroll Sticky Shrink Handler
+        document.addEventListener('DOMContentLoaded', () => {
+            const nav = document.getElementById('main-nav');
+            if (nav) {
+                const toggleScrolled = () => {
+                    if (window.scrollY > 20) {
+                        nav.classList.add('scrolled');
+                    } else {
+                        nav.classList.remove('scrolled');
+                    }
+                };
+                window.addEventListener('scroll', toggleScrolled);
+                toggleScrolled();
+            }
+        });
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero reveal
+        gsap.from('.reveal-type', {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out',
+            stagger: 0.2
+        });
+
+        // Section animations on scroll
+        gsap.utils.toArray('section').forEach((section, i) => {
+            gsap.from(section.querySelectorAll('.glass-card'), {
+                scrollTrigger: {
+                    trigger: section,
+                    start: 'top 80%',
+                },
+                y: 60,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.15,
+                ease: 'power2.out'
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
