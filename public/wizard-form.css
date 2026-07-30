@@ -301,3 +301,73 @@
     font-weight: 700;
     text-align: right;
 }
+
+/* Mobile Responsive Optimizations for Form Popups & Wizard Components */
+@media (max-width: 640px) {
+    .wizard-stepper {
+        margin-bottom: 1.75rem;
+    }
+    
+    .wizard-step-bubble {
+        width: 36px;
+        height: 36px;
+        font-size: 0.85rem;
+    }
+    
+    .wizard-step-label {
+        font-size: 0.65rem;
+        letter-spacing: 0.02em;
+    }
+    
+    .date-picker-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.4rem;
+    }
+    
+    .date-pill {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .date-pill .day-num {
+        font-size: 0.95rem;
+    }
+    
+    .time-picker-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.4rem;
+    }
+    
+    .time-pill {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .meeting-format-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .format-pill {
+        padding: 0.65rem;
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .confirmation-card {
+        padding: 1.25rem 1rem;
+    }
+    
+    /* Ensure touch target sizes and prevent mobile browser font auto-zoom */
+    .wizard-form input[type="text"],
+    .wizard-form input[type="email"],
+    .wizard-form input[type="tel"],
+    .wizard-form input[type="url"],
+    .wizard-form input[type="date"],
+    .wizard-form select,
+    .wizard-form textarea {
+        font-size: 16px !important;
+        min-height: 44px;
+    }
+}
+

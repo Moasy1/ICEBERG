@@ -452,9 +452,12 @@
     </div>
 
     <!-- Content Modal -->
-    <div id="content-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
-        <div class="glass-card rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h3 class="text-xl font-bold text-white mb-4">Add/Edit Content</h3>
+    <div id="content-modal" class="fixed inset-0 flex items-start sm:items-center justify-center z-50 hidden overflow-y-auto p-4">
+        <div class="glass-card rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative my-auto">
+            <button type="button" onclick="closeAllModals()" aria-label="Close" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-gray-800/80 border border-gray-700">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            <h3 class="text-xl font-bold text-white mb-4 pr-8">Add/Edit Content</h3>
             <form id="content-form" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Key</label>
@@ -492,9 +495,12 @@
     </div>
 
     <!-- Project Modal -->
-    <div id="project-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
-        <div class="glass-card rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h3 class="text-xl font-bold text-white mb-4" id="project-modal-title">Add Project</h3>
+    <div id="project-modal" class="fixed inset-0 flex items-start sm:items-center justify-center z-50 hidden overflow-y-auto p-4">
+        <div class="glass-card rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative my-auto">
+            <button type="button" onclick="closeAllModals()" aria-label="Close" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-gray-800/80 border border-gray-700">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            <h3 class="text-xl font-bold text-white mb-4 pr-8" id="project-modal-title">Add Project</h3>
             <form id="project-form" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -565,9 +571,12 @@
     </div>
 
     <!-- Service Modal -->
-    <div id="service-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
-        <div class="glass-card rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h3 class="text-xl font-bold text-white mb-4" id="service-modal-title">Add Service</h3>
+    <div id="service-modal" class="fixed inset-0 flex items-start sm:items-center justify-center z-50 hidden overflow-y-auto p-4">
+        <div class="glass-card rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative my-auto">
+            <button type="button" onclick="closeAllModals()" aria-label="Close" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-gray-800/80 border border-gray-700">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            <h3 class="text-xl font-bold text-white mb-4 pr-8" id="service-modal-title">Add Service</h3>
             <form id="service-form" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -629,9 +638,12 @@
     </div>
 
     <!-- Contact Details Modal -->
-    <div id="contact-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
-        <div class="glass-card rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h3 class="text-xl font-bold text-white mb-4">Contact Message Details</h3>
+    <div id="contact-modal" class="fixed inset-0 flex items-start sm:items-center justify-center z-50 hidden overflow-y-auto p-4">
+        <div class="glass-card rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative my-auto">
+            <button type="button" onclick="closeAllModals()" aria-label="Close" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-gray-800/80 border border-gray-700">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            <h3 class="text-xl font-bold text-white mb-4 pr-8">Contact Message Details</h3>
             <div class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
