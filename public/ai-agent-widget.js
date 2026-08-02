@@ -134,6 +134,9 @@
         <div class="p-4 border-t border-white/10 bg-slate-950/40 space-y-3">
             <!-- Suggested Action Chips -->
             <div id="ai-agent-chips" class="flex flex-wrap gap-1.5 justify-start">
+                <button data-val="Schedule a strategy meeting" class="chip-btn text-[10px] bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 px-3 py-1.5 rounded-full text-cyan-200 font-bold transition-all">
+                    📅 Schedule Strategy Call
+                </button>
                 <button data-val="Tell me about the Birthday Bundle!" class="chip-btn text-[10px] bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 px-3 py-1.5 rounded-full text-cyan-300 font-bold transition-all">
                     🎉 Purchase 3 + 1 Deal
                 </button>
@@ -242,16 +245,34 @@
 
             if (chatState === 'expecting_email') {
                 leadData.email = text;
+                if (leadData.isBooking) {
+                    chatState = 'expecting_datetime';
+                    appendBotMsg(`Awesome! What date and time works best for your 1-on-1 strategy call? 📅 (e.g., Tomorrow at 2:00 PM EST)`);
+                } else {
+                    chatState = 'done';
+                    appendBotMsg(`Thank you so much! I have submitted your campaign interest. A real strategist from the Iceberg team will email you at <strong>${text}</strong> within the next 2 hours to confirm your custom requirements.`);
+                    await submitLeadToDb();
+                }
+                return;
+            }
+
+            if (chatState === 'expecting_datetime') {
+                leadData.appointmentTime = text;
+                leadData.appointmentDate = text;
                 chatState = 'done';
-                appendBotMsg(`Thank you so much! I have submitted your campaign interest. A real strategist from the Iceberg team will email you at <strong>${text}</strong> within the next 2 hours to confirm your custom requirements.`);
-                
-                // Submit actual lead to backend
+                appendBotMsg(`🎉 Perfect! Your strategy meeting request for <strong>${text}</strong> has been logged! A calendar invite will be dispatched to <strong>${leadData.email || 'your email'}</strong>.<br><br>You can also use our interactive setup form on the page to finalize your slot!`);
                 await submitLeadToDb();
                 return;
             }
 
-            if (input.includes('birthday') || input.includes('bundle') || input.includes('claim') || input.includes('3+1') || input.includes('kings') || input.includes('august')) {
+            if (input.includes('schedule') || input.includes('meeting') || input.includes('book') || input.includes('call') || input.includes('appointment') || input.includes('consultation')) {
                 chatState = 'expecting_name';
+                leadData.isBooking = true;
+                leadData.topic = text;
+                appendBotMsg(`I would be thrilled to schedule a strategy meeting with our team! 📅 To lock in your session, what is your full name?`);
+            } else if (input.includes('birthday') || input.includes('bundle') || input.includes('claim') || input.includes('3+1') || input.includes('kings') || input.includes('august')) {
+                chatState = 'expecting_name';
+                leadData.isBooking = false;
                 leadData.topic = text;
                 appendBotMsg(`I'd love to help you secure our Special Birthday Campaign offer! To get you qualified and registered, what is your full name?`);
             } else if (input.includes('services') || input.includes('offer') || input.includes('solutions')) {
@@ -262,9 +283,9 @@
                 - 🎯 <strong>Performance Marketing</strong> (high ROI paid advertising)<br>
                 - 🎨 <strong>Branding & Design</strong> (consistent identity layouts)<br>
                 - 🎥 <strong>Content Creation</strong> (scroll-stopping videography)<br><br>
-                Type **'bundle'** to claim our Birthday Purchase 3 Get 1 Free offer!`);
+                Type **'schedule'** to book a strategy call, or **'bundle'** to claim our Birthday Deal!`);
             } else {
-                appendBotMsg(`I'm an automated strategic assistant. I can help guide you through our **Birthday Campaign Deals** or book strategy sessions. Type **'bundle'** to claim our Buy 3 Get 1 Free promotion!`);
+                appendBotMsg(`I'm an automated strategic assistant. I can guide you through our services or book 1-on-1 strategy calls! Type **'schedule'** to book a meeting or **'bundle'** to claim our current promotion.`);
             }
         }, 1000);
     }
@@ -273,7 +294,11 @@
         const payload = {
             name: leadData.name,
             email: leadData.email,
-            message: `Qualified Lead from AI Agent Chat Widget. Topic: "${leadData.topic || 'General Campaign Deal'}".`
+            phone: leadData.phone || '',
+            appointmentDate: leadData.appointmentDate || undefined,
+            appointmentTime: leadData.appointmentTime || undefined,
+            meetingType: 'Google Meet Video Call',
+            message: `Lead/Meeting from AI Agent Chat Widget. Topic: "${leadData.topic || 'Strategy Session'}". Date/Time Requested: "${leadData.appointmentTime || 'N/A'}"`
         };
 
         try {
