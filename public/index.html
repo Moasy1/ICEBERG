@@ -35,6 +35,25 @@
     <script src="/ai-agent-widget.js" defer></script>
     <script src="/phone-init.js" defer></script>
     <script src="/meta-pixel.js" defer></script>
+    <!-- Meta Pixel Code -->
+    <script>
+        !function (f, b, e, v, n, t, s) {
+            if (f.fbq) return; n = f.fbq = function () {
+                n.callMethod ?
+                n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+            n.queue = []; t = b.createElement(e); t.async = !0;
+            t.src = v; s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window, document, 'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '2557716128012185');
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id=2557716128012185&ev=PageView&noscript=1" /></noscript>
+    <!-- End Meta Pixel Code -->
 </head>
 
 <body class="bg-[#020617] text-white overflow-x-hidden antialiased">
@@ -48,7 +67,8 @@
     </div>
 
     <!-- Header -->
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 md:px-8 py-4 md:py-6 header-anim bg-white/5 backdrop-blur-xl border-b border-white/10 shadow-lg"
+    <header
+        class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 md:px-8 py-4 md:py-6 header-anim bg-white/5 backdrop-blur-xl border-b border-white/10 shadow-lg"
         id="main-nav">
         <div class="flex items-center gap-3">
             <img src="/parallax/assets/LOGO%20(2).png" alt="Logo" class="h-10 w-auto">
@@ -60,14 +80,16 @@
             <a href="#process" class="hover:text-cyan-400 transition-colors">Process</a>
             <a href="#showcases" class="hover:text-cyan-400 transition-colors">Showcases</a>
             <a href="#about" class="hover:text-cyan-400 transition-colors">About</a>
-            <a href="/birthday-campaign" class="text-cyan-400 hover:text-cyan-300 font-black italic flex items-center gap-1 animate-pulse transition-all">
+            <a href="/birthday-campaign"
+                class="text-cyan-400 hover:text-cyan-300 font-black italic flex items-center gap-1 animate-pulse transition-all">
                 🎁 Birthday Deals
             </a>
             <a href="#contact"
                 class="px-6 py-2 border border-white/20 rounded-full hover:bg-white/10 transition-all hover:scale-105 active:scale-95 magnetic-btn">Start
                 Project</a>
         </nav>
-        <button class="md:hidden text-white p-2 glass-card rounded-lg border border-white/10" onclick="toggleMobileMenu()">
+        <button class="md:hidden text-white p-2 glass-card rounded-lg border border-white/10"
+            onclick="toggleMobileMenu()">
             <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
     </header>
@@ -75,18 +97,24 @@
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="fixed inset-0 bg-[#020617]/95 backdrop-blur-xl z-[10001] hidden">
         <div class="flex flex-col items-center justify-center h-full gap-8 text-2xl font-semibold">
-            <button class="absolute top-6 right-6 text-white p-2 glass-card rounded-lg border border-white/10" onclick="toggleMobileMenu()">
+            <button class="absolute top-6 right-6 text-white p-2 glass-card rounded-lg border border-white/10"
+                onclick="toggleMobileMenu()">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
             <a href="#home" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Home</a>
             <a href="#services" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Services</a>
             <a href="#process" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Process</a>
-            <a href="#showcases" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">Showcases</a>
+            <a href="#showcases" class="hover:text-cyan-400 transition-colors"
+                onclick="toggleMobileMenu()">Showcases</a>
             <a href="#about" class="hover:text-cyan-400 transition-colors" onclick="toggleMobileMenu()">About</a>
-            <a href="/birthday-campaign" class="text-cyan-400 hover:text-cyan-300 font-black italic flex items-center gap-1 animate-pulse transition-all" onclick="toggleMobileMenu()">
+            <a href="/birthday-campaign"
+                class="text-cyan-400 hover:text-cyan-300 font-black italic flex items-center gap-1 animate-pulse transition-all"
+                onclick="toggleMobileMenu()">
                 🎁 Birthday Deals
             </a>
-            <a href="#contact" class="px-8 py-3 border border-cyan-500/30 rounded-full hover:bg-cyan-500/10 text-cyan-400 transition-all font-black italic tracking-wider text-lg uppercase" onclick="toggleMobileMenu()">Start Project</a>
+            <a href="#contact"
+                class="px-8 py-3 border border-cyan-500/30 rounded-full hover:bg-cyan-500/10 text-cyan-400 transition-all font-black italic tracking-wider text-lg uppercase"
+                onclick="toggleMobileMenu()">Start Project</a>
         </div>
     </div>
 
@@ -95,7 +123,8 @@
         <!-- Multi-Layered Parallax Background -->
         <!-- Background Video -->
         <div class="absolute inset-0 z-0 h-full w-full overflow-hidden">
-            <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover parallax-layer" data-depth="0.5">
+            <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover parallax-layer"
+                data-depth="0.5">
                 <source src="/parallax/assets/iceberg-assets/hero_video.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
@@ -111,7 +140,8 @@
         </div>
 
         <!-- Refined Centered Stack -->
-        <div class="container mx-auto px-6 relative z-10 h-full flex flex-col items-center justify-center text-center hero-scale-75">
+        <div
+            class="container mx-auto px-6 relative z-10 h-full flex flex-col items-center justify-center text-center hero-scale-75">
 
             <!-- Top Badge -->
             <div class="mb-6">
@@ -259,7 +289,7 @@
         </div>
     </section>
 
-<!-- About / Who We Are -->
+    <!-- About / Who We Are -->
     <section id="about" class="py-32 relative z-10 bg-[#020617] overflow-hidden">
         <div class="container mx-auto px-6 relative z-10 text-center">
             <div class="inline-block relative mb-12">
@@ -276,7 +306,7 @@
         </div>
     </section>
 
-<!-- Mission & Vision -->
+    <!-- Mission & Vision -->
     <section class="py-24 bg-[#020617] relative z-10">
         <div class="container mx-auto px-6">
             <div class="grid md:grid-cols-2 gap-12">
@@ -409,7 +439,8 @@
                             01
                         </div>
                         <h4 class="text-xl font-black italic tracking-tighter mb-4 text-white">DISCOVERY</h4>
-                        <p class="text-gray-400">Understanding your brand's essence and uncovering hidden opportunities.</p>
+                        <p class="text-gray-400">Understanding your brand's essence and uncovering hidden opportunities.
+                        </p>
                     </div>
 
                     <!-- Step 2 -->
@@ -460,30 +491,43 @@
                         <div class="grid md:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Name</label>
-                                <input type="text" name="name" required class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors" placeholder="John Doe">
+                                <input type="text" name="name" required
+                                    class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                                    placeholder="John Doe">
                             </div>
                             <div class="space-y-2">
                                 <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Email</label>
-                                <input type="email" name="email" required class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors" placeholder="john@example.com">
+                                <input type="email" name="email" required
+                                    class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                                    placeholder="john@example.com">
                             </div>
                         </div>
                         <div class="grid md:grid-cols-2 gap-6">
                             <div class="space-y-2">
-                                <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Business Name</label>
-                                <input type="text" name="business_name" required class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors" placeholder="Acme Inc.">
+                                <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Business
+                                    Name</label>
+                                <input type="text" name="business_name" required
+                                    class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                                    placeholder="Acme Inc.">
                             </div>
                             <div class="space-y-2">
-                                <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Website / Business Link</label>
-                                <input type="url" name="business_link" class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors" placeholder="https://example.com">
+                                <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Website /
+                                    Business Link</label>
+                                <input type="url" name="business_link"
+                                    class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                                    placeholder="https://example.com">
                             </div>
                         </div>
                         <div class="space-y-2">
-                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider block mb-1">Phone Number</label>
-                            <input type="tel" name="phone" required class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider block mb-1">Phone
+                                Number</label>
+                            <input type="tel" name="phone" required
+                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Service</label>
-                            <select class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                            <select
+                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
                                 <option>Web Development</option>
                                 <option>SEO & Visibility</option>
                                 <option>Social Media</option>
@@ -493,10 +537,14 @@
                             </select>
                         </div>
                         <div class="space-y-2">
-                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Tell us about your project</label>
-                            <textarea rows="4" required class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors" placeholder="Describe your project requirements..."></textarea>
+                            <label class="text-sm text-cyan-400 font-bold uppercase tracking-wider">Tell us about your
+                                project</label>
+                            <textarea rows="4" required
+                                class="w-full bg-[#0a192f] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                                placeholder="Describe your project requirements..."></textarea>
                         </div>
-                        <button type="submit" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 rounded-lg font-black italic text-white uppercase tracking-widest hover:shadow-lg hover:shadow-cyan-500/25 transition-all transform hover:-translate-y-1">
+                        <button type="submit"
+                            class="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 rounded-lg font-black italic text-white uppercase tracking-widest hover:shadow-lg hover:shadow-cyan-500/25 transition-all transform hover:-translate-y-1">
                             Start Your Project
                         </button>
                     </form>
@@ -508,9 +556,11 @@
     <!-- Footer -->
     <footer class="py-12 px-6 border-t border-white/5 text-center bg-[#01040f]">
         <div class="flex flex-col items-center gap-6 mb-8">
-            <img src="/parallax/assets/LOGO%20(2).png" alt="Logo" class="h-12 w-auto grayscale opacity-50 hover:opacity-100 transition-opacity">
+            <img src="/parallax/assets/LOGO%20(2).png" alt="Logo"
+                class="h-12 w-auto grayscale opacity-50 hover:opacity-100 transition-opacity">
         </div>
-        <p class="text-gray-600 text-xs uppercase tracking-widest font-bold">&copy; 2026 Iceberg Agency. Dig Deep. Rise High.</p>
+        <p class="text-gray-600 text-xs uppercase tracking-widest font-bold">&copy; 2026 Iceberg Agency. Dig Deep. Rise
+            High.</p>
     </footer>
 
     <script src="/parallax/main.js"></script>
