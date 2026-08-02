@@ -41,8 +41,11 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Serve static files before API database middleware so the site can load even if
-// the database is temporarily unavailable.
-app.use(express.static(path.join(__dirname, '../public')));
+// the database is temporarily unavailable. Supports clean HTML URLs (e.g. /birthday-campaign -> birthday-campaign.html).
+app.use(express.static(path.join(__dirname, '../public'), {
+  extensions: ['html', 'htm'],
+  index: 'index.html'
+}));
 
 // MongoDB connection helper
 let cachedConnection = null;
@@ -131,9 +134,14 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404 handler
+// 404 handler for API routes
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ error: 'API route not found' });
+});
+
+// Fallback for page routes (SPA / fallback to index.html)
 app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // Only listen if running directly

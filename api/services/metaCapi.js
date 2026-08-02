@@ -70,6 +70,7 @@ class MetaCapiService {
             configured: Boolean(pixelId && accessToken),
             pixelIdSet: Boolean(pixelId),
             pixelIdPreview: pixelId ? `${pixelId.substring(0, 4)}***` : null,
+            pixelId: pixelId || null,
             accessTokenSet: Boolean(accessToken),
             testEventCodeSet: Boolean(testCode),
             apiVersion: this.apiVersion

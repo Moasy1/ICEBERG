@@ -87,6 +87,8 @@
         window.fbq('track', 'PageView');
     }
 
+    const DEFAULT_PIXEL_ID = '2557716128012185';
+
     // Check for Pixel ID via window configuration or fetch server status
     function initMetaPixel() {
         // Priority 1: Global window variable window.FB_PIXEL_ID or window.META_PIXEL_ID
@@ -100,16 +102,17 @@
         fetch('/api/meta/status')
             .then(res => res.json())
             .then(res => {
-                if (res.success && res.data && res.data.pixelIdSet) {
-                    // Status indicates pixel is configured on backend
-                    // If backend exposes pixelId or frontend passes it, load pixel script
-                    if (res.data.pixelId) {
-                        loadPixelScript(res.data.pixelId);
-                    }
+                if (res.success && res.data && res.data.pixelId) {
+                    loadPixelScript(res.data.pixelId);
+                } else if (DEFAULT_PIXEL_ID) {
+                    loadPixelScript(DEFAULT_PIXEL_ID);
                 }
             })
             .catch(() => {
                 // Backend endpoint unreachable or static deployment mode
+                if (DEFAULT_PIXEL_ID) {
+                    loadPixelScript(DEFAULT_PIXEL_ID);
+                }
             });
     }
 
