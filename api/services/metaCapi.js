@@ -2,6 +2,9 @@ const crypto = require('crypto');
 const https = require('https');
 const http = require('http');
 
+const DEFAULT_PIXEL_ID = '2557716128012185';
+const DEFAULT_ACCESS_TOKEN = 'EAANH2w2Ar6ABSP72OrOBwIN5LsZA9NsZAmAcuSPeLKZC3KIuFk3u4pMPm1sQp3Og2CS2HIMS8EJZA9BA8WF4KydMC9M4PhEvjG8Ud9NxYnLKKQbUNXyeVL4c6FJV52F0IXU1HtiS491dJFbXuB0ARJStF1HCXCUKmfqMpaA5HcLb47k6ONlA1dVKvqMUW95G4QZDZD';
+
 /**
  * Meta Conversions API (CAPI) Service
  * Handles server-side event dispatching to Meta's Graph API with SHA-256 normalization,
@@ -53,8 +56,8 @@ class MetaCapiService {
      * @returns {boolean}
      */
     isConfigured() {
-        const pixelId = process.env.META_PIXEL_ID || process.env.FB_PIXEL_ID;
-        const accessToken = process.env.META_ACCESS_TOKEN || process.env.FB_ACCESS_TOKEN;
+        const pixelId = process.env.META_PIXEL_ID || process.env.FB_PIXEL_ID || DEFAULT_PIXEL_ID;
+        const accessToken = process.env.META_ACCESS_TOKEN || process.env.FB_ACCESS_TOKEN || DEFAULT_ACCESS_TOKEN;
         return Boolean(pixelId && accessToken);
     }
 
@@ -62,8 +65,8 @@ class MetaCapiService {
      * Get current status overview
      */
     getStatus() {
-        const pixelId = process.env.META_PIXEL_ID || process.env.FB_PIXEL_ID;
-        const accessToken = process.env.META_ACCESS_TOKEN || process.env.FB_ACCESS_TOKEN;
+        const pixelId = process.env.META_PIXEL_ID || process.env.FB_PIXEL_ID || DEFAULT_PIXEL_ID;
+        const accessToken = process.env.META_ACCESS_TOKEN || process.env.FB_ACCESS_TOKEN || DEFAULT_ACCESS_TOKEN;
         const testCode = process.env.META_TEST_EVENT_CODE;
 
         return {
@@ -159,8 +162,8 @@ class MetaCapiService {
      * @param {Object} [eventDetails.req] - Express request object (optional fallback for headers & cookies)
      */
     async sendServerEvent(eventDetails = {}) {
-        const pixelId = process.env.META_PIXEL_ID || process.env.FB_PIXEL_ID;
-        const accessToken = process.env.META_ACCESS_TOKEN || process.env.FB_ACCESS_TOKEN;
+        const pixelId = process.env.META_PIXEL_ID || process.env.FB_PIXEL_ID || DEFAULT_PIXEL_ID;
+        const accessToken = process.env.META_ACCESS_TOKEN || process.env.FB_ACCESS_TOKEN || DEFAULT_ACCESS_TOKEN;
 
         if (!pixelId || !accessToken) {
             console.log(`[Meta CAPI] Skipping event "${eventDetails.eventName}": META_PIXEL_ID or META_ACCESS_TOKEN not set.`);
