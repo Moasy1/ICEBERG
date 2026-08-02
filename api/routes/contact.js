@@ -192,14 +192,21 @@ router.post('/submit', handleUpload, async (req, res) => {
       `
     };
 
-    // Send emails if configured
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    // Send emails if valid SMTP credentials are configured
+    const isEmailConfigured = process.env.EMAIL_USER && 
+                              process.env.EMAIL_PASS && 
+                              !process.env.EMAIL_USER.includes('your-email') && 
+                              !process.env.EMAIL_PASS.includes('your-app-password');
+
+    if (isEmailConfigured) {
       try {
         await transporter.sendMail(adminEmail);
         await transporter.sendMail(userConfirmationEmail);
       } catch (err) {
-        console.error('Email sending failed, but message was saved to DB:', err);
+        console.error('[Nodemailer Notice] Email sending failed, but message was saved to DB:', err.message || err);
       }
+    } else {
+      console.log('[Nodemailer Notice] SMTP credentials not configured (EMAIL_USER / EMAIL_PASS). Form message saved to DB.');
     }
 
     res.json({

@@ -61,8 +61,6 @@ const connectToDatabase = async () => {
   console.log('Connecting to MongoDB...');
   try {
     cachedConnection = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/iceberg_cms', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000, // Timeout after 5s
     });
     console.log('Connected to MongoDB');
