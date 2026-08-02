@@ -27,6 +27,11 @@ function setupWizardForForm(form) {
         stepPanels = form.querySelectorAll('.wizard-step-panel');
     }
     
+    // Re-initialize intl-tel-input flags on phone inputs inside the new wizard structure
+    if (typeof window.initPhoneInputs === 'function') {
+        window.initPhoneInputs(form);
+    }
+    
     let currentStep = 1;
     const totalSteps = 3;
 
@@ -94,6 +99,16 @@ function setupWizardForForm(form) {
         });
     }
 
+    // Explicit click handler for Confirm & Send button
+    if (submitBtn) {
+        submitBtn.addEventListener('click', (e) => {
+            if (currentStep === 2) {
+                e.preventDefault();
+                form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+            }
+        });
+    }
+
     // Form Submit Handler (Step 2 -> Step 3)
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -106,9 +121,29 @@ function setupWizardForForm(form) {
             return;
         }
 
-        // Validate Step 2 (Appointment details)
-        const selectedDate = form.querySelector('input[name="appointmentDate"]')?.value;
-        const selectedTime = form.querySelector('input[name="appointmentTime"]')?.value;
+        // Validate & Auto-populate Step 2 (Appointment details)
+        let selectedDate = form.querySelector('input[name="appointmentDate"]')?.value;
+        let selectedTime = form.querySelector('input[name="appointmentTime"]')?.value;
+
+        if (!selectedDate) {
+            const firstDatePill = form.querySelector('.date-pill');
+            if (firstDatePill) {
+                selectedDate = firstDatePill.dataset.date || firstDatePill.textContent.trim();
+                const hiddenDateInput = form.querySelector('input[name="appointmentDate"]');
+                if (hiddenDateInput) hiddenDateInput.value = selectedDate;
+                firstDatePill.classList.add('selected');
+            }
+        }
+
+        if (!selectedTime) {
+            const firstTimePill = form.querySelector('.time-pill');
+            if (firstTimePill) {
+                selectedTime = firstTimePill.dataset.time || firstTimePill.textContent.trim();
+                const hiddenTimeInput = form.querySelector('input[name="appointmentTime"]');
+                if (hiddenTimeInput) hiddenTimeInput.value = selectedTime;
+                firstTimePill.classList.add('selected');
+            }
+        }
 
         if (!selectedDate || !selectedTime) {
             showFormToast(form, 'Please select a date and time slot for your appointment.', 'warning');
@@ -130,6 +165,13 @@ function setupWizardForForm(form) {
         const formData = new FormData(form);
         const dataObj = {};
         formData.forEach((val, key) => dataObj[key] = val);
+
+        // Include full international phone if intl-tel-input exists
+        const phoneInput = form.querySelector('input[type="tel"]');
+        if (phoneInput && phoneInput._iti && typeof phoneInput._iti.getNumber === 'function') {
+            const fullPhone = phoneInput._iti.getNumber();
+            if (fullPhone) dataObj.phone = fullPhone;
+        }
 
         // Generate matching Meta Event ID for client/server deduplication
         const metaEventId = `wizard_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -495,6 +537,10 @@ function showFormToast(form, message, type = 'info') {
     }
 
     toast.textContent = message;
+    try {
+        toast.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (e) {}
+
     setTimeout(() => {
         if (toast) toast.remove();
     }, 5000);

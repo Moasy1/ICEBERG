@@ -371,3 +371,57 @@
     }
 }
 
+/* intl-tel-input Flag & Dark Mode Styling Overrides */
+.iti {
+    width: 100% !important;
+    display: block !important;
+}
+
+.iti__flag-container {
+    z-index: 10 !important;
+}
+
+.iti__selected-flag {
+    background-color: transparent !important;
+    border-radius: 8px 0 0 8px !important;
+    padding: 0 10px !important;
+}
+
+.iti__selected-dial-code {
+    color: #38bdf8 !important;
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    margin-left: 4px !important;
+}
+
+.iti__country-list {
+    background-color: #091528 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important;
+    z-index: 99999 !important;
+    max-height: 220px !important;
+}
+
+.iti__country {
+    padding: 8px 12px !important;
+    font-size: 0.85rem !important;
+    color: #e2e8f0 !important;
+}
+
+.iti__country:hover,
+.iti__country.iti__highlight {
+    background-color: #0e223d !important;
+    color: #38bdf8 !important;
+}
+
+.iti__country-name {
+    color: #f8fafc !important;
+}
+
+.iti__dial-code {
+    color: #94a3b8 !important;
+}
+
+
