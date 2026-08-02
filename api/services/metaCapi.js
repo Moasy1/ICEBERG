@@ -3,7 +3,8 @@ const https = require('https');
 const http = require('http');
 
 const DEFAULT_PIXEL_ID = '2557716128012185';
-const DEFAULT_ACCESS_TOKEN = 'EAANH2w2Ar6ABSP72OrOBwIN5LsZA9NsZAmAcuSPeLKZC3KIuFk3u4pMPm1sQp3Og2CS2HIMS8EJZA9BA8WF4KydMC9M4PhEvjG8Ud9NxYnLKKQbUNXyeVL4c6FJV52F0IXU1HtiS491dJFbXuB0ARJStF1HCXCUKmfqMpaA5HcLb47k6ONlA1dVKvqMUW95G4QZDZD';
+const DEFAULT_ACCESS_TOKEN = 'EAANH2w2Ar6ABSFdepnhLqbYOZBL16W4Xy2Gt6XNjUEW6QWXrQOIZAkzSF4VQBYNzl2CrTTIc3pZBdu16UlU0r4dPZBjV7xIaKFVZCq49ZAUP94igPYznzVlcMAjyGHFRxdFhTZA9JwqGYJTKQckMFdjKZC4MGVmJQaYZCBVZB9AmUmPfjOAEZAoHfZCCY3jPQikLTMvSFQZDZD';
+const DEFAULT_TEST_EVENT_CODE = 'TEST42775';
 
 /**
  * Meta Conversions API (CAPI) Service
@@ -211,8 +212,9 @@ class MetaCapiService {
                 data: [eventPayload]
             };
 
-            if (process.env.META_TEST_EVENT_CODE) {
-                requestBody.test_event_code = process.env.META_TEST_EVENT_CODE;
+            const testCode = process.env.META_TEST_EVENT_CODE || DEFAULT_TEST_EVENT_CODE;
+            if (testCode) {
+                requestBody.test_event_code = testCode;
             }
 
             const postData = JSON.stringify(requestBody);
