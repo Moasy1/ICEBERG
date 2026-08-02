@@ -187,11 +187,78 @@
         return window.trackMetaEvent('ViewContent', contentData, {}, eventId);
     };
 
-    // Initialize on DOM load
+    // Automatic Event Tracking Suite for Forms, Buttons, and User Interactions
+    function setupAutoTracking() {
+        // 1. Auto Track All Form Submissions across the site
+        document.addEventListener('submit', function (e) {
+            try {
+                const form = e.target;
+                if (!form || form.getAttribute('data-meta-tracked') === 'true') return;
+
+                const formData = new FormData(form);
+                const email = formData.get('email') || form.querySelector('input[type="email"]')?.value || '';
+                const phone = formData.get('phone') || form.querySelector('input[type="tel"]')?.value || '';
+                const name = formData.get('name') || form.querySelector('input[name="name"]')?.value || '';
+                const business = formData.get('business_name') || form.querySelector('input[name="business_name"]')?.value || '';
+                const service = formData.get('service') || form.querySelector('select')?.value || 'General Service';
+
+                const userData = { email, phone, name };
+                const customData = {
+                    form_id: form.id || 'contact_form',
+                    business_name: business,
+                    service_requested: service,
+                    page_path: window.location.pathname
+                };
+
+                window.trackMetaEvent('Lead', customData, userData);
+                window.trackMetaEvent('Contact', customData, userData);
+                form.setAttribute('data-meta-tracked', 'true');
+            } catch (err) {
+                console.warn('[Meta Auto-Track Form Exception]:', err);
+            }
+        }, true);
+
+        // 2. Auto Track CTA Click Interactions (Buttons, Call Links, Schedule Links)
+        document.addEventListener('click', function (e) {
+            try {
+                const target = e.target.closest('a, button, [role="button"]');
+                if (!target) return;
+
+                const text = (target.textContent || '').trim().toLowerCase();
+                const href = (target.getAttribute('href') || '').toLowerCase();
+
+                // Phone / WhatsApp / Direct Contact Click
+                if (href.startsWith('tel:') || href.includes('wa.me') || href.includes('whatsapp') || text.includes('call us') || text.includes('contact us')) {
+                    window.trackMetaEvent('Contact', { method: href.startsWith('tel:') ? 'phone' : 'whatsapp', click_text: text });
+                }
+                // Schedule / Book Consultation Click
+                else if (text.includes('schedule') || text.includes('book') || text.includes('consultation') || text.includes('appointment')) {
+                    window.trackMetaEvent('Schedule', { click_text: text, page_path: window.location.pathname });
+                }
+                // Start Project / Submit Application Click
+                else if (text.includes('start project') || text.includes('start your project') || text.includes('get started')) {
+                    window.trackMetaEvent('SubmitApplication', { click_text: text, page_path: window.location.pathname });
+                    window.trackMetaEvent('Lead', { click_text: text, page_path: window.location.pathname });
+                }
+                // Birthday Deals / Offers Click
+                else if (text.includes('birthday') || text.includes('deal') || text.includes('offer')) {
+                    window.trackMetaEvent('ViewContent', { content_name: 'Birthday Deals / Offers', click_text: text });
+                }
+            } catch (err) {
+                console.warn('[Meta Auto-Track Click Exception]:', err);
+            }
+        }, true);
+    }
+
+    // Initialize Meta Pixel & Auto-Tracking on DOM load
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initMetaPixel);
+        document.addEventListener('DOMContentLoaded', function() {
+            initMetaPixel();
+            setupAutoTracking();
+        });
     } else {
         initMetaPixel();
+        setupAutoTracking();
     }
 
 })(window, document);

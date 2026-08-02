@@ -112,6 +112,25 @@ const setupEventListeners = () => {
                 const result = await response.json();
                 
                 if (result.success) {
+                    if (typeof window.trackMetaLead === 'function') {
+                        window.trackMetaLead({
+                            lead_type: 'Contact Form',
+                            service: formData.company || 'General Inquiry'
+                        }, {
+                            email: formData.email,
+                            phone: formData.phone,
+                            name: formData.name
+                        });
+                    }
+                    if (typeof window.trackMetaContact === 'function') {
+                        window.trackMetaContact({
+                            content_name: 'Contact Form Submission'
+                        }, {
+                            email: formData.email,
+                            phone: formData.phone,
+                            name: formData.name
+                        });
+                    }
                     showLocalNotification(result.message || 'Message sent successfully!', 'success');
                     this.reset();
                 } else {
