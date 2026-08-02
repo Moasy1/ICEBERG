@@ -247,7 +247,7 @@
                 leadData.email = text;
                 if (leadData.isBooking) {
                     chatState = 'expecting_datetime';
-                    appendBotMsg(`Awesome! What date and time works best for your 1-on-1 strategy call? 📅 (e.g., Tomorrow at 2:00 PM EST)`);
+                    appendBotMsg(`Awesome! What date and time works best for your 1-on-1 strategy call? 📅<br><span class="text-[10px] text-cyan-300">Available: Sun - Thu, 12:00 PM - 5:00 PM (Fri & Sat Off)</span>`);
                 } else {
                     chatState = 'done';
                     appendBotMsg(`Thank you so much! I have submitted your campaign interest. A real strategist from the Iceberg team will email you at <strong>${text}</strong> within the next 2 hours to confirm your custom requirements.`);

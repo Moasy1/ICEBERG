@@ -268,8 +268,8 @@ function initAppointmentPicker(form) {
     curr.setDate(curr.getDate() + 1); // Start tomorrow
 
     while (addedDays < 6) {
-        // Skip weekends
-        if (curr.getDay() !== 0 && curr.getDay() !== 6) {
+        // Skip Friday (5) and Saturday (6) - Working days: Sun, Mon, Tue, Wed, Thu
+        if (curr.getDay() !== 5 && curr.getDay() !== 6) {
             const dayName = days[curr.getDay()];
             const dayNum = curr.getDate();
             const monthName = months[curr.getMonth()];
@@ -384,11 +384,12 @@ function buildWizardStructure(form) {
             <div>
                 <label class="text-xs text-cyan-400 font-bold uppercase tracking-wider block mb-2">Select Time Slot</label>
                 <div class="time-picker-grid">
-                    <div class="time-pill" data-time="09:00 AM EST">09:00 AM</div>
-                    <div class="time-pill" data-time="11:00 AM EST">11:00 AM</div>
-                    <div class="time-pill" data-time="02:00 PM EST">02:00 PM</div>
-                    <div class="time-pill" data-time="04:00 PM EST">04:00 PM</div>
-                    <div class="time-pill" data-time="06:00 PM EST">06:00 PM</div>
+                    <div class="time-pill" data-time="12:00 PM">12:00 PM</div>
+                    <div class="time-pill" data-time="01:00 PM">01:00 PM</div>
+                    <div class="time-pill" data-time="02:00 PM">02:00 PM</div>
+                    <div class="time-pill" data-time="03:00 PM">03:00 PM</div>
+                    <div class="time-pill" data-time="04:00 PM">04:00 PM</div>
+                    <div class="time-pill" data-time="05:00 PM">05:00 PM</div>
                 </div>
             </div>
 
