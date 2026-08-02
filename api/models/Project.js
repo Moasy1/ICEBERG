@@ -85,7 +85,6 @@ const projectSchema = new mongoose.Schema({
 });
 
 // Index for faster queries
-projectSchema.index({ slug: 1 });
 projectSchema.index({ category: 1 });
 projectSchema.index({ featured: 1 });
 projectSchema.index({ status: 1 });

@@ -100,7 +100,6 @@ const serviceSchema = new mongoose.Schema({
 });
 
 // Index for faster queries
-serviceSchema.index({ slug: 1 });
 serviceSchema.index({ featured: 1 });
 serviceSchema.index({ status: 1 });
 serviceSchema.index({ order: 1 });
