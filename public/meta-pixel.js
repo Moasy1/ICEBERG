@@ -83,6 +83,7 @@
             document.head.appendChild(script);
         }
 
+        window.fbq('set', 'autoConfig', 'false', pixelId);
         window.fbq('init', pixelId);
         window.fbq('track', 'PageView');
     }
@@ -189,7 +190,7 @@
 
     // Automatic Event Tracking Suite for Forms, Buttons, and User Interactions
     function setupAutoTracking() {
-        // 1. Auto Track All Form Submissions across the site
+        // 1. Auto Track All Form Submissions across the site as official "Lead" & "Contact" events
         document.addEventListener('submit', function (e) {
             try {
                 const form = e.target;
@@ -218,7 +219,7 @@
             }
         }, true);
 
-        // 2. Auto Track CTA Click Interactions (Buttons, Call Links, Schedule Links)
+        // 2. Auto Track All Button & CTA Clicks explicitly as Standard Meta Events (Lead / Contact / Schedule / SubmitApplication)
         document.addEventListener('click', function (e) {
             try {
                 const target = e.target.closest('a, button, [role="button"]');
@@ -227,22 +228,26 @@
                 const text = (target.textContent || '').trim().toLowerCase();
                 const href = (target.getAttribute('href') || '').toLowerCase();
 
-                // Phone / WhatsApp / Direct Contact Click
+                // Phone / WhatsApp / Direct Contact Click -> Meta "Contact" Event
                 if (href.startsWith('tel:') || href.includes('wa.me') || href.includes('whatsapp') || text.includes('call us') || text.includes('contact us')) {
                     window.trackMetaEvent('Contact', { method: href.startsWith('tel:') ? 'phone' : 'whatsapp', click_text: text });
                 }
-                // Schedule / Book Consultation Click
+                // Schedule / Book Consultation Click -> Meta "Schedule" Event
                 else if (text.includes('schedule') || text.includes('book') || text.includes('consultation') || text.includes('appointment')) {
                     window.trackMetaEvent('Schedule', { click_text: text, page_path: window.location.pathname });
                 }
-                // Start Project / Submit Application Click
+                // Start Project / Submit Application Click -> Meta "SubmitApplication" & "Lead" Events
                 else if (text.includes('start project') || text.includes('start your project') || text.includes('get started')) {
                     window.trackMetaEvent('SubmitApplication', { click_text: text, page_path: window.location.pathname });
                     window.trackMetaEvent('Lead', { click_text: text, page_path: window.location.pathname });
                 }
-                // Birthday Deals / Offers Click
+                // Birthday Deals / Special Offers Click -> Meta "ViewContent" Event
                 else if (text.includes('birthday') || text.includes('deal') || text.includes('offer')) {
                     window.trackMetaEvent('ViewContent', { content_name: 'Birthday Deals / Offers', click_text: text });
+                }
+                // Any other Button or Form Submit Button -> Default Meta "Lead" Event
+                else if (target.tagName === 'BUTTON' || target.type === 'submit' || target.classList.contains('btn') || target.classList.contains('button')) {
+                    window.trackMetaEvent('Lead', { click_text: text || 'Button Click', page_path: window.location.pathname });
                 }
             } catch (err) {
                 console.warn('[Meta Auto-Track Click Exception]:', err);
