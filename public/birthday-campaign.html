@@ -813,18 +813,6 @@
                 message: `ICEBERG BIRTHDAY BUNDLE BUILDER:\n- Business Name: ${businessName}\n- Website Link: ${businessLink}\n- Selected Paid Services: ${paidList}\n- Selected FREE Add-on: ${freeName}\n- Phone Number: ${phone}\n\nClient Notes: ${notes}`
             };
 
-            if (typeof window.trackMetaEvent === 'function') {
-                window.trackMetaEvent('Lead', {
-                    content_name: 'Birthday Campaign Bundle',
-                    selected_free_addon: freeName,
-                    selected_paid_services: paidList
-                }, {
-                    email: email,
-                    phone: phone,
-                    name: name
-                }, metaEventId);
-            }
-
             try {
                 const response = await fetch('/api/contact/submit', {
                     method: 'POST',
@@ -833,7 +821,19 @@
                 });
                 const result = await response.json();
 
-                if (result.success) {
+                if (response.ok && result.success) {
+                    if (typeof window.trackMetaEvent === 'function') {
+                        window.trackMetaEvent('Lead', {
+                            content_name: 'Birthday Campaign Bundle',
+                            selected_free_addon: freeName,
+                            selected_paid_services: paidList
+                        }, {
+                            email: email,
+                            phone: phone,
+                            name: name
+                        }, metaEventId);
+                    }
+
                     confetti({
                         particleCount: 200,
                         spread: 100,

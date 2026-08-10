@@ -53,12 +53,28 @@ const handleUpload = (req, res, next) => {
   });
 };
 
+// Emergency Disk Fallback Logger
+const backupLeadToDisk = (leadObj) => {
+  try {
+    const backupDir = path.join(__dirname, '../');
+    const backupFile = path.join(backupDir, 'leads_backup.jsonl');
+    const entry = JSON.stringify({
+      id: `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+      timestamp: new Date().toISOString(),
+      ...leadObj
+    }) + '\n';
+    fs.appendFileSync(backupFile, entry, 'utf8');
+  } catch (err) {
+    console.error('[Backup Lead Log Error]:', err);
+  }
+};
+
 // Contact form submission
 router.post('/submit', handleUpload, async (req, res) => {
   try {
     const { name, email, message, phone, company, business_name, businessName, business_link, businessLink, appointmentDate, appointmentTime, meetingType, notes } = req.body;
-    const finalBusinessName = business_name || businessName || company;
-    const finalBusinessLink = business_link || businessLink;
+    const finalBusinessName = (business_name || businessName || company || '').substring(0, 250);
+    const finalBusinessLink = (business_link || businessLink || '').substring(0, 2000);
 
     // Validate required fields
     if (!name || !email) {
@@ -68,15 +84,31 @@ router.post('/submit', handleUpload, async (req, res) => {
       });
     }
 
-    const finalMessage = message || (notes ? `Appointment notes: ${notes}` : 'Wizard Setup Consultation Request');
+    const finalMessage = (message || (notes ? `Appointment notes: ${notes}` : 'Wizard Setup Consultation Request')).substring(0, 10000);
+
+    // ALWAYS write to disk backup first to guarantee no lead is lost
+    backupLeadToDisk({
+      name: name.substring(0, 100),
+      email: email.trim(),
+      phone: (phone || '').substring(0, 50),
+      company: (company || finalBusinessName || '').substring(0, 250),
+      businessName: finalBusinessName,
+      businessLink: finalBusinessLink,
+      message: finalMessage,
+      appointmentDate,
+      appointmentTime,
+      meetingType,
+      notes,
+      attachment: req.file ? `/uploads/${req.file.filename}` : undefined
+    });
 
     // Save message to database
     const newMessage = new Message({
-      name,
-      email,
+      name: name.substring(0, 100),
+      email: email.trim(),
       message: finalMessage,
-      phone,
-      company: company || finalBusinessName,
+      phone: (phone || '').substring(0, 50),
+      company: (company || finalBusinessName || '').substring(0, 250),
       businessName: finalBusinessName,
       businessLink: finalBusinessLink,
       appointmentDate,
@@ -203,10 +235,10 @@ router.post('/submit', handleUpload, async (req, res) => {
         await transporter.sendMail(adminEmail);
         await transporter.sendMail(userConfirmationEmail);
       } catch (err) {
-        console.error('[Nodemailer Notice] Email sending failed, but message was saved to DB:', err.message || err);
+        console.error('[Nodemailer Notice] Email sending failed, but message was saved to DB & Disk:', err.message || err);
       }
     } else {
-      console.log('[Nodemailer Notice] SMTP credentials not configured (EMAIL_USER / EMAIL_PASS). Form message saved to DB.');
+      console.log('[Nodemailer Notice] SMTP credentials not configured (EMAIL_USER / EMAIL_PASS). Form message saved to DB & Disk.');
     }
 
     res.json({
@@ -244,6 +276,28 @@ router.get('/submissions', async (req, res) => {
       success: false,
       error: error.message
     });
+  }
+});
+
+// Get fallback leads from disk log (for admin lead recovery)
+router.get('/fallback-leads', async (req, res) => {
+  try {
+    const backupFile = path.join(__dirname, '../leads_backup.jsonl');
+    if (!fs.existsSync(backupFile)) {
+      return res.json({ success: true, count: 0, data: [] });
+    }
+    const lines = fs.readFileSync(backupFile, 'utf8').trim().split('\n').filter(Boolean);
+    const leads = lines.map(line => {
+      try { return JSON.parse(line); } catch (e) { return null; }
+    }).filter(Boolean).reverse();
+
+    res.json({
+      success: true,
+      count: leads.length,
+      data: leads
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

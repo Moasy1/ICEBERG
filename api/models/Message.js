@@ -5,36 +5,36 @@ const MessageSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide a name'],
         trim: true,
-        maxlength: [50, 'Name cannot be more than 50 characters']
+        maxlength: [100, 'Name cannot be more than 100 characters']
     },
     email: {
         type: String,
         required: [true, 'Please provide an email'],
         match: [
-            /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-            'Please add a valid email'
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            'Please add a valid email address'
         ]
     },
     phone: {
         type: String,
-        maxlength: [20, 'Phone number cannot be longer than 20 characters']
+        maxlength: [50, 'Phone number cannot be longer than 50 characters']
     },
     company: {
         type: String,
-        maxlength: [100, 'Company name cannot be longer than 100 characters']
+        maxlength: [250, 'Company name cannot be longer than 250 characters']
     },
     businessName: {
         type: String,
-        maxlength: [150, 'Business name cannot be longer than 150 characters']
+        maxlength: [250, 'Business name cannot be longer than 250 characters']
     },
     businessLink: {
         type: String,
-        maxlength: [300, 'Business link cannot be longer than 300 characters']
+        maxlength: [2000, 'Business link cannot be longer than 2000 characters']
     },
     message: {
         type: String,
         required: [true, 'Please add a message'],
-        maxlength: [5000, 'Message cannot be more than 5000 characters']
+        maxlength: [10000, 'Message cannot be more than 10000 characters']
     },
     attachment: {
         type: String

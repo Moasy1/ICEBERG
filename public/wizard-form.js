@@ -177,20 +177,6 @@ function setupWizardForForm(form) {
         const metaEventId = `wizard_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         dataObj.eventId = metaEventId;
 
-        // Dispatch client Meta Pixel Schedule/Lead event
-        if (typeof window.trackMetaEvent === 'function') {
-            window.trackMetaEvent('Schedule', {
-                content_name: 'Consultation Appointment Setup',
-                appointment_date: dataObj.appointmentDate,
-                appointment_time: dataObj.appointmentTime
-            }, {
-                email: dataObj.email,
-                phone: dataObj.phone,
-                name: dataObj.name,
-                company: dataObj.company
-            }, metaEventId);
-        }
-
         try {
             const response = await fetch('/api/contact/submit', {
                 method: 'POST',
@@ -201,19 +187,29 @@ function setupWizardForForm(form) {
             const result = await response.json();
 
             if (response.ok && result.success) {
+                // Dispatch client Meta Pixel Schedule/Lead event ONLY when backend confirms storage
+                if (typeof window.trackMetaEvent === 'function') {
+                    window.trackMetaEvent('Schedule', {
+                        content_name: 'Consultation Appointment Setup',
+                        appointment_date: dataObj.appointmentDate,
+                        appointment_time: dataObj.appointmentTime
+                    }, {
+                        email: dataObj.email,
+                        phone: dataObj.phone,
+                        name: dataObj.name,
+                        company: dataObj.company
+                    }, metaEventId);
+                }
+
                 populateConfirmationCard(form, dataObj);
                 updateStepUI(3);
             } else {
-                console.warn('Backend contact response notice:', result);
-                populateConfirmationCard(form, dataObj);
-                updateStepUI(3);
-                showFormToast(form, 'Appointment request created! Note: ' + (result.error || 'Saved'), 'info');
+                console.error('Backend submission rejected lead:', result);
+                showFormToast(form, result.error || 'Failed to submit appointment. Please check your information and try again.', 'warning');
             }
         } catch (err) {
-            console.error('Wizard submission error:', err);
-            // Fallback for static host / offline deployment
-            populateConfirmationCard(form, dataObj);
-            updateStepUI(3);
+            console.error('Wizard submission network error:', err);
+            showFormToast(form, 'Network connection issue. Please try submitting again or email us directly at info@iceberg.agency.', 'warning');
         } finally {
             if (submitBtn) {
                 submitBtn.disabled = false;

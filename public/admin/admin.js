@@ -512,6 +512,47 @@ async function deleteService(id) {
 }
 
 // Contacts Functions
+async function loadFallbackLeads() {
+    try {
+        const response = await fetch(`${API_BASE}/contact/fallback-leads`);
+        const result = await response.json();
+        const tbody = document.getElementById('contacts-table-body');
+
+        if (result.success && result.data && result.data.length > 0) {
+            tbody.innerHTML = result.data.map(msg => {
+                const date = new Date(msg.timestamp || Date.now()).toLocaleString();
+                return `
+                    <tr class="table-row bg-purple-950/20 border-l-2 border-purple-500">
+                        <td class="px-6 py-4 text-sm text-purple-200 font-medium">${msg.name}</td>
+                        <td class="px-6 py-4 text-sm text-gray-300">
+                            <div>${msg.email}</div>
+                            ${msg.phone ? `<div class="text-xs text-gray-500 mt-0.5">${msg.phone}</div>` : ''}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-300">${msg.company || msg.businessName || 'N/A'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-300 max-w-xs truncate">${msg.message}</td>
+                        <td class="px-6 py-4 text-sm text-gray-300">${date}</td>
+                        <td class="px-6 py-4 text-sm">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full border bg-purple-500/20 text-purple-300 border-purple-500/30">
+                                Disk Backup
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-right">
+                            <span class="text-xs text-gray-500">File Logged</span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            showNotification(`Loaded ${result.count} emergency disk backup leads.`, 'info');
+        } else {
+            tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-gray-400">No emergency disk fallback leads recorded.</td></tr>';
+        }
+        lucide.createIcons();
+    } catch (error) {
+        console.error('Error loading fallback leads:', error);
+        showNotification('Error fetching fallback disk leads', 'error');
+    }
+}
+
 async function loadContacts() {
     try {
         const response = await fetch(`${API_BASE}/contact/submissions`);
