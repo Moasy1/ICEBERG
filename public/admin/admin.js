@@ -8,20 +8,70 @@ const API_BASE = '/api';
 let currentEditId = null;
 let currentEditType = null;
 
-// Initialize dashboard
+// Initialize dashboard with Auth Guard
 document.addEventListener('DOMContentLoaded', function () {
-    loadDashboardData();
-    setupEventListeners();
+    checkAuth();
 });
+
+// Authentication Handlers
+function checkAuth() {
+    const isAuthenticated = sessionStorage.getItem('iceberg_admin_auth') === 'true';
+    const loginModal = document.getElementById('login-modal');
+
+    if (isAuthenticated) {
+        if (loginModal) loginModal.classList.add('hidden');
+        loadDashboardData();
+        setupEventListeners();
+    } else {
+        if (loginModal) loginModal.classList.remove('hidden');
+    }
+    lucide.createIcons();
+}
+
+function handleLogin(event) {
+    if (event) event.preventDefault();
+    const userEl = document.getElementById('login-username');
+    const passEl = document.getElementById('login-password');
+    const errEl = document.getElementById('login-error');
+
+    const username = (userEl ? userEl.value : '').trim();
+    const password = (passEl ? passEl.value : '').trim();
+
+    if (username.toLowerCase() === 'admin' && password === 'iceberg-dev') {
+        sessionStorage.setItem('iceberg_admin_auth', 'true');
+        if (errEl) errEl.classList.add('hidden');
+        const loginModal = document.getElementById('login-modal');
+        if (loginModal) loginModal.classList.add('hidden');
+        loadDashboardData();
+        setupEventListeners();
+        showNotification('Successfully authenticated! Welcome, Admin.', 'success');
+        lucide.createIcons();
+    } else {
+        if (errEl) {
+            errEl.textContent = 'Invalid username or password. Please try again.';
+            errEl.classList.remove('hidden');
+        }
+        showNotification('Invalid admin credentials', 'error');
+    }
+}
 
 // Setup event listeners
 function setupEventListeners() {
-    // Content form submission
-    document.getElementById('content-form').addEventListener('submit', handleContentSubmit);
-    // Project form submission
-    document.getElementById('project-form').addEventListener('submit', handleProjectSubmit);
-    // Service form submission
-    document.getElementById('service-form').addEventListener('submit', handleServiceSubmit);
+    const contentForm = document.getElementById('content-form');
+    if (contentForm && !contentForm._hasAuthListener) {
+        contentForm.addEventListener('submit', handleContentSubmit);
+        contentForm._hasAuthListener = true;
+    }
+    const projectForm = document.getElementById('project-form');
+    if (projectForm && !projectForm._hasAuthListener) {
+        projectForm.addEventListener('submit', handleProjectSubmit);
+        projectForm._hasAuthListener = true;
+    }
+    const serviceForm = document.getElementById('service-form');
+    if (serviceForm && !serviceForm._hasAuthListener) {
+        serviceForm.addEventListener('submit', handleServiceSubmit);
+        serviceForm._hasAuthListener = true;
+    }
 }
 
 // Navigation
@@ -911,6 +961,14 @@ async function initializeData() {
 
 function logout() {
     if (confirm('Are you sure you want to logout?')) {
-        window.location.href = '../index.html';
+        sessionStorage.removeItem('iceberg_admin_auth');
+        const loginModal = document.getElementById('login-modal');
+        if (loginModal) loginModal.classList.remove('hidden');
+        const userEl = document.getElementById('login-username');
+        const passEl = document.getElementById('login-password');
+        if (userEl) userEl.value = '';
+        if (passEl) passEl.value = '';
+        showNotification('You have logged out.', 'info');
+        lucide.createIcons();
     }
 }
