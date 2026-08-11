@@ -553,16 +553,18 @@ function initLeadForm(utmParams) {
 // Hero Confidential Exhibitor Audit Lookup Logic
 let selectedAuditCompany = 'Exhibitor Brand';
 let _idexExhibitorsData = [
+  { name: 'DR. A&H', category: 'Dental Equipment & CAD/CAM', country: 'Egypt & MENA', score: 58, est_leakage: 450000, vulnerabilities: ['Technical spec copy over clinical ROI', 'Zero automated comment-to-DM funnels'] },
+  { name: 'NEXT Dental', category: 'Dental Materials & Supplies', country: 'Egypt', score: 42, est_leakage: 620000, vulnerabilities: ['Static product catalogs', 'No pre-event booking ads'] },
   { name: 'Dentaquick', category: 'Dental Equipment & Consumables', country: 'Egypt', score: 84, est_leakage: 380000, vulnerabilities: ['Unoptimized landing page conversion', 'Zero retargeting ad campaigns'] },
   { name: 'Acrostone', category: 'Dental Materials & Acrylics', country: 'Egypt', score: 72, est_leakage: 520000, vulnerabilities: ['Slow mobile loading speed', 'No lead capture funnels'] },
   { name: 'Waterpik', category: 'Oral Health & Hygiene Devices', country: 'USA / MENA', score: 88, est_leakage: 290000, vulnerabilities: ['Missing MENA localized campaigns'] },
-  { name: 'Misr International Dental', category: 'Dental Furniture & Chairs', country: 'Egypt', score: 65, est_leakage: 640000, vulnerabilities: ['Inactive social media channels', 'No automated email nurturing'] },
-  { name: 'Pharaonic Dental Co.', category: 'Surgical Instruments & Implants', country: 'Egypt', score: 58, est_leakage: 780000, vulnerabilities: ['High ad cost per acquisition', 'Zero video demonstration reels'] },
-  { name: 'Al-Hayat Dental Supplies', category: 'Orthodontic & Consumable Lines', country: 'Egypt', score: 79, est_leakage: 410000, vulnerabilities: ['Unformatted WhatsApp lead pipeline'] }
+  { name: 'Septodont', category: 'Anesthetics & Dental Materials', country: 'France / MENA', score: 76, est_leakage: 310000, vulnerabilities: ['Unlocalized Arabic landing pages'] },
+  { name: 'Kerr Dental', category: 'Restorative & Endodontics', country: 'USA / MENA', score: 81, est_leakage: 270000, vulnerabilities: ['No automated lead nurturing'] }
 ];
 
 async function loadExhibitorData() {
   const urls = [
+    '/api/idex/data',
     '/IDEX%20Event/data.json',
     '/IDEX Event/data.json',
     'IDEX%20Event/data.json',
@@ -575,6 +577,9 @@ async function loadExhibitorData() {
         const json = await res.json();
         if (Array.isArray(json) && json.length > 0) {
           _idexExhibitorsData = json;
+          if (typeof window.onExhibitorDataLoaded === 'function') {
+            window.onExhibitorDataLoaded();
+          }
           break;
         }
       }
@@ -617,6 +622,12 @@ function initHeroAuditSearch() {
     openAuditGateModal(auditCompanyQuery);
   }
 
+  window.onExhibitorDataLoaded = () => {
+    if (document.activeElement === searchInput || searchInput.value) {
+      renderResults(searchInput.value);
+    }
+  };
+
   const renderResults = (query) => {
     const data = _idexExhibitorsData;
     resultsContainer.innerHTML = '';
@@ -624,22 +635,34 @@ function initHeroAuditSearch() {
 
     let matches = [];
     if (!q) {
-      // If query is empty, show top 5 featured/popular brand audit suggestions!
       matches = data.slice(0, 5);
     } else {
-      matches = data.filter(item => item.name && item.name.toLowerCase().includes(q)).slice(0, 6);
+      matches = data.filter(item => 
+        (item.name && item.name.toLowerCase().includes(q)) ||
+        (item.category && item.category.toLowerCase().includes(q)) ||
+        (item.sector && item.sector.toLowerCase().includes(q))
+      ).slice(0, 6);
     }
 
     if (matches.length === 0) {
-      resultsContainer.innerHTML = '<div class="p-3 text-xs text-slate-400">No matching brand found. Click Unlock to request a custom audit.</div>';
+      resultsContainer.innerHTML = `
+        <div class="p-3 text-xs text-slate-400 flex justify-between items-center">
+          <span>No brand exact match. Request audit for <strong>"${query}"</strong>?</span>
+          <button type="button" id="custom-brand-btn" class="px-2.5 py-1 bg-cyan-500/20 text-cyan-400 font-bold rounded text-xs">Unlock</button>
+        </div>
+      `;
       resultsContainer.classList.remove('hidden');
+      document.getElementById('custom-brand-btn')?.addEventListener('click', () => {
+        openAuditGateModal(query);
+        resultsContainer.classList.add('hidden');
+      });
       return;
     }
 
     // Add a header for suggested brand audits
     const header = document.createElement('div');
     header.className = 'text-[10px] font-bold text-cyan-400 uppercase px-3 py-1 bg-cyan-950/40 rounded border-b border-cyan-500/20 mb-1';
-    header.textContent = q ? 'Matching Exhibitor Audits:' : '💡 Suggested Exhibitor Audits (Click to Inspect):';
+    header.textContent = q ? `Matching Audits for "${query}":` : '💡 Suggested Exhibitor Audits (Click to Inspect):';
     resultsContainer.appendChild(header);
 
     matches.forEach(m => {
@@ -648,9 +671,9 @@ function initHeroAuditSearch() {
       div.innerHTML = `
         <div>
           <span class="font-bold text-white block">${m.name}</span>
-          <span class="text-xs text-slate-400">${m.category || 'Dental Brand'} | ${m.country || 'International'}</span>
+          <span class="text-xs text-slate-400">${m.category || m.sector || 'Dental Brand'} | ${m.country || m.region || 'MENA'}</span>
         </div>
-        <div class="text-xs font-bold text-cyan-400 px-2 py-1 rounded bg-cyan-500/10 border border-cyan-500/20">${m.score}/100</div>
+        <div class="text-xs font-bold text-cyan-400 px-2 py-1 rounded bg-cyan-500/10 border border-cyan-500/20">${m.score || 60}/100</div>
       `;
       div.onclick = () => {
         searchInput.value = m.name;
