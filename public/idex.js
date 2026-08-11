@@ -598,13 +598,13 @@ function initHeroAuditSearch() {
   const gateForm = document.getElementById('audit-gate-form');
   const gateCompanyEl = document.getElementById('gate-company-name');
 
-  if (!searchInput || !resultsContainer) return;
-
+  // --- Modal open/close: ALWAYS registered (before any early-return) ---
   function openAuditGateModal(companyName) {
-    selectedAuditCompany = companyName || 'Exhibitor Brand';
+    selectedAuditCompany = companyName || searchInput?.value?.trim() || 'IDEX Exhibitor Brand';
     if (gateCompanyEl) gateCompanyEl.textContent = selectedAuditCompany;
     if (gateModal) {
-      gateModal.classList.remove('hidden');
+      gateModal.removeAttribute('class');
+      gateModal.className = 'fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/90 backdrop-blur-xl p-4 overflow-y-auto';
       gateModal.style.display = 'flex';
     }
     if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -612,24 +612,87 @@ function initHeroAuditSearch() {
 
   function closeAuditGateModal() {
     if (gateModal) {
-      gateModal.classList.add('hidden');
       gateModal.style.display = 'none';
+      gateModal.className = 'fixed inset-0 z-[9999] items-center justify-center bg-slate-950/90 backdrop-blur-xl p-4 overflow-y-auto hidden';
     }
   }
 
   window.openAuditGateModal = openAuditGateModal;
   window.closeAuditGateModal = closeAuditGateModal;
 
+  // Always wire close button and unlock button
   closeGateBtn?.addEventListener('click', closeAuditGateModal);
   gateModal?.addEventListener('click', (e) => {
     if (e.target === gateModal) closeAuditGateModal();
   });
 
+  // The main CTA button
+  unlockBtn?.addEventListener('click', () => {
+    const query = searchInput ? searchInput.value.trim() : '';
+    openAuditGateModal(query || 'IDEX Exhibitor Brand');
+  });
+
+  // URL param auto-open
   const urlParamsLocal = new URLSearchParams(window.location.search);
   const auditCompanyQuery = urlParamsLocal.get('audit_company');
-  if (auditCompanyQuery) {
-    openAuditGateModal(auditCompanyQuery);
-  }
+  if (auditCompanyQuery) openAuditGateModal(auditCompanyQuery);
+
+  // --- Form submit: save lead + render private audit inline ---
+  gateForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('gate-name')?.value || '';
+    const email = document.getElementById('gate-email')?.value || '';
+    const phone = document.getElementById('gate-phone')?.value || '';
+    const date = document.getElementById('gate-meeting-date')?.value || '2026-08-20';
+    const timeSlot = document.getElementById('gate-time-slot')?.value || '10:00 AM';
+
+    const submitBtn = document.getElementById('gate-submit-btn');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="animate-pulse">🔒 Booking Meeting Slot & Unlocking Audit Report...</span>';
+    }
+
+    const leadData = {
+      name, email, phone,
+      company: selectedAuditCompany,
+      date,
+      meeting_time: timeSlot,
+      source: 'idex.html (Confidential Audit Gate & Meeting Scheduler)',
+      requirements: ['Confidential Audit Access', 'IDEX Consultation']
+    };
+
+    try {
+      await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(leadData)
+      });
+      await fetch('/api/calendar/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, company: selectedAuditCompany, date, time: timeSlot })
+      });
+    } catch (err) {}
+
+    try {
+      const booked = JSON.parse(localStorage.getItem('iceberg_booked_slots') || '[]');
+      booked.push({ date, time: timeSlot, company: selectedAuditCompany, name });
+      localStorage.setItem('iceberg_booked_slots', JSON.stringify(booked));
+    } catch (e) {}
+
+    localStorage.setItem('iceberg_lead', JSON.stringify(leadData));
+    localStorage.setItem(`iceberg_unlocked_${selectedAuditCompany}`, 'true');
+
+    if (submitBtn) submitBtn.innerHTML = '🎉 Consultation Scheduled! Preparing your private audit...';
+
+    setTimeout(() => {
+      closeAuditGateModal();
+      renderPrivateAuditReport(selectedAuditCompany, name);
+    }, 800);
+  });
+
+  // --- Early-return guard only applies to search/autocomplete wiring ---
+  if (!searchInput || !resultsContainer) return;
 
   window.onExhibitorDataLoaded = () => {
     if (document.activeElement === searchInput || searchInput.value) {
@@ -646,7 +709,7 @@ function initHeroAuditSearch() {
     if (!q) {
       matches = data.slice(0, 5);
     } else {
-      matches = data.filter(item => 
+      matches = data.filter(item =>
         (item.name && item.name.toLowerCase().includes(q)) ||
         (item.category && item.category.toLowerCase().includes(q)) ||
         (item.sector && item.sector.toLowerCase().includes(q))
@@ -668,7 +731,6 @@ function initHeroAuditSearch() {
       return;
     }
 
-    // Add a header for suggested brand audits
     const header = document.createElement('div');
     header.className = 'text-[10px] font-bold text-cyan-400 uppercase px-3 py-1 bg-cyan-950/40 rounded border-b border-cyan-500/20 mb-1';
     header.textContent = q ? `Matching Audits for "${query}":` : '💡 Suggested Exhibitor Audits (Click to Inspect):';
@@ -701,69 +763,139 @@ function initHeroAuditSearch() {
       resultsContainer.classList.add('hidden');
     }
   });
-
-  unlockBtn?.addEventListener('click', () => {
-    const query = searchInput.value.trim();
-    openAuditGateModal(query || 'IDEX Exhibitor Brand');
-  });
-
-  gateForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('gate-name')?.value || '';
-    const email = document.getElementById('gate-email')?.value || '';
-    const phone = document.getElementById('gate-phone')?.value || '';
-    const date = document.getElementById('gate-meeting-date')?.value || '2026-08-20';
-    const timeSlot = document.getElementById('gate-time-slot')?.value || '10:00 AM';
-
-    const submitBtn = document.getElementById('gate-submit-btn');
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="animate-pulse">🔒 Booking Meeting Slot & Unlocking Audit Report...</span>';
-    }
-
-    const leadData = {
-      name,
-      email,
-      phone,
-      company: selectedAuditCompany,
-      date,
-      meeting_time: timeSlot,
-      source: 'idex.html (Confidential Audit Gate & Meeting Scheduler)',
-      requirements: ['Confidential Audit Access', 'IDEX Consultation']
-    };
-
-    try {
-      await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(leadData)
-      });
-      await fetch('/api/calendar/book', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone, company: selectedAuditCompany, date, time: timeSlot })
-      });
-    } catch (err) {}
-
-    try {
-      const booked = JSON.parse(localStorage.getItem('iceberg_booked_slots') || '[]');
-      booked.push({ date, time: timeSlot, company: selectedAuditCompany, name });
-      localStorage.setItem('iceberg_booked_slots', JSON.stringify(booked));
-    } catch (e) {}
-
-    localStorage.setItem('iceberg_lead', JSON.stringify(leadData));
-    localStorage.setItem(`iceberg_unlocked_${selectedAuditCompany}`, 'true');
-
-    // Show temporary success feedback before opening audit
-    if (submitBtn) {
-      submitBtn.innerHTML = '🎉 Consultation Scheduled! Opening Confidential Audit...';
-    }
-
-    setTimeout(() => {
-      window.location.href = `/IDEX Event/index.html?company=${encodeURIComponent(selectedAuditCompany)}&unlocked=true`;
-    }, 600);
-  });
 }
+
+// Render the private audit report inline on idex.html after scheduling
+function renderPrivateAuditReport(companyName, contactName) {
+  // Find exhibitor data
+  const brand = _idexExhibitorsData.find(b => b.name && b.name.toLowerCase() === companyName.toLowerCase())
+    || { name: companyName, score: 62, est_leakage: 420000, category: 'Dental Brand', country: 'MENA',
+         vulnerabilities: ['No pre-event booking funnels', 'Unoptimized social media', 'Missing lead nurturing'],
+         actions: ['Launch pre-IDEX brand awareness campaign', 'Set up automated DM follow-up funnel', 'Build lead capture landing page'] };
+
+  const score = brand.score || 62;
+  const leakage = brand.est_leakage || 420000;
+  const scoreColor = score >= 80 ? '#22d3ee' : score >= 60 ? '#f59e0b' : '#ef4444';
+  const vulnerabilities = brand.vulnerabilities || ['Weak digital presence', 'No lead capture', 'Missing retargeting'];
+  const actions = brand.actions || ['Launch event campaign', 'Build lead funnels', 'Set up retargeting ads'];
+
+  const metrics = [
+    { label: 'Social Media Presence', val: Math.round(score * 0.9), max: 100, color: '#22d3ee' },
+    { label: 'Lead Capture Infrastructure', val: Math.round(score * 0.7), max: 100, color: '#818cf8' },
+    { label: 'MENA Market Localization', val: Math.round(score * 0.75), max: 100, color: '#34d399' },
+    { label: 'Pre-Event Campaign Readiness', val: Math.round(score * 0.65), max: 100, color: '#f59e0b' },
+  ];
+
+  // Create the overlay report
+  const overlay = document.createElement('div');
+  overlay.id = 'private-audit-overlay';
+  overlay.style.cssText = `
+    position: fixed; inset: 0; z-index: 10000; background: rgba(2,6,23,0.97);
+    backdrop-filter: blur(20px); overflow-y: auto; padding: 20px;
+    font-family: 'Outfit', sans-serif; color: white;
+  `;
+  overlay.innerHTML = `
+    <div style="max-width:800px; margin:0 auto; padding: 20px 0;">
+      <!-- Header -->
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="background:#0e7490;padding:10px;border-radius:12px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div style="font-size:10px;letter-spacing:3px;color:#22d3ee;text-transform:uppercase;font-weight:700;">ICEBERG × IDEX 2026 — PRIVATE AUDIT</div>
+            <div style="font-size:20px;font-weight:900;">${brand.name} <span style="color:#22d3ee;">Confidential Executive Report</span></div>
+          </div>
+        </div>
+        <button onclick="document.getElementById('private-audit-overlay').remove()" style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);color:white;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;">✕ Close</button>
+      </div>
+
+      <!-- Booking confirmed banner -->
+      <div style="background:rgba(34,211,238,0.08);border:1px solid rgba(34,211,238,0.3);border-radius:16px;padding:16px;margin-bottom:24px;display:flex;align-items:center;gap:12px;">
+        <div style="font-size:24px;">✅</div>
+        <div>
+          <div style="font-weight:700;font-size:14px;">Consultation Booked — Audit Unlocked</div>
+          <div style="font-size:12px;color:#94a3b8;">Hello ${contactName || 'there'}, your private access to <strong style="color:#22d3ee;">${brand.name}</strong>'s full audit has been granted. Our team will confirm your meeting slot shortly.</div>
+        </div>
+      </div>
+
+      <!-- Score Card -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+        <div style="background:#0f172a;border:1px solid rgba(34,211,238,0.2);border-radius:16px;padding:24px;text-align:center;">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#94a3b8;margin-bottom:12px;">DIGITAL AUDIT SCORE</div>
+          <div style="font-size:56px;font-weight:900;color:${scoreColor};">${score}</div>
+          <div style="font-size:12px;color:#94a3b8;">/100 — ${score >= 80 ? 'Strong Presence' : score >= 60 ? 'Growth Opportunity' : 'Critical Gaps Detected'}</div>
+        </div>
+        <div style="background:#0f172a;border:1px solid rgba(239,68,68,0.3);border-radius:16px;padding:24px;text-align:center;">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#94a3b8;margin-bottom:12px;">EST. REVENUE LEAKAGE</div>
+          <div style="font-size:42px;font-weight:900;color:#ef4444;">$${(leakage/1000).toFixed(0)}K</div>
+          <div style="font-size:12px;color:#94a3b8;">lost per year from digital gaps</div>
+        </div>
+      </div>
+
+      <!-- Metrics Breakdown -->
+      <div style="background:#0f172a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px;margin-bottom:24px;">
+        <div style="font-weight:700;font-size:14px;margin-bottom:16px;">📊 Channel Performance Breakdown</div>
+        ${metrics.map(m => `
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
+              <span style="color:#cbd5e1;">${m.label}</span>
+              <span style="font-weight:700;color:${m.color};">${m.val}%</span>
+            </div>
+            <div style="background:#1e293b;border-radius:99px;height:8px;overflow:hidden;">
+              <div style="height:100%;border-radius:99px;background:${m.color};width:${m.val}%;transition:width 1s ease;"></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- Vulnerabilities -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+        <div style="background:#0f172a;border:1px solid rgba(239,68,68,0.2);border-radius:16px;padding:20px;">
+          <div style="font-weight:700;font-size:13px;color:#ef4444;margin-bottom:12px;">⚠️ Key Vulnerabilities Detected</div>
+          ${vulnerabilities.map(v => `<div style="font-size:12px;color:#cbd5e1;margin-bottom:8px;padding-left:12px;border-left:2px solid rgba(239,68,68,0.4);">${v}</div>`).join('')}
+        </div>
+        <div style="background:#0f172a;border:1px solid rgba(34,211,238,0.2);border-radius:16px;padding:20px;">
+          <div style="font-weight:700;font-size:13px;color:#22d3ee;margin-bottom:12px;">🚀 Immediate Recovery Actions</div>
+          ${actions.map((a,i) => `<div style="font-size:12px;color:#cbd5e1;margin-bottom:8px;padding-left:12px;border-left:2px solid rgba(34,211,238,0.4);"><strong style="color:#22d3ee;">${i+1}.</strong> ${a}</div>`).join('')}
+        </div>
+      </div>
+
+      <!-- 90-Day Plan -->
+      <div style="background:#0f172a;border:1px solid rgba(129,140,248,0.2);border-radius:16px;padding:24px;margin-bottom:24px;">
+        <div style="font-weight:700;font-size:14px;margin-bottom:16px;color:#818cf8;">📅 ICEBERG 90-Day IDEX Acceleration Plan</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+          <div style="background:#1e293b;border-radius:12px;padding:16px;">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#22d3ee;margin-bottom:8px;">Day 1–30: PRE-EVENT</div>
+            <div style="font-size:11px;color:#94a3b8;">Brand positioning, pre-booking campaigns, digital ad setup, landing page optimization</div>
+          </div>
+          <div style="background:#1e293b;border-radius:12px;padding:16px;">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#f59e0b;margin-bottom:8px;">Day 31–60: LIVE EVENT</div>
+            <div style="font-size:11px;color:#94a3b8;">Booth activation, real-time lead capture, live media coverage, daily debrief reporting</div>
+          </div>
+          <div style="background:#1e293b;border-radius:12px;padding:16px;">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#34d399;margin-bottom:8px;">Day 61–90: POST-IDEX</div>
+            <div style="font-size:11px;color:#94a3b8;">Lead nurturing sequences, retargeting campaigns, ROI reporting, client conversion</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div style="text-align:center;padding:24px;background:rgba(34,211,238,0.05);border:1px solid rgba(34,211,238,0.2);border-radius:16px;">
+        <div style="font-size:18px;font-weight:900;margin-bottom:8px;">Ready to eliminate these gaps before IDEX 2026?</div>
+        <div style="font-size:13px;color:#94a3b8;margin-bottom:16px;">Your consultation is booked. Our strategist will reach out within 24 hours.</div>
+        <a href="https://wa.me/201066223335?text=Hi%20ICEBERG%2C%20I%20just%20accessed%20the%20${encodeURIComponent(brand.name)}%20audit%20and%20want%20to%20discuss%20next%20steps%20for%20IDEX%202026" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#22d3ee,#3b82f6);color:#020617;font-weight:900;font-size:14px;padding:14px 28px;border-radius:12px;text-decoration:none;">
+          💬 WhatsApp Our IDEX Strategist Now →
+        </a>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  overlay.scrollIntoView({ behavior: 'smooth' });
+}
+
+
 
 // Interactive Choose 3 Get 1 Free Pricing Pool Estimator Logic
 function initPricingPoolEstimator() {
