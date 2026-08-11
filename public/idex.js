@@ -638,8 +638,10 @@ function initHeroAuditSearch() {
   if (auditCompanyQuery) openAuditGateModal(auditCompanyQuery);
 
   // --- Form submit: save lead + render private audit inline ---
-  gateForm?.addEventListener('submit', async (e) => {
+  gateForm?.addEventListener('submit', (e) => {
     e.preventDefault();
+    console.log('[IDEX Audit Gate] Form submitted');
+
     const name = document.getElementById('gate-name')?.value || '';
     const email = document.getElementById('gate-email')?.value || '';
     const phone = document.getElementById('gate-phone')?.value || '';
@@ -661,19 +663,20 @@ function initHeroAuditSearch() {
       requirements: ['Confidential Audit Access', 'IDEX Consultation']
     };
 
-    try {
-      await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(leadData)
-      });
-      await fetch('/api/calendar/book', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone, company: selectedAuditCompany, date, time: timeSlot })
-      });
-    } catch (err) {}
+    // Fire-and-forget API calls (don't block the UI)
+    fetch('/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(leadData)
+    }).catch(() => {});
 
+    fetch('/api/calendar/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, phone, company: selectedAuditCompany, date, time: timeSlot, industry: 'Dental' })
+    }).catch(() => {});
+
+    // Save to localStorage
     try {
       const booked = JSON.parse(localStorage.getItem('iceberg_booked_slots') || '[]');
       booked.push({ date, time: timeSlot, company: selectedAuditCompany, name });
@@ -681,13 +684,22 @@ function initHeroAuditSearch() {
     } catch (e) {}
 
     localStorage.setItem('iceberg_lead', JSON.stringify(leadData));
-    localStorage.setItem(`iceberg_unlocked_${selectedAuditCompany}`, 'true');
+    localStorage.setItem('iceberg_unlocked_' + selectedAuditCompany, 'true');
 
     if (submitBtn) submitBtn.innerHTML = '🎉 Consultation Scheduled! Preparing your private audit...';
 
-    setTimeout(() => {
-      closeAuditGateModal();
-      renderPrivateAuditReport(selectedAuditCompany, name);
+    // Close modal and show audit after brief delay
+    const companyForReport = selectedAuditCompany;
+    const nameForReport = name;
+    setTimeout(function() {
+      try {
+        console.log('[IDEX Audit Gate] Closing modal and rendering report for:', companyForReport);
+        closeAuditGateModal();
+        renderPrivateAuditReport(companyForReport, nameForReport);
+      } catch (err) {
+        console.error('[IDEX Audit Gate] Error rendering report:', err);
+        alert('Your meeting has been booked! Audit report will be sent to your email.');
+      }
     }, 800);
   });
 
