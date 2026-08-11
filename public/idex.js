@@ -220,6 +220,18 @@ function initCalendarBookingFlow(utmParams) {
     });
   }
 
+  // Allow step pills navigation
+  stepPills.forEach((pill, idx) => {
+    pill.style.cursor = 'pointer';
+    pill.addEventListener('click', () => {
+      goToStep(idx + 1);
+      if (idx + 1 === 2) fetchTimeSlots(selectedDate);
+    });
+  });
+
+  // Pre-fetch time slots on initialization
+  fetchTimeSlots(selectedDate);
+
   // Fetch Time Slots
   async function fetchTimeSlots(dStr) {
     const slotsContainer = document.getElementById('calendar-time-slots');
@@ -243,7 +255,7 @@ function initCalendarBookingFlow(utmParams) {
 
       // Fallback default slots if server endpoint offline
       if (slots.length === 0) {
-        const defaultTimes = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'];
+        const defaultTimes = ['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'];
         slots = defaultTimes.map(t => ({ time: t, status: 'AVAILABLE' }));
       }
 
@@ -573,7 +585,7 @@ async function loadExhibitorData() {
 function initHeroAuditSearch() {
   loadExhibitorData();
 
-  const searchInput = document.getElementById('hero-exhibitor-search');
+  const searchInput = document.getElementById('hero-audit-search') || document.getElementById('hero-exhibitor-search');
   const resultsContainer = document.getElementById('hero-search-results');
   const unlockBtn = document.getElementById('hero-unlock-audit-btn');
   const gateModal = document.getElementById('audit-gate-modal');
@@ -610,12 +622,13 @@ function initHeroAuditSearch() {
     resultsContainer.innerHTML = '';
     const q = (query || '').trim().toLowerCase();
 
+    let matches = [];
     if (!q) {
-      resultsContainer.classList.add('hidden');
-      return;
+      // If query is empty, show top 5 featured/popular brand audit suggestions!
+      matches = data.slice(0, 5);
+    } else {
+      matches = data.filter(item => item.name && item.name.toLowerCase().includes(q)).slice(0, 6);
     }
-
-    const matches = data.filter(item => item.name && item.name.toLowerCase().includes(q)).slice(0, 6);
 
     if (matches.length === 0) {
       resultsContainer.innerHTML = '<div class="p-3 text-xs text-slate-400">No matching brand found. Click Unlock to request a custom audit.</div>';
@@ -623,17 +636,24 @@ function initHeroAuditSearch() {
       return;
     }
 
+    // Add a header for suggested brand audits
+    const header = document.createElement('div');
+    header.className = 'text-[10px] font-bold text-cyan-400 uppercase px-3 py-1 bg-cyan-950/40 rounded border-b border-cyan-500/20 mb-1';
+    header.textContent = q ? 'Matching Exhibitor Audits:' : '💡 Suggested Exhibitor Audits (Click to Inspect):';
+    resultsContainer.appendChild(header);
+
     matches.forEach(m => {
       const div = document.createElement('div');
-      div.className = 'p-3 hover:bg-cyan-500/10 cursor-pointer flex justify-between items-center text-sm border-b border-white/5';
+      div.className = 'p-3 hover:bg-cyan-500/20 cursor-pointer flex justify-between items-center text-sm border-b border-white/5 transition-all rounded-lg';
       div.innerHTML = `
         <div>
           <span class="font-bold text-white block">${m.name}</span>
           <span class="text-xs text-slate-400">${m.category || 'Dental Brand'} | ${m.country || 'International'}</span>
         </div>
-        <div class="text-xs font-bold text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">${m.score}/100</div>
+        <div class="text-xs font-bold text-cyan-400 px-2 py-1 rounded bg-cyan-500/10 border border-cyan-500/20">${m.score}/100</div>
       `;
       div.onclick = () => {
+        searchInput.value = m.name;
         openAuditGateModal(m.name);
         resultsContainer.classList.add('hidden');
       };
@@ -644,6 +664,11 @@ function initHeroAuditSearch() {
 
   searchInput.addEventListener('input', (e) => renderResults(e.target.value));
   searchInput.addEventListener('focus', (e) => renderResults(e.target.value));
+  document.addEventListener('click', (e) => {
+    if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+      resultsContainer.classList.add('hidden');
+    }
+  });
 
   unlockBtn?.addEventListener('click', () => {
     const query = searchInput.value.trim();
