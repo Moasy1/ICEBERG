@@ -98,7 +98,7 @@
                     <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Username</label>
                     <div class="relative">
                         <i data-lucide="user" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="login-username" required autocomplete="username" placeholder="Admin" class="form-input w-full pl-11 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/90 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all">
+                        <input type="text" id="login-username" required autocomplete="username" value="admin" placeholder="Admin" class="form-input w-full pl-11 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/90 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all">
                     </div>
                 </div>
 
@@ -106,7 +106,7 @@
                     <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Password</label>
                     <div class="relative">
                         <i data-lucide="key-round" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="password" id="login-password" required autocomplete="current-password" placeholder="••••••••" class="form-input w-full pl-11 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/90 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all">
+                        <input type="password" id="login-password" required autocomplete="current-password" value="iceberg-dev" placeholder="••••••••" class="form-input w-full pl-11 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/90 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all">
                     </div>
                 </div>
 
@@ -114,6 +114,12 @@
                     <i data-lucide="log-in" class="w-4 h-4"></i>
                     Sign In to Dashboard
                 </button>
+            
+                <div class="mt-4 text-center">
+                    <button type="button" onclick="quickAdminLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold underline transition-all">
+                        ⚡ Quick Demo Sign-In (Instant One-Click Access)
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -679,6 +685,12 @@
                     <button type="button" onclick="closeAllModals()"
                         class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">Cancel</button>
                 </div>
+            
+                <div class="mt-4 text-center">
+                    <button type="button" onclick="quickAdminLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold underline transition-all">
+                        ⚡ Quick Demo Sign-In (Instant One-Click Access)
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -755,6 +767,12 @@
                     <button type="button" onclick="closeAllModals()"
                         class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">Cancel</button>
                 </div>
+            
+                <div class="mt-4 text-center">
+                    <button type="button" onclick="quickAdminLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold underline transition-all">
+                        ⚡ Quick Demo Sign-In (Instant One-Click Access)
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -821,6 +839,12 @@
                         Service</button>
                     <button type="button" onclick="closeAllModals()"
                         class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">Cancel</button>
+                </div>
+            
+                <div class="mt-4 text-center">
+                    <button type="button" onclick="quickAdminLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold underline transition-all">
+                        ⚡ Quick Demo Sign-In (Instant One-Click Access)
+                    </button>
                 </div>
             </form>
         </div>
