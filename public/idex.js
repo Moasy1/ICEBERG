@@ -603,13 +603,22 @@ function initHeroAuditSearch() {
   function openAuditGateModal(companyName) {
     selectedAuditCompany = companyName || 'Exhibitor Brand';
     if (gateCompanyEl) gateCompanyEl.textContent = selectedAuditCompany;
-    if (gateModal) gateModal.classList.remove('hidden');
+    if (gateModal) {
+      gateModal.classList.remove('hidden');
+      gateModal.style.display = 'flex';
+    }
     if (typeof lucide !== 'undefined') lucide.createIcons();
   }
 
   function closeAuditGateModal() {
-    if (gateModal) gateModal.classList.add('hidden');
+    if (gateModal) {
+      gateModal.classList.add('hidden');
+      gateModal.style.display = 'none';
+    }
   }
+
+  window.openAuditGateModal = openAuditGateModal;
+  window.closeAuditGateModal = closeAuditGateModal;
 
   closeGateBtn?.addEventListener('click', closeAuditGateModal);
   gateModal?.addEventListener('click', (e) => {
@@ -703,12 +712,13 @@ function initHeroAuditSearch() {
     const name = document.getElementById('gate-name')?.value || '';
     const email = document.getElementById('gate-email')?.value || '';
     const phone = document.getElementById('gate-phone')?.value || '';
+    const date = document.getElementById('gate-meeting-date')?.value || '2026-08-20';
     const timeSlot = document.getElementById('gate-time-slot')?.value || '10:00 AM';
 
     const submitBtn = document.getElementById('gate-submit-btn');
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.textContent = '🔒 Processing Lead & Reserving Time...';
+      submitBtn.innerHTML = '<span class="animate-pulse">🔒 Booking Meeting Slot & Unlocking Audit Report...</span>';
     }
 
     const leadData = {
@@ -716,9 +726,10 @@ function initHeroAuditSearch() {
       email,
       phone,
       company: selectedAuditCompany,
+      date,
       meeting_time: timeSlot,
-      source: 'idex.html (Confidential Audit Gate)',
-      requirements: ['Confidential Audit Access', 'Booth Consultation']
+      source: 'idex.html (Confidential Audit Gate & Meeting Scheduler)',
+      requirements: ['Confidential Audit Access', 'IDEX Consultation']
     };
 
     try {
@@ -727,10 +738,30 @@ function initHeroAuditSearch() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(leadData)
       });
+      await fetch('/api/calendar/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, company: selectedAuditCompany, date, time: timeSlot })
+      });
     } catch (err) {}
 
+    try {
+      const booked = JSON.parse(localStorage.getItem('iceberg_booked_slots') || '[]');
+      booked.push({ date, time: timeSlot, company: selectedAuditCompany, name });
+      localStorage.setItem('iceberg_booked_slots', JSON.stringify(booked));
+    } catch (e) {}
+
     localStorage.setItem('iceberg_lead', JSON.stringify(leadData));
-    window.location.href = `/IDEX Event/index.html?company=${encodeURIComponent(selectedAuditCompany)}&unlocked=true`;
+    localStorage.setItem(`iceberg_unlocked_${selectedAuditCompany}`, 'true');
+
+    // Show temporary success feedback before opening audit
+    if (submitBtn) {
+      submitBtn.innerHTML = '🎉 Consultation Scheduled! Opening Confidential Audit...';
+    }
+
+    setTimeout(() => {
+      window.location.href = `/IDEX Event/index.html?company=${encodeURIComponent(selectedAuditCompany)}&unlocked=true`;
+    }, 600);
   });
 }
 

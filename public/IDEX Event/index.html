@@ -9759,7 +9759,7 @@ Link: ${clientUrl}`);
             });
         }
 
-        function selectExhibitor(id) {
+        function selectExhibitor(id, forceSkipGate = false) {
             selectedExhibitorId = id;
             isEditingMetrics = false;
             document.getElementById('edit-metrics-btn').innerText = 'Edit Metrics';
@@ -9772,6 +9772,17 @@ Link: ${clientUrl}`);
 
             const e = exhibitorsData.find(ex => ex.id === id);
             if (!e) return;
+
+            // Check if client audit is unlocked or requires scheduling a consultation meeting
+            const isUnlocked = localStorage.getItem(`iceberg_unlocked_${e.name}`) === 'true' || 
+                               localStorage.getItem(`iceberg_unlocked_${e.id}`) === 'true' || 
+                               new URLSearchParams(window.location.search).get('unlocked') === 'true' || 
+                               !isClientViewMode || 
+                               forceSkipGate;
+
+            if (!isUnlocked && isClientViewMode) {
+                openAuditScheduleModal(e);
+            }
 
             document.getElementById('audit-empty-state').classList.add('hidden');
             document.getElementById('audit-detail-grid').classList.remove('hidden');
@@ -10149,6 +10160,128 @@ Audit Compiled by Mohamed Asy, Web Development Manager & Digital Consultant at I
                 heatmapContainer.appendChild(cell);
             });
         }
+
+        // Audit Gate & Consultation Meeting Scheduler Logic
+        let targetExhibitorForGate = null;
+
+        function openAuditScheduleModal(exhibitorObj) {
+            targetExhibitorForGate = exhibitorObj;
+            document.getElementById('event-gate-company-name').innerText = exhibitorObj.name;
+            document.getElementById('idex-event-gate-modal').style.display = 'flex';
+        }
+
+        function closeIdexEventGateModal() {
+            document.getElementById('idex-event-gate-modal').style.display = 'none';
+        }
+
+        async function handleEventGateSubmit(e) {
+            e.preventDefault();
+            if (!targetExhibitorForGate) return;
+
+            const name = document.getElementById('ev-gate-name').value;
+            const email = document.getElementById('ev-gate-email').value;
+            const phone = document.getElementById('ev-gate-phone').value;
+            const date = document.getElementById('ev-gate-date').value;
+            const time = document.getElementById('ev-gate-time').value;
+            const submitBtn = document.getElementById('ev-gate-submit-btn');
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = '🔒 Reserving Meeting Slot & Unlocking Audit...';
+
+            const leadData = {
+                name, email, phone, company: targetExhibitorForGate.name, date, meeting_time: time,
+                source: 'IDEX 140 Exhibitor Directory Audit Gate',
+                requirements: ['Confidential Audit Access', 'IDEX Consultation']
+            };
+
+            try {
+                await fetch('/api/leads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(leadData) });
+                await fetch('/api/calendar/book', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, phone, company: targetExhibitorForGate.name, date, time }) });
+            } catch (err) {}
+
+            try {
+                const booked = JSON.parse(localStorage.getItem('iceberg_booked_slots') || '[]');
+                booked.push({ date, time, company: targetExhibitorForGate.name, name });
+                localStorage.setItem('iceberg_booked_slots', JSON.stringify(booked));
+            } catch (err) {}
+
+            localStorage.setItem(`iceberg_unlocked_${targetExhibitorForGate.name}`, 'true');
+            localStorage.setItem(`iceberg_unlocked_${targetExhibitorForGate.id}`, 'true');
+
+            submitBtn.innerText = '🎉 Meeting Scheduled! Opening Confidential Audit...';
+            setTimeout(() => {
+                closeIdexEventGateModal();
+                selectExhibitor(targetExhibitorForGate.id, true);
+            }, 500);
+        }
     </script>
+
+    <!-- ==================== IDEX EVENT AUDIT GATE & MEETING SCHEDULER MODAL ==================== -->
+    <div id="idex-event-gate-modal" style="position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; background: rgba(3, 7, 18, 0.92); backdrop-filter: blur(12px); padding: 1rem; overflow-y: auto;">
+        <div style="background: rgba(17, 24, 39, 0.95); border: 1px solid rgba(6, 182, 212, 0.4); max-width: 520px; width: 100%; padding: 2rem; border-radius: 1rem; box-shadow: 0 25px 50px -12px rgba(6, 182, 212, 0.25); position: relative; margin: auto; color: #F9FAFB;">
+            <button type="button" onclick="closeIdexEventGateModal()" style="position: absolute; top: 1rem; right: 1rem; color: #9CA3AF; background: rgba(31, 41, 55, 0.8); border: 1px solid rgba(75, 85, 99, 0.4); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+
+            <div style="color: #06B6D4; font-size: 0.75rem; font-family: monospace; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.5rem;">
+                🛡️ CONFIDENTIAL IDEX 2026 AUDIT PORTAL
+            </div>
+
+            <h3 style="font-size: 1.5rem; font-weight: 800; font-family: 'Outfit', sans-serif; margin-bottom: 0.25rem;">
+                Unlock Audit For <span id="event-gate-company-name" style="color: #06B6D4;">Exhibitor Brand</span>
+            </h3>
+            <p style="font-size: 0.8rem; color: #9CA3AF; margin-bottom: 1.5rem; line-height: 1.4;">
+                To access your full audit score, estimated revenue leakage breakdown, and 90-day recovery strategy, please schedule your 15-minute IDEX consultation slot below.
+            </p>
+
+            <form id="event-gate-form" onsubmit="handleEventGateSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #D1D5DB; text-transform: uppercase; margin-bottom: 0.25rem;">Your Full Name *</label>
+                    <input type="text" id="ev-gate-name" required placeholder="Dr. / Eng. / Mr. Name" style="width: 100%; padding: 0.6rem 0.8rem; background: #030712; border: 1px solid rgba(75, 85, 99, 0.4); border-radius: 0.5rem; font-size: 0.85rem; color: #FFF; outline: none;">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                    <div>
+                        <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #D1D5DB; text-transform: uppercase; margin-bottom: 0.25rem;">Work Email *</label>
+                        <input type="email" id="ev-gate-email" required placeholder="name@company.com" style="width: 100%; padding: 0.6rem 0.8rem; background: #030712; border: 1px solid rgba(75, 85, 99, 0.4); border-radius: 0.5rem; font-size: 0.85rem; color: #FFF; outline: none;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #D1D5DB; text-transform: uppercase; margin-bottom: 0.25rem;">Phone / WhatsApp *</label>
+                        <input type="tel" id="ev-gate-phone" required placeholder="+20 100 000 0000" style="width: 100%; padding: 0.6rem 0.8rem; background: #030712; border: 1px solid rgba(75, 85, 99, 0.4); border-radius: 0.5rem; font-size: 0.85rem; color: #FFF; outline: none;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                    <div>
+                        <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #D1D5DB; text-transform: uppercase; margin-bottom: 0.25rem;">Select Event Date *</label>
+                        <select id="ev-gate-date" required style="width: 100%; padding: 0.6rem 0.8rem; background: #030712; border: 1px solid rgba(75, 85, 99, 0.4); border-radius: 0.5rem; font-size: 0.85rem; color: #FFF; outline: none;">
+                            <option value="2026-08-20">Day 1: Aug 20, 2026</option>
+                            <option value="2026-08-21">Day 2: Aug 21, 2026</option>
+                            <option value="2026-08-22">Day 3: Aug 22, 2026</option>
+                            <option value="2026-08-23">Day 4: Aug 23, 2026</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #D1D5DB; text-transform: uppercase; margin-bottom: 0.25rem;">Time Slot *</label>
+                        <select id="ev-gate-time" required style="width: 100%; padding: 0.6rem 0.8rem; background: #030712; border: 1px solid rgba(75, 85, 99, 0.4); border-radius: 0.5rem; font-size: 0.85rem; color: #FFF; outline: none;">
+                            <option value="10:00 AM">10:00 AM - 10:30 AM</option>
+                            <option value="11:30 AM">11:30 AM - 12:00 PM</option>
+                            <option value="02:00 PM">02:00 PM - 02:30 PM</option>
+                            <option value="03:30 PM">03:30 PM - 04:00 PM</option>
+                            <option value="05:00 PM">05:00 PM - 05:30 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-top: 0.5rem;">
+                    <button type="submit" id="ev-gate-submit-btn" style="width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #06B6D4, #3B82F6); color: #030712; font-weight: 800; font-family: 'Outfit', sans-serif; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; border: none; border-radius: 0.5rem; cursor: pointer; box-shadow: 0 10px 20px rgba(6, 182, 212, 0.3); transition: all 0.2s;">
+                        📅 Schedule Meeting & View Confidential Audit
+                    </button>
+                </div>
+
+                <div style="font-size: 0.7rem; color: #6B7280; text-align: center; margin-top: 0.25rem;">
+                    🔒 Encrypted & Strictly Confidential for IDEX 2026 Exhibitors.
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
