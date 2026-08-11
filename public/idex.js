@@ -539,7 +539,7 @@ function initLeadForm(utmParams) {
 }
 
 // Hero Confidential Exhibitor Audit Lookup Logic
-async let selectedAuditCompany = 'Exhibitor Brand';
+let selectedAuditCompany = 'Exhibitor Brand';
 let _idexExhibitorsData = [
   { name: 'Dentaquick', category: 'Dental Equipment & Consumables', country: 'Egypt', score: 84, est_leakage: 380000, vulnerabilities: ['Unoptimized landing page conversion', 'Zero retargeting ad campaigns'] },
   { name: 'Acrostone', category: 'Dental Materials & Acrylics', country: 'Egypt', score: 72, est_leakage: 520000, vulnerabilities: ['Slow mobile loading speed', 'No lead capture funnels'] },
@@ -598,6 +598,12 @@ function initHeroAuditSearch() {
   gateModal?.addEventListener('click', (e) => {
     if (e.target === gateModal) closeAuditGateModal();
   });
+
+  const urlParamsLocal = new URLSearchParams(window.location.search);
+  const auditCompanyQuery = urlParamsLocal.get('audit_company');
+  if (auditCompanyQuery) {
+    openAuditGateModal(auditCompanyQuery);
+  }
 
   const renderResults = (query) => {
     const data = _idexExhibitorsData;

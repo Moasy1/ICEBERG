@@ -1090,7 +1090,7 @@ function renderAdminAudits(audits) {
         else if (item.score < 80) scoreBadge = `<span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded text-xs font-bold font-mono">${item.score}/100</span>`;
 
         const leakageStr = item.est_leakage ? `${item.est_leakage.toLocaleString()} EGP` : '—';
-        const clientUrl = `/IDEX Event/index.html?company=${encodeURIComponent(item.name)}`;
+        const clientUrl = `/idex.html?audit_company=${encodeURIComponent(item.name)}`;
 
         tr.innerHTML = `
             <td class="p-4">
