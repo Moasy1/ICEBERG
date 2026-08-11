@@ -1069,9 +1069,6 @@ async function loadIdexAudits() {
         ];
     }
     renderAdminAudits(allAdminAudits);
-} catch (err) {
-        tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-red-400">Failed to load exhibitor database.</td></tr>';
-    }
 }
 
 function renderAdminAudits(audits) {
