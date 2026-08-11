@@ -105,6 +105,9 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/meta', metaRoutes);
 app.use('/api/leads', leadsRoutes);
 app.use('/api/calendar', calendarRoutes);
+app.get('/api/idex/data', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/IDEX Event/data.json'));
+});
 
 // Page Route Clean Rewrites
 app.get('/admin*', (req, res) => {

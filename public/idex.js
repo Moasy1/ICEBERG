@@ -540,8 +540,39 @@ function initLeadForm(utmParams) {
 
 // Hero Confidential Exhibitor Audit Lookup Logic
 async let selectedAuditCompany = 'Exhibitor Brand';
+let _idexExhibitorsData = [
+  { name: 'Dentaquick', category: 'Dental Equipment & Consumables', country: 'Egypt', score: 84, est_leakage: 380000, vulnerabilities: ['Unoptimized landing page conversion', 'Zero retargeting ad campaigns'] },
+  { name: 'Acrostone', category: 'Dental Materials & Acrylics', country: 'Egypt', score: 72, est_leakage: 520000, vulnerabilities: ['Slow mobile loading speed', 'No lead capture funnels'] },
+  { name: 'Waterpik', category: 'Oral Health & Hygiene Devices', country: 'USA / MENA', score: 88, est_leakage: 290000, vulnerabilities: ['Missing MENA localized campaigns'] },
+  { name: 'Misr International Dental', category: 'Dental Furniture & Chairs', country: 'Egypt', score: 65, est_leakage: 640000, vulnerabilities: ['Inactive social media channels', 'No automated email nurturing'] },
+  { name: 'Pharaonic Dental Co.', category: 'Surgical Instruments & Implants', country: 'Egypt', score: 58, est_leakage: 780000, vulnerabilities: ['High ad cost per acquisition', 'Zero video demonstration reels'] },
+  { name: 'Al-Hayat Dental Supplies', category: 'Orthodontic & Consumable Lines', country: 'Egypt', score: 79, est_leakage: 410000, vulnerabilities: ['Unformatted WhatsApp lead pipeline'] }
+];
+
+async function loadExhibitorData() {
+  const urls = [
+    '/IDEX%20Event/data.json',
+    '/IDEX Event/data.json',
+    'IDEX%20Event/data.json',
+    'IDEX Event/data.json'
+  ];
+  for (const url of urls) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        const json = await res.json();
+        if (Array.isArray(json) && json.length > 0) {
+          _idexExhibitorsData = json;
+          break;
+        }
+      }
+    } catch (e) {}
+  }
+}
 
 function initHeroAuditSearch() {
+  loadExhibitorData();
+
   const searchInput = document.getElementById('hero-exhibitor-search');
   const resultsContainer = document.getElementById('hero-search-results');
   const unlockBtn = document.getElementById('hero-unlock-audit-btn');
@@ -556,7 +587,7 @@ function initHeroAuditSearch() {
     selectedAuditCompany = companyName || 'Exhibitor Brand';
     if (gateCompanyEl) gateCompanyEl.textContent = selectedAuditCompany;
     if (gateModal) gateModal.classList.remove('hidden');
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
   }
 
   function closeAuditGateModal() {
@@ -568,24 +599,20 @@ function initHeroAuditSearch() {
     if (e.target === gateModal) closeAuditGateModal();
   });
 
-  fetch('/IDEX Event/data.json')
-    .then(r => r.json())
-    .then(data => {
-      window._idexExhibitorsData = data;
-    })
-    .catch(() => {});
-
   const renderResults = (query) => {
-    const data = window._idexExhibitorsData || [];
+    const data = _idexExhibitorsData;
     resultsContainer.innerHTML = '';
-    if (!query.trim()) {
+    const q = (query || '').trim().toLowerCase();
+
+    if (!q) {
       resultsContainer.classList.add('hidden');
       return;
     }
-    const matches = data.filter(item => item.name && item.name.toLowerCase().includes(query.toLowerCase())).slice(0, 5);
+
+    const matches = data.filter(item => item.name && item.name.toLowerCase().includes(q)).slice(0, 6);
 
     if (matches.length === 0) {
-      resultsContainer.innerHTML = '<div class="p-3 text-xs text-slate-400">No exhibitor found. Click Unlock to request a custom audit.</div>';
+      resultsContainer.innerHTML = '<div class="p-3 text-xs text-slate-400">No matching brand found. Click Unlock to request a custom audit.</div>';
       resultsContainer.classList.remove('hidden');
       return;
     }
@@ -610,13 +637,13 @@ function initHeroAuditSearch() {
   };
 
   searchInput.addEventListener('input', (e) => renderResults(e.target.value));
+  searchInput.addEventListener('focus', (e) => renderResults(e.target.value));
 
   unlockBtn?.addEventListener('click', () => {
     const query = searchInput.value.trim();
     openAuditGateModal(query || 'IDEX Exhibitor Brand');
   });
 
-  // Handle Form Submission -> Save Lead & Calendar Booking -> Redirect to Audit
   gateForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('gate-name')?.value || '';
@@ -648,10 +675,7 @@ function initHeroAuditSearch() {
       });
     } catch (err) {}
 
-    // Save to local storage
     localStorage.setItem('iceberg_lead', JSON.stringify(leadData));
-
-    // Redirect to Audit page
     window.location.href = `/IDEX Event/index.html?company=${encodeURIComponent(selectedAuditCompany)}&unlocked=true`;
   });
 }
