@@ -117,6 +117,12 @@ function showSection(sectionId) {
         case 'clients':
             loadClients();
             break;
+        case 'idex-leads':
+            loadIdexLeads();
+            break;
+        case 'idex-calendar':
+            loadIdexCalendar();
+            break;
     }
 }
 
@@ -970,5 +976,121 @@ function logout() {
         if (passEl) passEl.value = '';
         showNotification('You have logged out.', 'info');
         lucide.createIcons();
+    }
+}
+
+// IDEX Leads & Calendar Management Functions
+async function loadIdexLeads() {
+    const tbody = document.getElementById('idex-leads-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-cyan-400 animate-pulse">Loading IDEX leads...</td></tr>';
+
+    try {
+        const res = await fetch(`${API_BASE}/leads`);
+        const data = await res.json();
+
+        if (data.success && Array.isArray(data.leads) && data.leads.length > 0) {
+            document.getElementById('idex-leads-count').textContent = data.leads.length;
+            tbody.innerHTML = '';
+            data.leads.forEach(lead => {
+                const tr = document.createElement('tr');
+                tr.className = 'table-row border-b border-slate-800';
+
+                const reqList = Array.isArray(lead.requirements) ? lead.requirements.join(', ') : (lead.requirements || 'N/A');
+                const dateStr = lead.created_at ? new Date(lead.created_at).toLocaleDateString() : new Date().toLocaleDateString();
+                
+                let statusBadge = '<span class="px-2 py-1 bg-cyan-500/20 text-cyan-400 rounded text-xs font-bold">NEW</span>';
+                if (lead.status === 'SCHEDULED') statusBadge = '<span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-bold">SCHEDULED</span>';
+
+                tr.innerHTML = `
+                    <td class="p-4 font-mono text-xs">
+                        <div class="font-bold text-white">${lead.lead_id || 'IDEX Lead'}</div>
+                        <div class="text-gray-400">${dateStr}</div>
+                    </td>
+                    <td class="p-4">
+                        <div class="font-bold text-white">${lead.name || 'N/A'}</div>
+                        <div class="text-xs text-gray-400">${lead.email || ''} | ${lead.phone || ''}</div>
+                        <div class="text-xs font-bold text-cyan-400">${lead.company || ''}</div>
+                    </td>
+                    <td class="p-4 text-xs">
+                        <div class="font-semibold text-gray-200">${lead.industry || 'N/A'}</div>
+                        <div class="text-gray-400">${lead.position || 'Executive'}</div>
+                    </td>
+                    <td class="p-4 text-xs">
+                        <span class="px-2 py-0.5 rounded bg-slate-800 text-gray-300 font-mono">${lead.source || 'idex'}</span>
+                    </td>
+                    <td class="p-4 text-xs text-gray-300 max-w-xs truncate">${reqList}</td>
+                    <td class="p-4">${statusBadge}</td>
+                    <td class="p-4 text-right space-x-2">
+                        ${lead.phone ? `<a href="https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}" target="_blank" class="px-2 py-1 bg-green-600/30 text-green-400 hover:bg-green-600 hover:text-white rounded text-xs font-bold transition-all">WhatsApp</a>` : ''}
+                        ${lead.email ? `<a href="mailto:${lead.email}" class="px-2 py-1 bg-blue-600/30 text-blue-400 hover:bg-blue-600 hover:text-white rounded text-xs font-bold transition-all">Email</a>` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } else {
+            tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-gray-400">No IDEX leads found yet.</td></tr>';
+        }
+    } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-red-400">Failed to load leads from server.</td></tr>';
+    }
+}
+
+async function loadIdexCalendar() {
+    const tbody = document.getElementById('idex-calendar-tbody');
+    const dateInput = document.getElementById('admin-cal-date-filter');
+    if (!tbody) return;
+
+    const dateVal = dateInput && dateInput.value ? dateInput.value : new Date().toISOString().split('T')[0];
+    if (dateInput && !dateInput.value) dateInput.value = dateVal;
+
+    tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-cyan-400 animate-pulse">Loading meeting slots...</td></tr>';
+
+    try {
+        const res = await fetch(`${API_BASE}/calendar/slots?date=${dateVal}`);
+        const data = await res.json();
+
+        if (data.success && Array.isArray(data.slots) && data.slots.length > 0) {
+            tbody.innerHTML = '';
+            data.slots.forEach(slot => {
+                const tr = document.createElement('tr');
+                tr.className = 'table-row border-b border-slate-800';
+
+                let statusBadge = '<span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded text-xs font-bold">AVAILABLE</span>';
+                if (slot.status === 'BOOKED') statusBadge = '<span class="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs font-bold">🔒 BOOKED</span>';
+                if (slot.status === 'HELD') statusBadge = '<span class="px-2 py-1 bg-amber-500/20 text-amber-400 rounded text-xs font-bold">⏳ HELD</span>';
+
+                tr.innerHTML = `
+                    <td class="p-4 font-mono font-bold text-cyan-400 text-sm">${slot.time} (${slot.date || dateVal})</td>
+                    <td class="p-4">${statusBadge}</td>
+                    <td class="p-4 text-xs font-semibold text-white">${slot.lead_email || slot.held_by_session || 'Open'}</td>
+                    <td class="p-4 text-xs text-gray-300">${slot.company || '—'}</td>
+                    <td class="p-4 text-xs text-gray-400 font-mono">${slot.owner || 'Sales Team'}</td>
+                    <td class="p-4 text-right">
+                        ${slot.status !== 'AVAILABLE' ? `<button onclick="releaseAdminSlot('${slot.slot_id}', '${dateVal}')" class="px-2.5 py-1 bg-red-600/30 text-red-400 hover:bg-red-600 hover:text-white rounded text-xs font-bold transition-all">Clear Slot</button>` : '<span class="text-xs text-gray-500">Ready</span>'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } else {
+            tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-gray-400">No meeting slots found for selected date.</td></tr>';
+        }
+    } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-red-400">Failed to load calendar slots.</td></tr>';
+    }
+}
+
+async function releaseAdminSlot(slotId, dateVal) {
+    if (!confirm('Clear this booked slot and make it available again?')) return;
+    try {
+        const res = await fetch(`${API_BASE}/calendar/hold`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slotId, status: 'AVAILABLE' })
+        });
+        showNotification('Slot cleared successfully!', 'success');
+        loadIdexCalendar();
+    } catch (e) {
+        showNotification('Failed to update slot', 'error');
     }
 }

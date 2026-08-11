@@ -193,7 +193,21 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" onclick="showSection('clients')"
+                        <a href="#" onclick="showSection('idex-leads')"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-cyan-400 hover:text-white transition-all">
+                            <i data-lucide="sparkles" class="w-5 h-5 text-cyan-400"></i>
+                            IDEX Exhibitor Leads
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('idex-calendar')"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-cyan-400 hover:text-white transition-all">
+                            <i data-lucide="calendar" class="w-5 h-5 text-cyan-400"></i>
+                            IDEX Meeting Slots
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('clients')" 
                             class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
                             <i data-lucide="users" class="w-5 h-5"></i>
                             Client Logos
@@ -489,6 +503,87 @@
                             placeholder="clients-logos/logo1.png"></textarea>
                     </div>
                 </section>
+        <!-- IDEX Exhibitor Leads Section -->
+            <section id="idex-leads" class="content-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                            <i data-lucide="sparkles" class="w-6 h-6 text-cyan-400"></i>
+                            IDEX Exhibitor Leads & Audits
+                        </h2>
+                        <p class="text-sm text-gray-400 mt-1">Leads captured from IDEX Event landing pages, free audit requests, and exhibitor tools.</p>
+                    </div>
+                    <button onclick="loadIdexLeads()" class="btn-primary px-4 py-2 text-white rounded-lg text-sm font-medium flex items-center gap-2">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh Leads
+                    </button>
+                </div>
+
+                <div class="glass-card rounded-xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-800/80 text-gray-400 text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-4">Lead ID / Date</th>
+                                    <th class="p-4">Contact & Company</th>
+                                    <th class="p-4">Industry / Position</th>
+                                    <th class="p-4">Source & Interest</th>
+                                    <th class="p-4">Selected Services</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="idex-leads-tbody" class="divide-y divide-slate-800 text-sm text-gray-300">
+                                <tr>
+                                    <td colspan="7" class="p-6 text-center text-gray-400">Loading IDEX leads...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- IDEX Meeting Calendar Slots Section -->
+            <section id="idex-calendar" class="content-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                            <i data-lucide="calendar" class="w-6 h-6 text-cyan-400"></i>
+                            IDEX Consultation Meeting Slots
+                        </h2>
+                        <p class="text-sm text-gray-400 mt-1">Manage scheduled booth consultations, held slots, and calendar availability.</p>
+                    </div>
+                    <button onclick="loadIdexCalendar()" class="btn-primary px-4 py-2 text-white rounded-lg text-sm font-medium flex items-center gap-2">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh Calendar
+                    </button>
+                </div>
+
+                <div class="glass-card rounded-xl overflow-hidden p-6">
+                    <div class="flex items-center gap-4 mb-6">
+                        <label class="text-sm font-bold text-gray-300">Filter Date:</label>
+                        <input type="date" id="admin-cal-date-filter" class="form-input px-3 py-1.5 rounded-lg text-sm text-white" onchange="loadIdexCalendar()">
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-800/80 text-gray-400 text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-4">Time Slot</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4">Lead / Booked By</th>
+                                    <th class="p-4">Company</th>
+                                    <th class="p-4">Owner / Session</th>
+                                    <th class="p-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="idex-calendar-tbody" class="divide-y divide-slate-800 text-sm text-gray-300">
+                                <tr>
+                                    <td colspan="6" class="p-6 text-center text-gray-400">Loading meeting slots...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 

@@ -94,6 +94,8 @@ const contactRoutes = require('./routes/contact');
 const projectRoutes = require('./routes/projects');
 const serviceRoutes = require('./routes/services');
 const metaRoutes = require('./routes/meta');
+const leadsRoutes = require('./routes/leads');
+const calendarRoutes = require('./routes/calendar');
 
 // API Routes
 app.use('/api/content', contentRoutes);
@@ -101,6 +103,28 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/meta', metaRoutes);
+app.use('/api/leads', leadsRoutes);
+app.use('/api/calendar', calendarRoutes);
+
+// Page Route Clean Rewrites
+app.get('/admin*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/index.html'));
+});
+app.get('/idex', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/idex.html'));
+});
+app.get('/idex/audit', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/idex.html'));
+});
+app.get('/idex/book', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/idex.html'));
+});
+app.get('/idex/thank-you', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/idex-thank-you.html'));
+});
+app.get('/idex/case-study/:slug', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/idex.html'));
+});
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {

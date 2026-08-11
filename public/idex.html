@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ICEBERG × IDEX | Turn Exhibition Presence Into Business Growth</title>
+  <meta name="description" content="ICEBERG IDEX Event Plan. Growth packages, digital audits, exhibition rebranding, media buying, and lead generation for IDEX exhibitors.">
+
+  <!-- Fonts & Libraries -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+
+  <link rel="stylesheet" href="/idex.css">
+  <script src="/idex.js" defer></script>
+</head>
+<body class="bg-[#020617] text-white selection:bg-cyan-500 selection:text-black">
+
+  <!-- QR Scan Toast Notification -->
+  <div id="qr-toast" class="glass-card bg-slate-900/90 border-cyan-500/40 p-4 shadow-2xl flex items-center gap-3">
+    <div class="p-2 bg-cyan-500/20 text-cyan-400 rounded-lg">
+      <i data-lucide="qr-code" class="w-5 h-5"></i>
+    </div>
+    <div>
+      <p class="text-sm font-bold text-white">Welcome from IDEX!</p>
+      <p class="text-xs text-slate-300">You scanned our flyer. Explore your IDEX Growth Package below.</p>
+    </div>
+  </div>
+
+  <!-- Header / Navigation -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-[#020617]/80 backdrop-blur-md border-b border-white/10 px-6 py-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <a href="/idex" class="flex items-center gap-3">
+        <img src="/LOGO%20(2).png" alt="ICEBERG Logo" class="h-8 w-auto">
+        <span class="text-xl font-black italic tracking-tighter text-cyan-400">ICEBERG <span class="text-white text-xs font-normal not-italic px-2 py-0.5 border border-cyan-500/30 rounded-full">× IDEX</span></span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold tracking-wider uppercase">
+        <a href="#section-why" class="hover:text-cyan-400 transition-colors">Why Us</a>
+        <a href="#section-services" class="hover:text-cyan-400 transition-colors">Services</a>
+        <a href="#section-package" class="hover:text-cyan-400 transition-colors">Growth Package</a>
+        <a href="#section-work" class="hover:text-cyan-400 transition-colors">Our Work</a>
+        <a href="#section-audit" class="hover:text-cyan-400 transition-colors">Free Audit</a>
+      </nav>
+
+      <a href="#section-calendar" data-scroll-to="section-calendar" data-cta-id="header_book" class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-lg hover:brightness-110 transition-all shadow-lg shadow-cyan-500/20">
+        Book Consultation
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="pt-24">
+
+    <!-- ==================== SECTION 01: HERO ==================== -->
+    <section id="section-hero" class="min-h-[85vh] flex flex-col justify-center px-6 py-12 max-w-7xl mx-auto relative overflow-hidden">
+      <div class="absolute -top-32 -right-32 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute top-1/2 -left-32 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <!-- Left Hero Column -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="eyebrow-tag">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            IDEX 2026 AUGUST EXHIBITOR HUB
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] gradient-heading">
+            Turn Your IDEX Presence Into High-Value Business Growth.
+          </h1>
+
+          <p class="text-lg sm:text-xl text-slate-300 max-w-2xl leading-relaxed">
+            350+ exhibitors will compete for attention at IDEX 2026. ICEBERG helps dental brands pre-book clinic owners, capture qualified lead funnels, and dominate event ROI.
+          </p>
+
+          <div class="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <button data-scroll-to="section-calendar" data-cta-id="hero_primary" class="px-8 py-4 bg-cyan-400 text-slate-950 font-bold text-base rounded-lg hover:bg-cyan-300 transition-all transform hover:-translate-y-0.5 shadow-xl shadow-cyan-500/20 flex items-center justify-center gap-2">
+              <i data-lucide="calendar" class="w-5 h-5"></i>
+              Book Your IDEX Consultation
+            </button>
+            
+            <button data-scroll-to="section-package" data-cta-id="hero_secondary" class="px-8 py-4 bg-transparent border border-cyan-500/40 text-cyan-400 font-bold text-base rounded-lg hover:bg-cyan-500/10 transition-all flex items-center justify-center gap-2">
+              Explore 90-Day Package
+              <i data-lucide="arrow-right" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <!-- Trust Strip -->
+          <div class="pt-8 border-t border-white/10 flex flex-wrap items-center gap-4 sm:gap-8 text-sm text-slate-400">
+            <span class="text-xs uppercase tracking-widest text-slate-500 font-bold">Trusted Execution For:</span>
+            <button data-scroll-to="section-work" class="font-bold text-slate-300 hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+              Dentaquick <span class="text-slate-600">·</span>
+            </button>
+            <button data-scroll-to="section-work" class="font-bold text-slate-300 hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+              Acrostone <span class="text-slate-600">·</span>
+            </button>
+            <button data-scroll-to="section-work" class="font-bold text-slate-300 hover:text-cyan-400 transition-colors">
+              Waterpik
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Hero Column: Confidential Audit Finder Widget -->
+        <div class="lg:col-span-5">
+          <div class="glass-card-elevated p-6 sm:p-8 rounded-2xl relative space-y-5 border-cyan-500/40 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4">
+              <div class="flex items-center gap-2">
+                <span class="p-2 rounded-lg bg-cyan-500/20 text-cyan-400">
+                  <i data-lucide="shield-check" class="w-5 h-5"></i>
+                </span>
+                <div>
+                  <h3 class="text-base font-extrabold text-white">IDEX Audit Portal</h3>
+                  <p class="text-xs text-slate-400">140+ Pre-Audited Exhibitors</p>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-[10px] uppercase font-bold rounded-full">Confidential</span>
+            </div>
+
+            <p class="text-xs text-slate-300 leading-relaxed">
+              We evaluated MENA digital channels for IDEX exhibitors. Access your brand's confidential audit score, revenue leakage breakdown, and 14-day recovery plan.
+            </p>
+
+            <div class="space-y-3">
+              <label for="hero-audit-search" class="block text-xs font-bold uppercase text-slate-300">Find Your Brand Audit</label>
+              <div class="relative">
+                <input type="text" id="hero-audit-search" placeholder="Type company name (e.g. Septodont, Kerr, DR. A&H)..." class="w-full px-4 py-3 bg-slate-950/80 border border-white/15 rounded-xl text-sm text-white focus:border-cyan-400 focus:outline-none pl-10">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5"></i>
+              </div>
+              <div id="hero-search-results" class="max-h-48 overflow-y-auto space-y-1 hidden bg-slate-900 border border-white/10 rounded-xl p-2 shadow-xl"></div>
+            </div>
+
+            <button id="hero-unlock-audit-btn" class="w-full py-3.5 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black text-sm uppercase tracking-wider rounded-xl hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20">
+              <i data-lucide="lock" class="w-4 h-4"></i>
+              Access Confidential Audit
+            </button>
+
+            <div class="text-center pt-1">
+              <a href="/IDEX Event/index.html?mode=internal" class="text-[11px] text-slate-400 hover:text-cyan-400 underline">Iceberg Sales Rep? Switch to Team Hub &rarr;</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 02: WHY ICEBERG ==================== -->
+    <section id="section-why" class="py-20 px-6 max-w-7xl mx-auto border-t border-white/5">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <h2 class="text-3xl sm:text-4xl font-extrabold gradient-heading">Why ICEBERG for IDEX?</h2>
+        <p class="text-slate-400 mt-3 text-base">Five ways we turn event attention into measurable business outcomes.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Pillar 1 -->
+        <div class="glass-card p-6 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <i data-lucide="badge-check" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-xl font-bold">Brand</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">Build a stronger and more professional market presence.</p>
+          </div>
+        </div>
+
+        <!-- Pillar 2 -->
+        <div class="glass-card p-6 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <i data-lucide="monitor" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-xl font-bold">Digital</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">Create the digital infrastructure supporting your exhibition presence.</p>
+          </div>
+        </div>
+
+        <!-- Pillar 3 -->
+        <div class="glass-card p-6 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <i data-lucide="send" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-xl font-bold">Marketing</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">Generate awareness and reach relevant target audiences.</p>
+          </div>
+        </div>
+
+        <!-- Pillar 4 -->
+        <div class="glass-card p-6 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-xl font-bold">Performance</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">Turn attention into qualified, measurable leads.</p>
+          </div>
+        </div>
+
+        <!-- Pillar 5 (Spans Full Width on Desktop) -->
+        <div class="glass-card p-8 md:col-span-2 lg:col-span-4 bg-gradient-to-r from-slate-900 via-cyan-950/20 to-slate-900 border-cyan-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div class="flex items-center gap-5">
+            <div class="w-14 h-14 rounded-2xl bg-cyan-400 text-slate-950 flex items-center justify-center font-bold shrink-0">
+              <i data-lucide="trending-up" class="w-7 h-7"></i>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-white">Business Development</h3>
+              <p class="text-slate-300 text-base mt-1">Transform event exposure into actual business opportunities and long-term contracts.</p>
+            </div>
+          </div>
+          <button data-scroll-to="section-calendar" data-cta-id="why_bizdev" class="px-6 py-3 bg-cyan-400 text-slate-950 font-bold rounded-lg hover:bg-cyan-300 transition-all shrink-0">
+            Talk to Strategy Team
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 03: SERVICES ==================== -->
+    <section id="section-services" class="py-20 px-6 max-w-7xl mx-auto border-t border-white/5">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <h2 class="text-3xl sm:text-4xl font-extrabold gradient-heading">ICEBERG IDEX Services</h2>
+        <p class="text-slate-400 mt-3 text-base">Five services. One standard of execution.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Service 1 -->
+        <div data-service-key="rebranding" class="glass-card p-6 cursor-pointer group hover:border-cyan-400/50 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="p-3 rounded-lg bg-cyan-500/10 text-cyan-400">
+                <i data-lucide="palette" class="w-6 h-6"></i>
+              </div>
+              <span class="text-xs text-cyan-400 font-semibold group-hover:translate-x-1 transition-transform">Learn details &rarr;</span>
+            </div>
+            <h3 class="text-xl font-bold group-hover:text-cyan-400 transition-colors">Rebranding</h3>
+            <p class="text-sm text-slate-300">Strengthen your brand positioning and visual identity for exhibition impact.</p>
+          </div>
+        </div>
+
+        <!-- Service 2 -->
+        <div data-service-key="printing" class="glass-card p-6 cursor-pointer group hover:border-cyan-400/50 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="p-3 rounded-lg bg-cyan-500/10 text-cyan-400">
+                <i data-lucide="printer" class="w-6 h-6"></i>
+              </div>
+              <span class="text-xs text-cyan-400 font-semibold group-hover:translate-x-1 transition-transform">Learn details &rarr;</span>
+            </div>
+            <h3 class="text-xl font-bold group-hover:text-cyan-400 transition-colors">Printing</h3>
+            <p class="text-sm text-slate-300">Create professional physical materials for your exhibition booth and visitors.</p>
+          </div>
+        </div>
+
+        <!-- Service 3 -->
+        <div data-service-key="media" class="glass-card p-6 cursor-pointer group hover:border-cyan-400/50 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="p-3 rounded-lg bg-cyan-500/10 text-cyan-400">
+                <i data-lucide="megaphone" class="w-6 h-6"></i>
+              </div>
+              <span class="text-xs text-cyan-400 font-semibold group-hover:translate-x-1 transition-transform">Learn details &rarr;</span>
+            </div>
+            <h3 class="text-xl font-bold group-hover:text-cyan-400 transition-colors">Media Buying</h3>
+            <p class="text-sm text-slate-300">Reach relevant regional audiences and key industry decision-makers.</p>
+          </div>
+        </div>
+
+        <!-- Service 4 -->
+        <div data-service-key="website" class="glass-card p-6 cursor-pointer group hover:border-cyan-400/50 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="p-3 rounded-lg bg-cyan-500/10 text-cyan-400">
+                <i data-lucide="globe" class="w-6 h-6"></i>
+              </div>
+              <span class="text-xs text-cyan-400 font-semibold group-hover:translate-x-1 transition-transform">Learn details &rarr;</span>
+            </div>
+            <h3 class="text-xl font-bold group-hover:text-cyan-400 transition-colors">Website Services</h3>
+            <p class="text-sm text-slate-300">Build or optimize your high-converting digital presence and landing funnels.</p>
+          </div>
+        </div>
+
+        <!-- Service 5 -->
+        <div data-service-key="bizdev" class="glass-card p-6 cursor-pointer group hover:border-cyan-400/50 flex flex-col justify-between md:col-span-2 lg:col-span-2">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="p-3 rounded-lg bg-cyan-500/10 text-cyan-400">
+                <i data-lucide="trending-up" class="w-6 h-6"></i>
+              </div>
+              <span class="text-xs text-cyan-400 font-semibold group-hover:translate-x-1 transition-transform">Learn details &rarr;</span>
+            </div>
+            <h3 class="text-xl font-bold group-hover:text-cyan-400 transition-colors">Business Development & Consulting</h3>
+            <p class="text-sm text-slate-300">Identify strategic opportunities and convert them into valuable business relationships.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Service Detail Modal Backdrop -->
+    <div id="service-modal-backdrop" class="modal-backdrop">
+      <div class="modal-content relative">
+        <button id="modal-service-close" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-lg border border-white/10" aria-label="Close modal">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        <h3 id="modal-service-title" class="text-2xl font-bold text-cyan-400 mb-3">Service Title</h3>
+        <p id="modal-service-desc" class="text-slate-300 text-base leading-relaxed mb-6">Service details content...</p>
+        <button data-scroll-to="section-calendar" class="w-full py-3 bg-cyan-400 text-slate-950 font-bold rounded-lg hover:bg-cyan-300 transition-colors">
+          Book Consultation For This Service
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== SECTION 04: 3-MONTH PACKAGE ==================== -->
+    <section id="section-package" class="py-20 px-6 max-w-7xl mx-auto border-t border-white/5">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <div class="eyebrow-tag mb-3">OFFICIAL COMMERCIAL OFFER</div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold gradient-heading">ICEBERG IDEX Growth Package</h2>
+        <span class="inline-block mt-2 px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-bold text-xs rounded-full">3 SERVICES × 3 MONTHS</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Main Elevated Package Card: Interactive Pricing Pool Estimator -->
+        <div class="lg:col-span-7 glass-card-elevated p-8 rounded-2xl relative space-y-6">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="px-2.5 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-[10px] uppercase font-bold rounded-full inline-block mb-2">Choose 3, Get 1 Free Offer</span>
+              <h3 class="text-2xl font-black text-white">IDEX Dynamic Growth Package Estimator</h3>
+              <p class="text-sm text-slate-300 mt-1">Select 3 or 4 services below to calculate your dynamic investment pool.</p>
+            </div>
+            <span class="px-3 py-1 bg-cyan-400 text-slate-950 font-black text-xs uppercase rounded shrink-0">Most Popular</span>
+          </div>
+
+          <!-- Interactive Service Checkbox Pool -->
+          <div class="space-y-3 border-y border-white/10 py-6">
+            <div class="flex justify-between items-center mb-1">
+              <p class="text-xs uppercase font-bold text-slate-300">Build Your Service Pool:</p>
+              <span id="pool-count-badge" class="text-xs font-extrabold text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 px-2 py-0.5 rounded">3 Services Selected</span>
+            </div>
+
+            <div id="pricing-service-pool" class="space-y-2.5">
+              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-cyan-500/30 cursor-pointer hover:border-cyan-400 transition-all">
+                <div class="flex items-center gap-3">
+                  <input type="checkbox" name="pool-service" value="branding" checked data-price="25000" class="w-4 h-4 accent-cyan-400 rounded">
+                  <div>
+                    <span class="text-sm font-bold text-white block">Rebranding & Visual Identity</span>
+                    <span class="text-[10px] text-slate-400">Identity systems & logo guidelines</span>
+                  </div>
+                </div>
+                <span class="text-xs font-mono font-bold text-cyan-400">25,000 – 40,000 EGP</span>
+              </label>
+
+              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-cyan-500/30 cursor-pointer hover:border-cyan-400 transition-all">
+                <div class="flex items-center gap-3">
+                  <input type="checkbox" name="pool-service" value="website" checked data-price="20000" class="w-4 h-4 accent-cyan-400 rounded">
+                  <div>
+                    <span class="text-sm font-bold text-white block">Website & Digital Funnels</span>
+                    <span class="text-[10px] text-slate-400">High-speed corporate sites & lead pages</span>
+                  </div>
+                </div>
+                <span class="text-xs font-mono font-bold text-cyan-400">20,000 – 35,000 EGP</span>
+              </label>
+
+              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-cyan-500/30 cursor-pointer hover:border-cyan-400 transition-all">
+                <div class="flex items-center gap-3">
+                  <input type="checkbox" name="pool-service" value="media" checked data-price="15000" class="w-4 h-4 accent-cyan-400 rounded">
+                  <div>
+                    <span class="text-sm font-bold text-white block">Targeted Media Buying & Ads</span>
+                    <span class="text-[10px] text-slate-400">High ROI Meta & TikTok lead campaigns</span>
+                  </div>
+                </div>
+                <span class="text-xs font-mono font-bold text-cyan-400">15,000 – 25,000 EGP</span>
+              </label>
+
+              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-emerald-500/40 bg-emerald-950/20 cursor-pointer hover:border-cyan-400 transition-all" id="free-4th-label">
+                <div class="flex items-center gap-3">
+                  <input type="checkbox" name="pool-service" value="printing" checked data-price="15000" class="w-4 h-4 accent-cyan-400 rounded">
+                  <div>
+                    <span class="text-sm font-bold text-white block">Exhibition Printing & Collateral</span>
+                    <span id="free-badge-tag" class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/20 border border-emerald-500/30 px-1.5 py-0.5 rounded inline-block mt-0.5">🎁 FREE 4TH SERVICE BONUS</span>
+                  </div>
+                </div>
+                <span id="free-4th-price" class="text-xs font-mono font-extrabold text-emerald-400">0 EGP (FREE)</span>
+              </label>
+
+              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-white/10 cursor-pointer hover:border-cyan-400 transition-all">
+                <div class="flex items-center gap-3">
+                  <input type="checkbox" name="pool-service" value="bizdev" data-price="12000" class="w-4 h-4 accent-cyan-400 rounded">
+                  <div>
+                    <span class="text-sm font-bold text-white block">Business Development & Consulting</span>
+                    <span class="text-[10px] text-slate-400">Sales enablement & B2B closing strategy</span>
+                  </div>
+                </div>
+                <span class="text-xs font-mono font-bold text-slate-400">12,000 – 20,000 EGP</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Live Itemized Pool Summary -->
+          <div class="space-y-2.5 bg-slate-950/70 p-4 rounded-xl border border-white/10">
+            <div class="flex justify-between text-xs text-slate-300">
+              <span>Gross Services Value:</span>
+              <span id="pool-gross-val" class="font-mono font-bold text-white">75,000 EGP</span>
+            </div>
+            <div class="flex justify-between text-xs text-emerald-400">
+              <span>Choose 3 Get 1 Free Bonus:</span>
+              <span id="pool-free-bonus" class="font-mono font-bold">-15,000 EGP</span>
+            </div>
+            <div class="flex justify-between text-xs text-cyan-400">
+              <span>33% IDEX Event Special Discount:</span>
+              <span id="pool-event-discount" class="font-mono font-bold">-19,800 EGP</span>
+            </div>
+            <div class="pt-2 border-t border-white/10 flex justify-between items-center">
+              <div>
+                <span class="text-xs uppercase font-extrabold text-slate-300 block">Final Net Investment:</span>
+                <span class="text-[10px] text-slate-400">Pre-Event, Live & Post-Event (90 Days)</span>
+              </div>
+              <div class="text-right">
+                <span id="pool-net-total" class="text-2xl font-black text-cyan-400 font-mono block">40,200 EGP</span>
+                <span id="pool-monthly-total" class="text-xs text-slate-300 font-bold">~ 13,400 EGP / mo</span>
+              </div>
+            </div>
+          </div>
+
+          <button data-scroll-to="section-calendar" data-cta-id="package_primary" class="w-full py-4 bg-cyan-400 text-slate-950 font-black text-sm uppercase tracking-wider rounded-xl hover:bg-cyan-300 transition-all text-center shadow-lg shadow-cyan-500/20">
+            Claim This Package & Book Consultation
+          </button>
+        </div>
+
+        <!-- 3 Promotional Offers Column -->
+        <div class="lg:col-span-5 space-y-4">
+          <!-- Offer 01 -->
+          <div class="glass-card p-6 border-cyan-500/30 relative">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase text-cyan-400">Offer 01</span>
+              <div id="offer-countdown" class="text-xs font-mono"></div>
+            </div>
+            <h4 class="text-lg font-bold text-white">33% IDEX Special Offer</h4>
+            <p class="text-xs text-slate-300 mt-1">33% discount on the 3-Month Growth Package. Valid through 31 August. Limited-time event offer.</p>
+          </div>
+
+          <!-- Offer 02 -->
+          <div class="glass-card p-6">
+            <span class="text-xs font-bold uppercase text-cyan-400 block mb-2">Offer 02</span>
+            <h4 class="text-lg font-bold text-white">Choose 3, Get 1 Free</h4>
+            <p class="text-xs text-slate-300 mt-1">Clients selecting three core services receive an additional fourth service completely free of charge.</p>
+          </div>
+
+          <!-- Offer 03 -->
+          <div class="glass-card p-6">
+            <span class="text-xs font-bold uppercase text-cyan-400 block mb-2">Offer 03</span>
+            <h4 class="text-lg font-bold text-white">August Birthday Offer</h4>
+            <p class="text-xs text-slate-300 mt-1">Dedicated promotional offer for eligible companies founded or incorporated in August. Verified at consultation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 05: CLIENT SHOWCASE ==================== -->
+    <section id="section-work" class="py-20 px-6 max-w-7xl mx-auto border-t border-white/5">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <h2 class="text-3xl sm:text-4xl font-extrabold gradient-heading">Our Work — Client Showcase</h2>
+        <p class="text-slate-400 mt-3 text-base">Three brands. One standard of execution.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Dentaquick -->
+        <div class="glass-card p-6 flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="flex justify-between items-center pb-4 border-b border-white/10">
+              <h3 class="text-xl font-extrabold text-cyan-400">Dentaquick</h3>
+              <span class="text-[10px] text-slate-400 uppercase tracking-widest">Dental Care / D2C</span>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase">Challenge</p>
+              <p class="text-xs text-slate-300 mt-1">Needed to transition from clinical brand to consumer growth brand.</p>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase">Strategy</p>
+              <p class="text-xs text-slate-300 mt-1">Position as lifestyle health brand focusing on patient outcomes.</p>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase">Execution</p>
+              <p class="text-xs text-slate-300 mt-1">Full rebrand, performance website rebuild, paid-media engine.</p>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-white/10">
+            <div class="text-2xl font-black text-emerald-400 mb-2">+38% leads</div>
+            <a href="/idex/case-study/dentaquick" class="text-xs font-bold text-cyan-400 hover:underline flex items-center gap-1">View Case Study &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Acrostone -->
+        <div class="glass-card p-6 flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="flex justify-between items-center pb-4 border-b border-white/10">
+              <h3 class="text-xl font-extrabold text-cyan-400">Acrostone</h3>
+              <span class="text-[10px] text-slate-400 uppercase tracking-widest">Healthcare / B2B</span>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase">Challenge</p>
+              <p class="text-xs text-slate-300 mt-1">Established B2B distributor with weak digital presence.</p>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase">Strategy</p>
+              <p class="text-xs text-slate-300 mt-1">Build HCP-focused content engine anchored on LinkedIn.</p>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase">Execution</p>
+              <p class="text-xs text-slate-300 mt-1">Messaging framework, LinkedIn content, trade-show creative.</p>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-white/10">
+            <div class="text-2xl font-black text-emerald-400 mb-2">2.4× engagement</div>
+            <a href="/idex/case-study/acrostone" class="text-xs font-bold text-cyan-400 hover:underline flex items-center gap-1">View Case Study &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Waterpik -->
+        <div class="glass-card p-6 flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="flex justify-between items-center pb-4 border-b border-white/10">
+              <h3 class="text-xl font-extrabold text-cyan-400">Waterpik</h3>
+              <span class="text-[10px] text-slate-400 uppercase tracking-widest">Consumer Brand</span>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase">Challenge</p>
+              <p class="text-xs text-slate-300 mt-1">Global brand requiring regional MEA campaign localization.</p>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase">Strategy</p>
+              <p class="text-xs text-slate-300 mt-1">Localize creative region-by-region; rebuild retail landing pages.</p>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase">Execution</p>
+              <p class="text-xs text-slate-300 mt-1">Regional creative, landing optimization, MEA media buying.</p>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-white/10">
+            <div class="text-2xl font-black text-emerald-400 mb-2">+27% ROAS</div>
+            <a href="/idex/case-study/waterpik" class="text-xs font-bold text-cyan-400 hover:underline flex items-center gap-1">View Case Study &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mandatory Draft Disclaimer -->
+      <div class="mt-8 p-4 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs text-center">
+        ⚠ Figures are draft estimates based on public information — verify before publish.
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 06: FREE DIGITAL AUDIT ==================== -->
+    <section id="section-audit" class="py-20 px-6 max-w-7xl mx-auto border-t border-white/5">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <!-- Audit Scope Info -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="eyebrow-tag">FREE LEAD MAGNET</div>
+          <h2 class="text-3xl sm:text-4xl font-extrabold gradient-heading">Not Sure What Your Brand Needs Before IDEX?</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Get a comprehensive, free IDEX Digital Opportunity Audit evaluated across 7 core marketing surfaces:</p>
+
+          <div class="space-y-3">
+            <div class="tooltip-trigger flex items-center gap-3 p-3 rounded-lg bg-slate-900/60 border border-white/5">
+              <i data-lucide="check-circle-2" class="w-5 h-5 text-cyan-400 shrink-0"></i>
+              <div>
+                <span class="text-sm font-bold block text-white">Website & Speed</span>
+                <span class="text-xs text-slate-400">Load speed, mobile UX, conversion paths.</span>
+              </div>
+            </div>
+
+            <div class="tooltip-trigger flex items-center gap-3 p-3 rounded-lg bg-slate-900/60 border border-white/5">
+              <i data-lucide="check-circle-2" class="w-5 h-5 text-cyan-400 shrink-0"></i>
+              <div>
+                <span class="text-sm font-bold block text-white">Branding & Positioning</span>
+                <span class="text-xs text-slate-400">Visual consistency, messaging clarity.</span>
+              </div>
+            </div>
+
+            <div class="tooltip-trigger flex items-center gap-3 p-3 rounded-lg bg-slate-900/60 border border-white/5">
+              <i data-lucide="check-circle-2" class="w-5 h-5 text-cyan-400 shrink-0"></i>
+              <div>
+                <span class="text-sm font-bold block text-white">Social Media Cadence</span>
+                <span class="text-xs text-slate-400">Channel presence, engagement rate.</span>
+              </div>
+            </div>
+
+            <div class="tooltip-trigger flex items-center gap-3 p-3 rounded-lg bg-slate-900/60 border border-white/5">
+              <i data-lucide="check-circle-2" class="w-5 h-5 text-cyan-400 shrink-0"></i>
+              <div>
+                <span class="text-sm font-bold block text-white">Content Quality & SEO</span>
+                <span class="text-xs text-slate-400">Editorial quality, search coverage.</span>
+              </div>
+            </div>
+
+            <div class="tooltip-trigger flex items-center gap-3 p-3 rounded-lg bg-slate-900/60 border border-white/5">
+              <i data-lucide="check-circle-2" class="w-5 h-5 text-cyan-400 shrink-0"></i>
+              <div>
+                <span class="text-sm font-bold block text-white">Digital Marketing & Ads</span>
+                <span class="text-xs text-slate-400">Paid channels, funnel coverage.</span>
+              </div>
+            </div>
+
+            <div class="tooltip-trigger flex items-center gap-3 p-3 rounded-lg bg-slate-900/60 border border-white/5">
+              <i data-lucide="check-circle-2" class="w-5 h-5 text-cyan-400 shrink-0"></i>
+              <div>
+                <span class="text-sm font-bold block text-white">Customer Journey</span>
+                <span class="text-xs text-slate-400">Awareness to conversion clarity.</span>
+              </div>
+            </div>
+
+            <div class="tooltip-trigger flex items-center gap-3 p-3 rounded-lg bg-slate-900/60 border border-white/5">
+              <i data-lucide="check-circle-2" class="w-5 h-5 text-cyan-400 shrink-0"></i>
+              <div>
+                <span class="text-sm font-bold block text-white">Lead Gen Opportunities</span>
+                <span class="text-xs text-slate-400">Forms, CTAs, retargeting setup.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit Lead Form -->
+        <div class="lg:col-span-7 glass-card p-8 rounded-2xl">
+          <h3 class="text-xl font-bold mb-6 text-cyan-400">Request Your Free IDEX Audit</h3>
+          <form id="audit-lead-form" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="audit-name" class="block text-xs font-bold text-slate-300 uppercase mb-1">Name *</label>
+                <input type="text" id="audit-name" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white focus:border-cyan-400" placeholder="John Doe">
+              </div>
+
+              <div>
+                <label for="audit-company" class="block text-xs font-bold text-slate-300 uppercase mb-1">Company *</label>
+                <input type="text" id="audit-company" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white focus:border-cyan-400" placeholder="Acme Health">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="audit-website" class="block text-xs font-bold text-slate-300 uppercase mb-1">Website URL *</label>
+                <input type="url" id="audit-website" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white focus:border-cyan-400" placeholder="https://example.com">
+              </div>
+
+              <div>
+                <label for="audit-email" class="block text-xs font-bold text-slate-300 uppercase mb-1">Email *</label>
+                <input type="email" id="audit-email" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white focus:border-cyan-400" placeholder="john@example.com">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="audit-phone" class="block text-xs font-bold text-slate-300 uppercase mb-1">Phone Number</label>
+                <input type="tel" id="audit-phone" class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white focus:border-cyan-400">
+              </div>
+
+              <div>
+                <label for="audit-industry" class="block text-xs font-bold text-slate-300 uppercase mb-1">Industry *</label>
+                <select id="audit-industry" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white focus:border-cyan-400">
+                  <option value="">Select Industry</option>
+                  <option value="Healthcare & Medical">Healthcare & Medical</option>
+                  <option value="Dental Care">Dental Care</option>
+                  <option value="Pharmaceuticals">Pharmaceuticals</option>
+                  <option value="Medical Devices">Medical Devices</option>
+                  <option value="Consumer Goods">Consumer Goods</option>
+                  <option value="Other B2B">Other B2B</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase mb-2">What are you looking for? (Select all that apply) *</label>
+              <div class="grid grid-cols-2 gap-2 text-xs text-slate-300">
+                <label class="flex items-center gap-2"><input type="checkbox" name="requirements" value="Rebranding" class="accent-cyan-400"> Rebranding</label>
+                <label class="flex items-center gap-2"><input type="checkbox" name="requirements" value="Printing" class="accent-cyan-400"> Printing</label>
+                <label class="flex items-center gap-2"><input type="checkbox" name="requirements" value="Media Buying" class="accent-cyan-400"> Media Buying</label>
+                <label class="flex items-center gap-2"><input type="checkbox" name="requirements" value="Website Services" class="accent-cyan-400"> Website Services</label>
+                <label class="flex items-center gap-2"><input type="checkbox" name="requirements" value="Business Development" class="accent-cyan-400"> Business Development</label>
+                <label class="flex items-center gap-2"><input type="checkbox" name="requirements" value="IDEX Growth Package" class="accent-cyan-400"> IDEX Growth Package</label>
+              </div>
+            </div>
+
+            <button type="submit" id="audit-submit-btn" class="w-full py-4 bg-cyan-400 text-slate-950 font-bold text-base rounded-lg hover:bg-cyan-300 transition-all shadow-lg shadow-cyan-500/20">
+              Request My Free Audit
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 07: MEETING CALENDAR ==================== -->
+    <section id="section-calendar" class="py-20 px-6 max-w-7xl mx-auto border-t border-white/5">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <h2 class="text-3xl sm:text-4xl font-extrabold gradient-heading">Book Your IDEX Consultation</h2>
+        <p class="text-slate-400 mt-3 text-base">Select a date and time that works for you. 60-minute strategy session.</p>
+      </div>
+
+      <!-- 4-Step Calendar Booking Widget Container -->
+      <div class="glass-card p-8 rounded-2xl max-w-4xl mx-auto">
+        <!-- Step Pills Header -->
+        <div class="flex items-center justify-between border-b border-white/10 pb-6 mb-8 gap-2 overflow-x-auto">
+          <div class="calendar-step-pill active" data-step="1">Step 1 · Select Date</div>
+          <div class="calendar-step-pill" data-step="2">Step 2 · Select Time</div>
+          <div class="calendar-step-pill" data-step="3">Step 3 · Enter Details</div>
+          <div class="calendar-step-pill" data-step="4">Step 4 · Confirm</div>
+        </div>
+
+        <!-- Step 1 Panel: Pick Date -->
+        <div class="calendar-step-panel" data-panel="1">
+          <h3 class="text-lg font-bold mb-4 text-cyan-400">Select Date (Africa/Cairo Time)</h3>
+          <div id="calendar-date-grid" class="grid grid-cols-7 gap-2 max-w-lg mx-auto">
+            <!-- Date buttons injected via idex.js -->
+          </div>
+        </div>
+
+        <!-- Step 2 Panel: Pick Time -->
+        <div class="calendar-step-panel hidden" data-panel="2">
+          <h3 class="text-lg font-bold mb-4 text-cyan-400">Select Time Slot</h3>
+          <div id="calendar-time-slots" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <!-- Time buttons injected via idex.js -->
+          </div>
+        </div>
+
+        <!-- Step 3 Panel: Enter Details -->
+        <div class="calendar-step-panel hidden" data-panel="3">
+          <div id="hold-timer-banner" class="mb-4 p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-xs text-cyan-300 flex items-center justify-between">
+            <span>⏰ Slot held for <strong><span id="hold-seconds">60s</span></strong>. Complete details below.</span>
+          </div>
+          <h3 class="text-lg font-bold mb-4 text-cyan-400">Enter Your Contact Details</h3>
+          <form id="calendar-step3-form" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="cal-name" class="block text-xs font-bold text-slate-300 uppercase mb-1">Name *</label>
+                <input type="text" id="cal-name" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white">
+              </div>
+              <div>
+                <label for="cal-email" class="block text-xs font-bold text-slate-300 uppercase mb-1">Email *</label>
+                <input type="email" id="cal-email" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="cal-phone" class="block text-xs font-bold text-slate-300 uppercase mb-1">Phone *</label>
+                <input type="tel" id="cal-phone" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white">
+              </div>
+              <div>
+                <label for="cal-company" class="block text-xs font-bold text-slate-300 uppercase mb-1">Company *</label>
+                <input type="text" id="cal-company" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="cal-industry" class="block text-xs font-bold text-slate-300 uppercase mb-1">Industry *</label>
+                <input type="text" id="cal-industry" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white" placeholder="Healthcare / Dental / B2B">
+              </div>
+              <div>
+                <label for="cal-notes" class="block text-xs font-bold text-slate-300 uppercase mb-1">Notes (Optional)</label>
+                <input type="text" id="cal-notes" class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white" placeholder="Project goals...">
+              </div>
+            </div>
+
+            <button type="submit" class="w-full py-3.5 bg-cyan-400 text-slate-950 font-bold text-sm rounded-lg hover:bg-cyan-300 transition-colors">
+              Continue to Confirmation &rarr;
+            </button>
+          </form>
+        </div>
+
+        <!-- Step 4 Panel: Summary & Confirm -->
+        <div class="calendar-step-panel hidden" data-panel="4">
+          <h3 class="text-lg font-bold mb-4 text-cyan-400">Review & Confirm Your Meeting</h3>
+          <div class="space-y-3 bg-slate-900/80 p-5 rounded-xl border border-white/10 text-sm mb-6">
+            <div class="flex justify-between"><span class="text-slate-400">Date & Time:</span> <span id="summary-datetime" class="font-bold text-cyan-400"></span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Name:</span> <span id="summary-name" class="font-bold text-white"></span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Email:</span> <span id="summary-email" class="font-bold text-white"></span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Company:</span> <span id="summary-company" class="font-bold text-white"></span></div>
+          </div>
+          <button id="confirm-booking-btn" class="w-full py-4 bg-emerald-400 text-slate-950 font-black text-base rounded-lg hover:bg-emerald-300 transition-all shadow-xl shadow-emerald-500/20">
+            Confirm Meeting
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 08: LEAD QUALIFICATION FORM ==================== -->
+    <section id="section-contact" class="py-20 px-6 max-w-7xl mx-auto border-t border-white/5">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <h2 class="text-3xl sm:text-4xl font-extrabold gradient-heading">Let's Talk — Tell Us About Your Project</h2>
+        <p class="text-slate-400 mt-3 text-base">We'll respond within one business day.</p>
+      </div>
+
+      <div class="glass-card p-8 rounded-2xl max-w-3xl mx-auto">
+        <form id="lead-qual-form" class="space-y-6">
+          <!-- Honeypot -->
+          <input type="text" id="qual-hp" name="website_hp" class="hidden" tabindex="-1" autocomplete="off">
+
+          <!-- Personal Information -->
+          <div>
+            <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-3 border-b border-white/10 pb-1">Personal Information</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="qual-name" class="block text-xs font-bold text-slate-300 uppercase mb-1">Name *</label>
+                <input type="text" id="qual-name" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white">
+              </div>
+              <div>
+                <label for="qual-position" class="block text-xs font-bold text-slate-300 uppercase mb-1">Position / Title *</label>
+                <input type="text" id="qual-position" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white">
+              </div>
+              <div>
+                <label for="qual-email" class="block text-xs font-bold text-slate-300 uppercase mb-1">Email *</label>
+                <input type="email" id="qual-email" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white">
+              </div>
+              <div>
+                <label for="qual-phone" class="block text-xs font-bold text-slate-300 uppercase mb-1">Phone *</label>
+                <input type="tel" id="qual-phone" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white">
+              </div>
+            </div>
+          </div>
+
+          <!-- Company Information -->
+          <div>
+            <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-3 border-b border-white/10 pb-1">Company Information</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="qual-company" class="block text-xs font-bold text-slate-300 uppercase mb-1">Company *</label>
+                <input type="text" id="qual-company" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white">
+              </div>
+              <div>
+                <label for="qual-country" class="block text-xs font-bold text-slate-300 uppercase mb-1">Country *</label>
+                <input type="text" id="qual-country" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white" placeholder="UAE / Saudi Arabia / Egypt">
+              </div>
+              <div>
+                <label for="qual-website" class="block text-xs font-bold text-slate-300 uppercase mb-1">Website URL</label>
+                <input type="url" id="qual-website" class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white">
+              </div>
+              <div>
+                <label for="qual-industry" class="block text-xs font-bold text-slate-300 uppercase mb-1">Industry *</label>
+                <input type="text" id="qual-industry" required class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-white">
+              </div>
+            </div>
+          </div>
+
+          <!-- Requirements -->
+          <div>
+            <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-3 border-b border-white/10 pb-1">Requirements</h3>
+            <label class="block text-xs text-slate-400 mb-2">What are you looking for? (Select all that apply)</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs text-slate-300">
+              <label class="flex items-center gap-2"><input type="checkbox" name="qual-req" value="Rebranding" class="accent-cyan-400"> Rebranding</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="qual-req" value="Printing" class="accent-cyan-400"> Printing</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="qual-req" value="Media Buying" class="accent-cyan-400"> Media Buying</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="qual-req" value="Website" class="accent-cyan-400"> Website</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="qual-req" value="Business Dev" class="accent-cyan-400"> Business Dev</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="qual-req" value="Consulting" class="accent-cyan-400"> Consulting</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="qual-req" value="Multiple Services" class="accent-cyan-400"> Multiple Services</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="qual-req" value="IDEX Growth Package" class="accent-cyan-400"> IDEX Growth Package</label>
+            </div>
+            <div class="mt-3">
+              <input type="text" id="qual-req-other-text" class="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-xs text-white" placeholder="Other details / custom requirements...">
+            </div>
+          </div>
+
+          <button type="submit" id="lead-qual-submit-btn" class="w-full py-4 bg-cyan-400 text-slate-950 font-bold text-base rounded-lg hover:bg-cyan-300 transition-all shadow-lg shadow-cyan-500/20">
+            Submit Lead
+          </button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/10 py-8 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>© 2026 ICEBERG Digital Marketing Agency. All rights reserved.</p>
+      <p>IDEX Event Campaign · Confidential Internal Specification</p>
+    </div>
+  </footer>
+
+</body>
+</html>
