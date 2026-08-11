@@ -10,6 +10,14 @@ let currentEditType = null;
 
 // Initialize dashboard with Auth Guard
 document.addEventListener('DOMContentLoaded', function () {
+    const loginForm = document.getElementById('admin-login-form');
+    if (loginForm) {
+        loginForm.onsubmit = handleLogin;
+    }
+    const quickBtn = document.getElementById('quick-login-btn');
+    if (quickBtn) {
+        quickBtn.onclick = quickAdminLogin;
+    }
     checkAuth();
 });
 

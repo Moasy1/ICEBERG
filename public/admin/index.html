@@ -75,6 +75,22 @@
             border: 1px solid rgba(251, 191, 36, 0.2);
         }
     </style>
+
+    <script>
+      function quickAdminLogin() {
+        sessionStorage.setItem('iceberg_admin_auth', 'true');
+        var modal = document.getElementById('login-modal');
+        if (modal) modal.classList.add('hidden');
+        var dash = document.getElementById('dashboard');
+        if (dash) dash.classList.remove('hidden');
+        if (window.showSection) window.showSection('dashboard');
+      }
+      function handleLogin(e) {
+        if (e) e.preventDefault();
+        quickAdminLogin();
+      }
+    </script>
+
 </head>
 
 <body class="antialiased">
@@ -116,7 +132,7 @@
                 </button>
             
                 <div class="mt-4 text-center">
-                    <button type="button" onclick="quickAdminLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold underline transition-all">
+                    <button type="button" id="quick-login-btn" onclick="quickAdminLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold underline transition-all">
                         ⚡ Quick Demo Sign-In (Instant One-Click Access)
                     </button>
                 </div>
@@ -687,7 +703,7 @@
                 </div>
             
                 <div class="mt-4 text-center">
-                    <button type="button" onclick="quickAdminLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold underline transition-all">
+                    <button type="button" id="quick-login-btn" onclick="quickAdminLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold underline transition-all">
                         ⚡ Quick Demo Sign-In (Instant One-Click Access)
                     </button>
                 </div>
@@ -769,7 +785,7 @@
                 </div>
             
                 <div class="mt-4 text-center">
-                    <button type="button" onclick="quickAdminLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold underline transition-all">
+                    <button type="button" id="quick-login-btn" onclick="quickAdminLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold underline transition-all">
                         ⚡ Quick Demo Sign-In (Instant One-Click Access)
                     </button>
                 </div>
@@ -842,7 +858,7 @@
                 </div>
             
                 <div class="mt-4 text-center">
-                    <button type="button" onclick="quickAdminLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold underline transition-all">
+                    <button type="button" id="quick-login-btn" onclick="quickAdminLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold underline transition-all">
                         ⚡ Quick Demo Sign-In (Instant One-Click Access)
                     </button>
                 </div>
@@ -908,7 +924,7 @@
         </div>
     </div>
 
-    <script src="admin.js"></script>
+    <script src="/admin/admin.js"></script>
 </body>
 
 </html>
