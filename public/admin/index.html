@@ -214,28 +214,53 @@
                             Showcase Marquee
                         </a>
                     </li>
+                    <!-- IDEX Management Suite Sidebar Menu -->
+                    <li class="pt-3 pb-1 border-t border-slate-800">
+                        <span class="px-4 text-[10px] font-extrabold uppercase tracking-widest text-cyan-400">IDEX Management Suite</span>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('idex-overview')"
+                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-cyan-400 hover:text-white transition-all">
+                            <i data-lucide="layout-grid" class="w-4 h-4 text-cyan-400"></i>
+                            IDEX Hub Overview
+                        </a>
+                    </li>
                     <li>
                         <a href="#" onclick="showSection('idex-audits')"
-                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-cyan-400 hover:text-white transition-all">
-                            <i data-lucide="shield-alert" class="w-5 h-5 text-cyan-400"></i>
+                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-cyan-400 hover:text-white transition-all">
+                            <i data-lucide="shield-alert" class="w-4 h-4 text-cyan-400"></i>
                             IDEX Exhibitor Audits
                         </a>
                     </li>
                     <li>
                         <a href="#" onclick="showSection('idex-leads')"
-                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-cyan-400 hover:text-white transition-all">
-                            <i data-lucide="sparkles" class="w-5 h-5 text-cyan-400"></i>
+                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-cyan-400 hover:text-white transition-all">
+                            <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
                             IDEX Exhibitor Leads
                         </a>
                     </li>
                     <li>
                         <a href="#" onclick="showSection('idex-calendar')"
-                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-cyan-400 hover:text-white transition-all">
-                            <i data-lucide="calendar" class="w-5 h-5 text-cyan-400"></i>
+                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-cyan-400 hover:text-white transition-all">
+                            <i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i>
                             IDEX Meeting Slots
                         </a>
                     </li>
                     <li>
+                        <a href="#" onclick="showSection('idex-packages')"
+                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-cyan-400 hover:text-white transition-all">
+                            <i data-lucide="package" class="w-4 h-4 text-cyan-400"></i>
+                            Growth Packages
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('idex-screens')"
+                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-cyan-400 hover:text-white transition-all">
+                            <i data-lucide="monitor" class="w-4 h-4 text-cyan-400"></i>
+                            Public Screens Manager
+                        </a>
+                    </li>
+                    <li class="pt-2">
                         <a href="#" onclick="showSection('clients')" 
                             class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
                             <i data-lucide="users" class="w-5 h-5"></i>
@@ -495,7 +520,9 @@
                         </table>
                     </div>
                 </div>
-                <!-- Showcase Management Section -->
+            </section>
+
+            <!-- Showcase Management Section -->
                 <section id="showcase" class="content-section hidden">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-bold text-white">Showcase Marquee Management</h2>
@@ -533,7 +560,148 @@
                     </div>
                 </section>
         
-            <!-- IDEX Exhibitor Audits Database Section -->
+            <!-- ========================================== -->
+            <!-- IDEX 01: HUB OVERVIEW & ANALYTICS DASHBOARD -->
+            <!-- ========================================== -->
+            <section id="idex-overview" class="content-section hidden">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <div>
+                        <div class="flex items-center gap-2 text-cyan-400 text-xs font-mono font-bold tracking-widest uppercase mb-1">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                            IDEX 2026 EVENT SUITE CONTROL CENTER
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-white flex items-center gap-3">
+                            <i data-lucide="layout-grid" class="w-7 h-7 text-cyan-400"></i>
+                            IDEX Hub Overview & Analytics
+                        </h2>
+                        <p class="text-sm text-gray-400 mt-1">Live performance metrics, exhibitor leakage audit database, lead pipeline status, and screen management.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button onclick="loadIdexOverview()" class="btn-primary px-4 py-2 text-white rounded-lg text-sm font-medium flex items-center gap-2">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Sync Data
+                        </button>
+                        <a href="/idex.html" target="_blank" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 rounded-lg text-sm font-bold flex items-center gap-2 transition-all">
+                            <i data-lucide="external-link" class="w-4 h-4"></i> Launch Landing Page
+                        </a>
+                    </div>
+                </div>
+
+                <!-- KPI Metric Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+                    <div class="glass-card p-5 rounded-xl border border-slate-800 relative overflow-hidden group hover:border-cyan-500/50 transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 bg-cyan-500/10 border border-cyan-500/30 rounded-lg flex items-center justify-center">
+                                <i data-lucide="shield-alert" class="w-5 h-5 text-cyan-400"></i>
+                            </div>
+                            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">100% COVERAGE</span>
+                        </div>
+                        <h3 class="text-3xl font-black text-white" id="ov-audits-count">140</h3>
+                        <p class="text-xs text-gray-400 font-semibold mt-1">Audited Exhibitor Brands</p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-xl border border-slate-800 relative overflow-hidden group hover:border-red-500/50 transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center justify-center">
+                                <i data-lucide="trending-down" class="w-5 h-5 text-red-400"></i>
+                            </div>
+                            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20">IDENTIFIED</span>
+                        </div>
+                        <h3 class="text-2xl sm:text-3xl font-black text-red-400 font-mono" id="ov-leakage-tally">65.4M EGP</h3>
+                        <p class="text-xs text-gray-400 font-semibold mt-1">Est. Revenue Leakage</p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-xl border border-slate-800 relative overflow-hidden group hover:border-emerald-500/50 transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center justify-center">
+                                <i data-lucide="users-check" class="w-5 h-5 text-emerald-400"></i>
+                            </div>
+                            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">ACTIVE</span>
+                        </div>
+                        <h3 class="text-3xl font-black text-white" id="ov-leads-count">0</h3>
+                        <p class="text-xs text-gray-400 font-semibold mt-1">Exhibitor Leads Captured</p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-xl border border-slate-800 relative overflow-hidden group hover:border-purple-500/50 transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 bg-purple-500/10 border border-purple-500/30 rounded-lg flex items-center justify-center">
+                                <i data-lucide="calendar" class="w-5 h-5 text-purple-400"></i>
+                            </div>
+                            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">IDEX 2026</span>
+                        </div>
+                        <h3 class="text-3xl font-black text-white" id="ov-slots-count">0</h3>
+                        <p class="text-xs text-gray-400 font-semibold mt-1">Consultation Slots Booked</p>
+                    </div>
+                </div>
+
+                <!-- Quick Action Hub & Overview Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Column 1 & 2: Top High-Leakage Exhibitors -->
+                    <div class="lg:col-span-2 glass-card p-6 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-400"></i>
+                                Priority High-Leakage Exhibitors (<60 Audit Score)
+                            </h3>
+                            <button onclick="showSection('idex-audits')" class="text-xs font-bold text-cyan-400 hover:underline flex items-center gap-1">
+                                View All 140 Audits <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                        <div id="ov-top-audits-list" class="space-y-3">
+                            <p class="text-sm text-gray-400 animate-pulse p-4 text-center">Analyzing exhibitor database...</p>
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Operational Quick Actions & Public Screen Launcher -->
+                    <div class="space-y-6">
+                        <div class="glass-card p-6 rounded-xl border border-slate-800">
+                            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                <i data-lucide="zap" class="w-5 h-5 text-cyan-400"></i>
+                                Quick Operational Tools
+                            </h3>
+                            <div class="space-y-2.5">
+                                <button onclick="openAuditModal()" class="w-full px-4 py-2.5 bg-cyan-500/20 hover:bg-cyan-500 text-cyan-400 hover:text-slate-950 font-bold text-xs rounded-lg border border-cyan-500/30 transition-all flex items-center justify-between">
+                                    <span class="flex items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> Add New Exhibitor Audit</span>
+                                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                </button>
+
+                                <button onclick="openLeadModal()" class="w-full px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-gray-200 font-bold text-xs rounded-lg border border-slate-700 transition-all flex items-center justify-between">
+                                    <span class="flex items-center gap-2"><i data-lucide="user-plus" class="w-4 h-4 text-emerald-400"></i> Log New Exhibitor Lead</span>
+                                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                </button>
+
+                                <button onclick="autoGenerateIdexSlots()" class="w-full px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-gray-200 font-bold text-xs rounded-lg border border-slate-700 transition-all flex items-center justify-between">
+                                    <span class="flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-purple-400"></i> Auto-Generate Event Slots</span>
+                                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                </button>
+
+                                <button onclick="showSection('idex-screens')" class="w-full px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-gray-200 font-bold text-xs rounded-lg border border-slate-700 transition-all flex items-center justify-between">
+                                    <span class="flex items-center gap-2"><i data-lucide="monitor" class="w-4 h-4 text-cyan-400"></i> Open Screens Manager</span>
+                                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-6 rounded-xl border border-slate-800">
+                            <h3 class="text-sm font-bold text-gray-300 mb-2">IDEX Public Web Screens</h3>
+                            <div class="text-xs text-gray-400 space-y-2">
+                                <a href="/idex.html" target="_blank" class="block p-2 bg-slate-900/60 rounded border border-slate-800 hover:border-cyan-500/50 text-cyan-400 font-semibold truncate">
+                                    🌐 Landing Page (/idex.html)
+                                </a>
+                                <a href="/IDEX Event/index.html" target="_blank" class="block p-2 bg-slate-900/60 rounded border border-slate-800 hover:border-cyan-500/50 text-cyan-400 font-semibold truncate">
+                                    📊 140 Exhibitor Audit Hub (/IDEX Event/)
+                                </a>
+                                <a href="/idex-thank-you.html" target="_blank" class="block p-2 bg-slate-900/60 rounded border border-slate-800 hover:border-cyan-500/50 text-cyan-400 font-semibold truncate">
+                                    ✅ Consultation Thank You (/idex-thank-you.html)
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- IDEX 02: EXHIBITOR AUDITS DATABASE        -->
+            <!-- ========================================== -->
             <section id="idex-audits" class="content-section hidden">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
@@ -541,23 +709,65 @@
                             <i data-lucide="shield-alert" class="w-6 h-6 text-cyan-400"></i>
                             IDEX 2026 Exhibitor Audits (140 Brands)
                         </h2>
-                        <p class="text-sm text-gray-400 mt-1">Browse, search, inspect leakage scores, and generate confidential links for decision makers.</p>
+                        <p class="text-sm text-gray-400 mt-1">Browse, search, inspect leakage scores, view full outreach scripts, and edit confidential client audits.</p>
                     </div>
-                    <div class="flex items-center gap-3 w-full md:w-auto">
-                        <input type="text" id="admin-audit-search" placeholder="Search exhibitor or category..." class="form-input px-4 py-2 rounded-lg text-sm text-white bg-slate-800 border border-slate-700 w-full md:w-64" oninput="filterAdminAudits()">
-                        <button onclick="loadIdexAudits()" class="btn-primary px-4 py-2 text-white rounded-lg text-sm font-medium flex items-center gap-2 shrink-0">
-                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Reload
+                    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                        <button onclick="openAuditModal()" class="btn-primary px-4 py-2 text-white rounded-lg text-sm font-medium flex items-center gap-2 shrink-0">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Add Exhibitor
+                        </button>
+                        <button onclick="exportAuditsCSV()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-gray-200 border border-slate-700 rounded-lg text-sm font-medium flex items-center gap-2 shrink-0 transition-all">
+                            <i data-lucide="download" class="w-4 h-4 text-cyan-400"></i> Export CSV
+                        </button>
+                        <button onclick="loadIdexAudits()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-gray-300 rounded-lg text-sm font-medium shrink-0">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="glass-card rounded-xl overflow-hidden">
+                <!-- Filter & Search Controls Bar -->
+                <div class="glass-card p-4 rounded-xl mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Search Keyword</label>
+                        <input type="text" id="admin-audit-search" placeholder="Search exhibitor or category..." class="form-input w-full px-3 py-1.5 rounded-lg text-xs text-white bg-slate-800 border border-slate-700" oninput="filterAdminAudits()">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Sector / Category</label>
+                        <select id="admin-audit-sector-filter" class="form-input w-full px-3 py-1.5 rounded-lg text-xs text-white bg-slate-800 border border-slate-700" onchange="filterAdminAudits()">
+                            <option value="ALL">All Categories</option>
+                            <option value="Equipment">Dental Equipment & Instruments</option>
+                            <option value="Materials">Dental Materials & Supplies</option>
+                            <option value="Orthodontic">Orthodontics & Implants</option>
+                            <option value="CAD/CAM">Digital & CAD/CAM</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Exhibitor Tier</label>
+                        <select id="admin-audit-tier-filter" class="form-input w-full px-3 py-1.5 rounded-lg text-xs text-white bg-slate-800 border border-slate-700" onchange="filterAdminAudits()">
+                            <option value="ALL">All Tiers</option>
+                            <option value="Tier 1">Tier 1 (Market Leaders)</option>
+                            <option value="Tier 2">Tier 2 (Mid-scale Brands)</option>
+                            <option value="Tier 3">Tier 3 (Tech Specialists)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Audit Score Level</label>
+                        <select id="admin-audit-score-filter" class="form-input w-full px-3 py-1.5 rounded-lg text-xs text-white bg-slate-800 border border-slate-700" onchange="filterAdminAudits()">
+                            <option value="ALL">All Audit Scores</option>
+                            <option value="CRITICAL">Critical (<60 Score)</option>
+                            <option value="WARNING">Warning (60-79 Score)</option>
+                            <option value="GOOD">Good (80+ Score)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Audits Table -->
+                <div class="glass-card rounded-xl overflow-hidden border border-slate-800">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="bg-slate-800/80 text-gray-400 text-xs uppercase tracking-wider">
                                 <tr>
                                     <th class="p-4">Exhibitor Company</th>
-                                    <th class="p-4">Category / Origin</th>
+                                    <th class="p-4">Category / Region</th>
                                     <th class="p-4">Audit Score</th>
                                     <th class="p-4">Est. Revenue Leakage</th>
                                     <th class="p-4">Critical Vulnerability</th>
@@ -574,22 +784,51 @@
                 </div>
             </section>
 
-            <!-- IDEX Exhibitor Leads Section -->
+            <!-- ========================================== -->
+            <!-- IDEX 03: EXHIBITOR LEADS PIPELINE          -->
+            <!-- ========================================== -->
             <section id="idex-leads" class="content-section hidden">
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
                         <h2 class="text-2xl font-bold text-white flex items-center gap-3">
                             <i data-lucide="sparkles" class="w-6 h-6 text-cyan-400"></i>
-                            IDEX Exhibitor Leads & Audits
+                            IDEX Exhibitor Lead Pipeline
                         </h2>
-                        <p class="text-sm text-gray-400 mt-1">Leads captured from IDEX Event landing pages, free audit requests, and exhibitor tools.</p>
+                        <p class="text-sm text-gray-400 mt-1">Leads captured from IDEX Event landing pages, free audit lookup tools, and estimator funnels.</p>
                     </div>
-                    <button onclick="loadIdexLeads()" class="btn-primary px-4 py-2 text-white rounded-lg text-sm font-medium flex items-center gap-2">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh Leads
-                    </button>
+                    <div class="flex items-center gap-3">
+                        <button onclick="openLeadModal()" class="btn-primary px-4 py-2 text-white rounded-lg text-sm font-medium flex items-center gap-2">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i> Add Lead
+                        </button>
+                        <button onclick="exportLeadsCSV()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-gray-200 border border-slate-700 rounded-lg text-sm font-medium flex items-center gap-2 transition-all">
+                            <i data-lucide="download" class="w-4 h-4 text-cyan-400"></i> Export CSV
+                        </button>
+                        <button onclick="loadIdexLeads()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-gray-300 rounded-lg text-sm font-medium">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="glass-card rounded-xl overflow-hidden">
+                <!-- Status Filter Bar -->
+                <div class="glass-card p-4 rounded-xl mb-6 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-gray-400 uppercase">Pipeline Status:</span>
+                        <select id="admin-lead-status-filter" class="form-input px-3 py-1.5 rounded-lg text-xs text-white bg-slate-800 border border-slate-700" onchange="filterAdminLeads()">
+                            <option value="ALL">All Lead Statuses</option>
+                            <option value="NEW">New Lead</option>
+                            <option value="CONTACTED">Contacted</option>
+                            <option value="QUALIFIED">Qualified</option>
+                            <option value="SCHEDULED">Meeting Scheduled</option>
+                            <option value="CONVERTED">Converted Client</option>
+                            <option value="CLOSED">Closed / Disqualified</option>
+                        </select>
+                    </div>
+                    <div class="w-full md:w-64">
+                        <input type="text" id="admin-lead-search" placeholder="Search name, company, email..." class="form-input w-full px-3 py-1.5 rounded-lg text-xs text-white bg-slate-800 border border-slate-700" oninput="filterAdminLeads()">
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-xl overflow-hidden border border-slate-800">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="bg-slate-800/80 text-gray-400 text-xs uppercase tracking-wider">
@@ -598,8 +837,8 @@
                                     <th class="p-4">Contact & Company</th>
                                     <th class="p-4">Industry / Position</th>
                                     <th class="p-4">Source & Interest</th>
-                                    <th class="p-4">Selected Services</th>
-                                    <th class="p-4">Status</th>
+                                    <th class="p-4">Requirements</th>
+                                    <th class="p-4">Pipeline Status</th>
                                     <th class="p-4 text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -613,25 +852,45 @@
                 </div>
             </section>
 
-            <!-- IDEX Meeting Calendar Slots Section -->
+            <!-- ========================================== -->
+            <!-- IDEX 04: MEETING CALENDAR SLOTS            -->
+            <!-- ========================================== -->
             <section id="idex-calendar" class="content-section hidden">
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
                         <h2 class="text-2xl font-bold text-white flex items-center gap-3">
                             <i data-lucide="calendar" class="w-6 h-6 text-cyan-400"></i>
                             IDEX Consultation Meeting Slots
                         </h2>
-                        <p class="text-sm text-gray-400 mt-1">Manage scheduled booth consultations, held slots, and calendar availability.</p>
+                        <p class="text-sm text-gray-400 mt-1">Manage scheduled booth consultations, held slots, and calendar availability during IDEX 2026.</p>
                     </div>
-                    <button onclick="loadIdexCalendar()" class="btn-primary px-4 py-2 text-white rounded-lg text-sm font-medium flex items-center gap-2">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh Calendar
-                    </button>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button onclick="autoGenerateIdexSlots()" class="px-4 py-2 bg-purple-600/30 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/40 rounded-lg text-sm font-bold flex items-center gap-2 transition-all">
+                            <i data-lucide="wand-2" class="w-4 h-4"></i> Auto-Generate Event Slots
+                        </button>
+                        <button onclick="openSlotModal()" class="btn-primary px-4 py-2 text-white rounded-lg text-sm font-medium flex items-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add Slot
+                        </button>
+                        <button onclick="loadIdexCalendar()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-gray-300 rounded-lg text-sm font-medium">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="glass-card rounded-xl overflow-hidden p-6">
-                    <div class="flex items-center gap-4 mb-6">
-                        <label class="text-sm font-bold text-gray-300">Filter Date:</label>
-                        <input type="date" id="admin-cal-date-filter" class="form-input px-3 py-1.5 rounded-lg text-sm text-white bg-slate-800 border border-slate-700" onchange="loadIdexCalendar()">
+                <div class="glass-card rounded-xl p-6 border border-slate-800">
+                    <!-- Quick Event Day Tabs -->
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-800">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-gray-400 uppercase mr-2">IDEX 2026 Event Days:</span>
+                            <button onclick="setCalendarDay('2026-08-20')" class="cal-day-btn px-3 py-1.5 bg-slate-800 hover:bg-cyan-500/20 text-gray-300 hover:text-cyan-400 border border-slate-700 rounded-lg text-xs font-bold transition-all">Day 1 (Aug 20)</button>
+                            <button onclick="setCalendarDay('2026-08-21')" class="cal-day-btn px-3 py-1.5 bg-slate-800 hover:bg-cyan-500/20 text-gray-300 hover:text-cyan-400 border border-slate-700 rounded-lg text-xs font-bold transition-all">Day 2 (Aug 21)</button>
+                            <button onclick="setCalendarDay('2026-08-22')" class="cal-day-btn px-3 py-1.5 bg-slate-800 hover:bg-cyan-500/20 text-gray-300 hover:text-cyan-400 border border-slate-700 rounded-lg text-xs font-bold transition-all">Day 3 (Aug 22)</button>
+                            <button onclick="setCalendarDay('2026-08-23')" class="cal-day-btn px-3 py-1.5 bg-slate-800 hover:bg-cyan-500/20 text-gray-300 hover:text-cyan-400 border border-slate-700 rounded-lg text-xs font-bold transition-all">Day 4 (Aug 23)</button>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <label class="text-xs font-bold text-gray-300">Custom Date:</label>
+                            <input type="date" id="admin-cal-date-filter" class="form-input px-3 py-1.5 rounded-lg text-xs text-white bg-slate-800 border border-slate-700" onchange="loadIdexCalendar()">
+                        </div>
                     </div>
 
                     <div class="overflow-x-auto">
@@ -642,7 +901,7 @@
                                     <th class="p-4">Status</th>
                                     <th class="p-4">Lead / Booked By</th>
                                     <th class="p-4">Company</th>
-                                    <th class="p-4">Owner / Session</th>
+                                    <th class="p-4">Session Desk</th>
                                     <th class="p-4 text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -652,6 +911,79 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- IDEX 05: GROWTH PACKAGES CONFIGURATOR     -->
+            <!-- ========================================== -->
+            <section id="idex-packages" class="content-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                            <i data-lucide="package" class="w-6 h-6 text-cyan-400"></i>
+                            IDEX Growth Packages & Pricing Manager
+                        </h2>
+                        <p class="text-sm text-gray-400 mt-1">Configure pricing, deliverables, and discounts for IDEX Packages featured on idex.html landing page.</p>
+                    </div>
+                    <button onclick="saveIdexPackagesConfig()" class="btn-primary px-4 py-2 text-white rounded-lg text-sm font-medium flex items-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i> Save Package Settings
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" id="idex-packages-container">
+                    <!-- Package Cards populated dynamically -->
+                    <div class="p-8 text-center text-gray-400">Loading package configurator...</div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- IDEX 06: PUBLIC SCREENS MANAGER           -->
+            <!-- ========================================== -->
+            <section id="idex-screens" class="content-section hidden">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                            <i data-lucide="monitor" class="w-6 h-6 text-cyan-400"></i>
+                            IDEX Public Screens Manager & Live Preview
+                        </h2>
+                        <p class="text-sm text-gray-400 mt-1">Preview, switch, and inspect all public IDEX screens and audit views in real time.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <!-- Viewport Switcher -->
+                        <div class="flex items-center bg-slate-800 p-1 rounded-lg border border-slate-700">
+                            <button onclick="setPreviewDevice('desktop')" id="dev-desktop-btn" class="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded text-xs font-bold transition-all">Desktop</button>
+                            <button onclick="setPreviewDevice('tablet')" id="dev-tablet-btn" class="px-3 py-1 text-gray-400 hover:text-white rounded text-xs font-bold transition-all">Tablet</button>
+                            <button onclick="setPreviewDevice('mobile')" id="dev-mobile-btn" class="px-3 py-1 text-gray-400 hover:text-white rounded text-xs font-bold transition-all">Mobile</button>
+                        </div>
+                        <a id="preview-open-link" href="/idex.html" target="_blank" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Open Screen
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Screen Selector Toolbar -->
+                <div class="glass-card p-4 rounded-xl mb-6 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <label class="text-xs font-bold text-gray-300 shrink-0">Target Screen:</label>
+                        <select id="idex-screen-selector" class="form-input px-4 py-2 rounded-lg text-xs text-white bg-slate-800 border border-slate-700 w-full sm:w-80" onchange="switchPreviewScreen(this.value)">
+                            <option value="/idex.html">1. Main IDEX Exhibitor Hub (/idex.html)</option>
+                            <option value="/IDEX Event/index.html">2. 140 Exhibitor Directory & Audit Hub (/IDEX Event/)</option>
+                            <option value="/idex-thank-you.html">3. Consultation Booking Thank You (/idex-thank-you.html)</option>
+                            <option value="/idex.html?audit_company=Dentaquick">4. Client Confidential Audit Viewer (Dentaquick)</option>
+                            <option value="/idex.html?audit_company=Acrostone">5. Client Confidential Audit Viewer (Acrostone)</option>
+                        </select>
+                    </div>
+                    <div class="text-xs text-gray-400 font-mono">
+                        Active URL: <span id="active-screen-url" class="text-cyan-400">/idex.html</span>
+                    </div>
+                </div>
+
+                <!-- Live Iframe Viewport Container -->
+                <div class="glass-card rounded-xl p-4 flex justify-center bg-slate-950/80 border border-slate-800 overflow-hidden">
+                    <div id="preview-viewport-frame" class="w-full transition-all duration-300 mx-auto rounded-lg overflow-hidden border border-slate-800 bg-slate-900 shadow-2xl" style="height: 680px;">
+                        <iframe id="idex-screen-iframe" src="/idex.html" class="w-full h-full border-0"></iframe>
                     </div>
                 </div>
             </section>
@@ -921,6 +1253,317 @@
                         class="px-6 py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors ml-auto">Close</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- IDEX MODAL 01: VIEW FULL EXHIBITOR AUDIT   -->
+    <!-- ========================================== -->
+    <div id="idex-audit-view-modal" class="fixed inset-0 flex items-start sm:items-center justify-center z-50 hidden overflow-y-auto p-4">
+        <div class="glass-card rounded-2xl p-6 sm:p-8 w-full max-w-4xl max-h-[92vh] overflow-y-auto relative my-auto border border-cyan-500/30 shadow-2xl bg-slate-950">
+            <button type="button" onclick="closeAllModals()" aria-label="Close" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-slate-800 border border-slate-700">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-6 border-b border-slate-800">
+                <div>
+                    <div class="flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest mb-1">
+                        <i data-lucide="shield-alert" class="w-4 h-4"></i> Confidential IDEX Exhibitor Audit Report
+                    </div>
+                    <h2 id="view-audit-name" class="text-3xl font-extrabold text-white">Company Name</h2>
+                    <p id="view-audit-meta" class="text-xs text-slate-400 mt-1">Category | Region | Hall & Booth</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div id="view-audit-score-badge" class="px-4 py-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-xl text-center">
+                        <div class="text-[10px] uppercase font-bold text-gray-400">Audit Score</div>
+                        <div class="text-2xl font-black font-mono" id="view-audit-score-num">85/100</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audit Metrics & Leakage Summary Bar -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Est. Revenue Leakage</span>
+                    <div class="text-xl font-black text-red-400 font-mono mt-1" id="view-audit-leakage">—</div>
+                </div>
+                <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Social Audience</span>
+                    <div class="text-lg font-bold text-white mt-1" id="view-audit-followers">0</div>
+                </div>
+                <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Engagement Rate</span>
+                    <div class="text-lg font-bold text-cyan-400 font-mono mt-1" id="view-audit-engagement">0%</div>
+                </div>
+                <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Tier & Market Position</span>
+                    <div class="text-xs font-bold text-gray-200 mt-1" id="view-audit-tier">Tier 1</div>
+                </div>
+            </div>
+
+            <!-- Detailed Audit Breakdown Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Vulnerability Box -->
+                <div class="p-5 bg-red-950/30 rounded-xl border border-red-500/30">
+                    <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i> Critical Growth Vulnerability
+                    </h3>
+                    <p class="text-sm text-gray-300 leading-relaxed" id="view-audit-vulnerabilities">No vulnerabilities logged.</p>
+                </div>
+
+                <!-- Strategic Recommended Actions -->
+                <div class="p-5 bg-slate-900/80 rounded-xl border border-slate-800">
+                    <h3 class="text-sm font-bold text-cyan-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <i data-lucide="check-circle-2" class="w-4 h-4"></i> Recommended Growth Actions
+                    </h3>
+                    <ul class="text-xs text-gray-300 space-y-2 list-disc list-inside" id="view-audit-actions">
+                        <li>Shift social copy focus to clinical ROI.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Outreach Pitch Scripts Tabbed Box -->
+            <div class="p-6 bg-slate-900 rounded-xl border border-slate-800 mb-8">
+                <h3 class="text-base font-bold text-white mb-4 flex items-center justify-between">
+                    <span class="flex items-center gap-2"><i data-lucide="message-square" class="w-5 h-5 text-cyan-400"></i> Decision Maker Outreach Scripts</span>
+                    <span class="text-xs text-gray-400 font-normal">Pre-written outreach for sales reps</span>
+                </h3>
+
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-xs font-bold text-cyan-400">LinkedIn Outreach InMail</label>
+                            <button onclick="copyScriptText('view-script-linkedin')" class="text-[11px] font-bold text-cyan-400 hover:underline">Copy InMail Script</button>
+                        </div>
+                        <textarea id="view-script-linkedin" rows="4" class="form-input w-full p-3 rounded-lg text-xs font-mono bg-slate-950 border border-slate-800 text-gray-300" readonly></textarea>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-xs font-bold text-green-400">WhatsApp Direct Voice / Text Script</label>
+                            <button onclick="copyScriptText('view-script-whatsapp')" class="text-[11px] font-bold text-green-400 hover:underline">Copy WhatsApp Script</button>
+                        </div>
+                        <textarea id="view-script-whatsapp" rows="3" class="form-input w-full p-3 rounded-lg text-xs font-mono bg-slate-950 border border-slate-800 text-gray-300" readonly></textarea>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-xs font-bold text-amber-400">Booth Floor Pitch Script (Face-to-Face)</label>
+                            <button onclick="copyScriptText('view-script-booth')" class="text-[11px] font-bold text-amber-400 hover:underline">Copy Pitch Script</button>
+                        </div>
+                        <textarea id="view-script-booth" rows="3" class="form-input w-full p-3 rounded-lg text-xs font-mono bg-slate-950 border border-slate-800 text-gray-300" readonly></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer Actions -->
+            <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-800">
+                <a id="view-audit-client-link" href="#" target="_blank" class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs rounded-lg hover:brightness-110 transition-all flex items-center gap-2">
+                    <i data-lucide="external-link" class="w-4 h-4"></i> Open Confidential Client Audit View
+                </a>
+                <button type="button" onclick="closeAllModals()" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg transition-colors">Close Audit Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- IDEX MODAL 02: ADD / EDIT AUDIT FORM      -->
+    <!-- ========================================== -->
+    <div id="idex-audit-edit-modal" class="fixed inset-0 flex items-start sm:items-center justify-center z-50 hidden overflow-y-auto p-4">
+        <div class="glass-card rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative my-auto bg-slate-950 border border-slate-800">
+            <button type="button" onclick="closeAllModals()" aria-label="Close" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-slate-800 border border-slate-700">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            <h3 class="text-xl font-bold text-white mb-4" id="audit-form-title">Add Exhibitor Audit</h3>
+            
+            <form id="idex-audit-form" onsubmit="handleAuditSubmit(event)" class="space-y-4">
+                <input type="hidden" id="edit-audit-id">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Company Name *</label>
+                        <input type="text" id="edit-audit-name" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" required placeholder="e.g. Dentaquick">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Category / Sector</label>
+                        <input type="text" id="edit-audit-category" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="Dental Equipment & Consumables">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Audit Score (0-100) *</label>
+                        <input type="number" id="edit-audit-score" min="0" max="100" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white font-mono" required placeholder="75">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Est. Revenue Leakage (EGP)</label>
+                        <input type="number" id="edit-audit-leakage" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white font-mono" placeholder="450000">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Tier Level</label>
+                        <select id="edit-audit-tier" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white">
+                            <option value="Tier 1">Tier 1 (Market Leaders)</option>
+                            <option value="Tier 2">Tier 2 (Mid-scale)</option>
+                            <option value="Tier 3">Tier 3 (Tech Specialists)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Country / Origin</label>
+                        <input type="text" id="edit-audit-country" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="Egypt / MENA">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">IDEX Hall & Booth</label>
+                        <input type="text" id="edit-audit-booth" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="Hall 2 | Stand B14">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Critical Vulnerabilities</label>
+                    <textarea id="edit-audit-vulnerabilities" rows="2" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="e.g. Missing pre-event WhatsApp lead funnels..."></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Recommended Growth Actions (One per line)</label>
+                    <textarea id="edit-audit-actions" rows="3" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="Shift social copy to ROI&#10;Run pre-booking ads"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="closeAllModals()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg">Cancel</button>
+                    <button type="submit" class="btn-primary px-6 py-2 text-white text-xs font-bold rounded-lg">Save Audit Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- IDEX MODAL 03: ADD / EDIT LEAD FORM       -->
+    <!-- ========================================== -->
+    <div id="idex-lead-modal" class="fixed inset-0 flex items-start sm:items-center justify-center z-50 hidden overflow-y-auto p-4">
+        <div class="glass-card rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative my-auto bg-slate-950 border border-slate-800">
+            <button type="button" onclick="closeAllModals()" aria-label="Close" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-slate-800 border border-slate-700">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            <h3 class="text-xl font-bold text-white mb-4" id="lead-form-title">Add IDEX Exhibitor Lead</h3>
+            
+            <form id="idex-lead-form" onsubmit="handleLeadSubmit(event)" class="space-y-4">
+                <input type="hidden" id="edit-lead-id">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Contact Name *</label>
+                        <input type="text" id="edit-lead-name" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" required placeholder="Dr. Tarek Mansour">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Company Name *</label>
+                        <input type="text" id="edit-lead-company" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" required placeholder="Egypt Dental Co.">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Email Address</label>
+                        <input type="email" id="edit-lead-email" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="tarek@egyptdental.com">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Phone Number / WhatsApp</label>
+                        <input type="text" id="edit-lead-phone" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="+20 100 123 4567">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Industry / Sector</label>
+                        <input type="text" id="edit-lead-industry" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="Dental Equipment">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Position / Title</label>
+                        <input type="text" id="edit-lead-position" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="Commercial Director">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Pipeline Status</label>
+                        <select id="edit-lead-status" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white">
+                            <option value="NEW">New Lead</option>
+                            <option value="CONTACTED">Contacted</option>
+                            <option value="QUALIFIED">Qualified</option>
+                            <option value="SCHEDULED">Scheduled</option>
+                            <option value="CONVERTED">Converted</option>
+                            <option value="CLOSED">Closed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Requirements & Selected Services</label>
+                    <textarea id="edit-lead-requirements" rows="3" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="Rebranding, Website funnels, Media buying..."></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="closeAllModals()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg">Cancel</button>
+                    <button type="submit" class="btn-primary px-6 py-2 text-white text-xs font-bold rounded-lg">Save Lead</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- IDEX MODAL 04: ADD / EDIT SLOT FORM       -->
+    <!-- ========================================== -->
+    <div id="idex-slot-modal" class="fixed inset-0 flex items-start sm:items-center justify-center z-50 hidden overflow-y-auto p-4">
+        <div class="glass-card rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto relative my-auto bg-slate-950 border border-slate-800">
+            <button type="button" onclick="closeAllModals()" aria-label="Close" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-slate-800 border border-slate-700">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            <h3 class="text-xl font-bold text-white mb-4" id="slot-form-title">Manage Meeting Slot</h3>
+            
+            <form id="idex-slot-form" onsubmit="handleSlotSubmit(event)" class="space-y-4">
+                <input type="hidden" id="edit-slot-id">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Event Date *</label>
+                        <input type="date" id="edit-slot-date" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Time Slot *</label>
+                        <input type="text" id="edit-slot-time" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" required placeholder="10:00 AM">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Slot Status</label>
+                        <select id="edit-slot-status" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white">
+                            <option value="AVAILABLE">AVAILABLE</option>
+                            <option value="HELD">HELD</option>
+                            <option value="BOOKED">BOOKED</option>
+                            <option value="COMPLETED">COMPLETED</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Session Desk / Owner</label>
+                        <input type="text" id="edit-slot-owner" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="Executive Desk 1">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Booked Lead Email</label>
+                    <input type="email" id="edit-slot-email" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="client@company.com">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Company Name</label>
+                    <input type="text" id="edit-slot-company" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="Dentaquick">
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="closeAllModals()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg">Cancel</button>
+                    <button type="submit" class="btn-primary px-6 py-2 text-white text-xs font-bold rounded-lg">Save Time Slot</button>
+                </div>
+            </form>
         </div>
     </div>
 
