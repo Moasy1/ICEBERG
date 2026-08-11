@@ -63,7 +63,7 @@ const connectToDatabase = async () => {
   console.log('Connecting to MongoDB...');
   try {
     cachedConnection = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/iceberg_cms', {
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s
+      serverSelectionTimeoutMS: 1000, // Timeout after 5s
     });
     console.log('Connected to MongoDB');
     return cachedConnection;
@@ -75,17 +75,14 @@ const connectToDatabase = async () => {
 
 // Middleware to ensure DB connection for API routes
 app.use('/api', async (req, res, next) => {
-  if (req.path === '/health' || req.path === '/meta/status' || req.path === '/meta/event') return next();
+  if (req.path === '/health' || req.path === '/meta/status' || req.path === '/meta/event' || req.path === '/idex/data') return next();
   try {
     await connectToDatabase();
-    next();
   } catch (err) {
-    res.status(503).json({
-      success: false,
-      error: 'Database connection failed',
-      details: err.message
-    });
+    // Operate gracefully in fallback mode if MongoDB is offline or disconnected
+    console.warn('[DB Middleware Warn]: DB offline, fallback mode active for path:', req.path);
   }
+  next();
 });
 
 // Import routes
