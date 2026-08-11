@@ -311,6 +311,57 @@
       </div>
     </div>
 
+    <!-- Audit Access Gate Modal with Lead Form & Calendar Slot Selection -->
+    <div id="audit-gate-modal" class="modal-backdrop hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
+      <div class="modal-content glass-card-elevated relative w-full max-w-xl p-8 rounded-2xl border border-cyan-500/30 shadow-2xl space-y-6">
+        <button id="modal-audit-close" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-lg border border-white/10" aria-label="Close modal">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <div class="space-y-2">
+          <span class="px-2.5 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-[10px] uppercase font-bold rounded-full inline-block">Confidential Audit Access</span>
+          <h3 class="text-2xl font-black text-white">Unlock Audit Report for <span id="gate-company-name" class="text-cyan-400">Exhibitor</span></h3>
+          <p class="text-xs text-slate-300">Enter your contact details and select a 15-minute consultation slot to view your brand's full audit score, revenue leakage breakdown, and 14-day recovery plan.</p>
+        </div>
+
+        <form id="audit-gate-form" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Your Full Name *</label>
+              <input type="text" id="gate-name" required placeholder="e.g. Dr. Ahmed Hassan" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-white/10 text-sm text-white focus:border-cyan-400 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Work Email *</label>
+              <input type="email" id="gate-email" required placeholder="name@company.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-white/10 text-sm text-white focus:border-cyan-400 focus:outline-none">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-300 mb-1">WhatsApp / Mobile *</label>
+              <input type="tel" id="gate-phone" required placeholder="+20 100 000 0000" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-white/10 text-sm text-white focus:border-cyan-400 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Preferred Consultation Time *</label>
+              <select id="gate-time-slot" required class="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-cyan-500/30 text-sm text-cyan-400 font-bold focus:border-cyan-400 focus:outline-none">
+                <option value="10:00 AM">Today, 10:00 AM (IDEX Booth)</option>
+                <option value="11:30 AM">Today, 11:30 AM (IDEX Booth)</option>
+                <option value="02:00 PM">Today, 02:00 PM (IDEX Booth)</option>
+                <option value="03:30 PM">Today, 03:30 PM (IDEX Booth)</option>
+                <option value="05:00 PM">Today, 05:00 PM (Online Zoom)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" id="gate-submit-btn" class="w-full py-3.5 bg-cyan-400 text-slate-950 font-black text-sm uppercase tracking-wider rounded-xl hover:bg-cyan-300 transition-all text-center shadow-lg shadow-cyan-500/20">
+              🔒 Unlock Full Audit Report & Book Consultation
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- ==================== SECTION 04: 3-MONTH PACKAGE ==================== -->
     <section id="section-package" class="py-20 px-6 max-w-7xl mx-auto border-t border-white/5">
       <div class="text-center max-w-2xl mx-auto mb-14">
@@ -339,59 +390,59 @@
             </div>
 
             <div id="pricing-service-pool" class="space-y-2.5">
-              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-cyan-500/30 cursor-pointer hover:border-cyan-400 transition-all">
+              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-white/10 cursor-pointer hover:border-cyan-400 transition-all" data-service-key="branding">
                 <div class="flex items-center gap-3">
-                  <input type="checkbox" name="pool-service" value="branding" checked data-price="25000" class="w-4 h-4 accent-cyan-400 rounded">
+                  <input type="checkbox" name="pool-service" value="branding" checked data-price="25000" data-range="25,000 – 40,000 EGP" class="w-4 h-4 accent-cyan-400 rounded">
                   <div>
                     <span class="text-sm font-bold text-white block">Rebranding & Visual Identity</span>
                     <span class="text-[10px] text-slate-400">Identity systems & logo guidelines</span>
                   </div>
                 </div>
-                <span class="text-xs font-mono font-bold text-cyan-400">25,000 – 40,000 EGP</span>
+                <span class="price-display text-xs font-mono font-bold text-cyan-400">25,000 – 40,000 EGP</span>
               </label>
 
-              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-cyan-500/30 cursor-pointer hover:border-cyan-400 transition-all">
+              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-white/10 cursor-pointer hover:border-cyan-400 transition-all" data-service-key="website">
                 <div class="flex items-center gap-3">
-                  <input type="checkbox" name="pool-service" value="website" checked data-price="20000" class="w-4 h-4 accent-cyan-400 rounded">
+                  <input type="checkbox" name="pool-service" value="website" checked data-price="20000" data-range="20,000 – 35,000 EGP" class="w-4 h-4 accent-cyan-400 rounded">
                   <div>
                     <span class="text-sm font-bold text-white block">Website & Digital Funnels</span>
                     <span class="text-[10px] text-slate-400">High-speed corporate sites & lead pages</span>
                   </div>
                 </div>
-                <span class="text-xs font-mono font-bold text-cyan-400">20,000 – 35,000 EGP</span>
+                <span class="price-display text-xs font-mono font-bold text-cyan-400">20,000 – 35,000 EGP</span>
               </label>
 
-              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-cyan-500/30 cursor-pointer hover:border-cyan-400 transition-all">
+              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-white/10 cursor-pointer hover:border-cyan-400 transition-all" data-service-key="media">
                 <div class="flex items-center gap-3">
-                  <input type="checkbox" name="pool-service" value="media" checked data-price="15000" class="w-4 h-4 accent-cyan-400 rounded">
+                  <input type="checkbox" name="pool-service" value="media" checked data-price="15000" data-range="15,000 – 25,000 EGP" class="w-4 h-4 accent-cyan-400 rounded">
                   <div>
                     <span class="text-sm font-bold text-white block">Targeted Media Buying & Ads</span>
                     <span class="text-[10px] text-slate-400">High ROI Meta & TikTok lead campaigns</span>
                   </div>
                 </div>
-                <span class="text-xs font-mono font-bold text-cyan-400">15,000 – 25,000 EGP</span>
+                <span class="price-display text-xs font-mono font-bold text-cyan-400">15,000 – 25,000 EGP</span>
               </label>
 
-              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-emerald-500/40 bg-emerald-950/20 cursor-pointer hover:border-cyan-400 transition-all" id="free-4th-label">
+              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-white/10 cursor-pointer hover:border-cyan-400 transition-all" data-service-key="printing">
                 <div class="flex items-center gap-3">
-                  <input type="checkbox" name="pool-service" value="printing" checked data-price="15000" class="w-4 h-4 accent-cyan-400 rounded">
+                  <input type="checkbox" name="pool-service" value="printing" checked data-price="15000" data-range="15,000 – 25,000 EGP" class="w-4 h-4 accent-cyan-400 rounded">
                   <div>
                     <span class="text-sm font-bold text-white block">Exhibition Printing & Collateral</span>
-                    <span id="free-badge-tag" class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/20 border border-emerald-500/30 px-1.5 py-0.5 rounded inline-block mt-0.5">🎁 FREE 4TH SERVICE BONUS</span>
+                    <span class="text-[10px] text-slate-400">High quality print & stand materials</span>
                   </div>
                 </div>
-                <span id="free-4th-price" class="text-xs font-mono font-extrabold text-emerald-400">0 EGP (FREE)</span>
+                <span class="price-display text-xs font-mono font-bold text-cyan-400">15,000 – 25,000 EGP</span>
               </label>
 
-              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-white/10 cursor-pointer hover:border-cyan-400 transition-all">
+              <label class="pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-white/10 cursor-pointer hover:border-cyan-400 transition-all" data-service-key="bizdev">
                 <div class="flex items-center gap-3">
-                  <input type="checkbox" name="pool-service" value="bizdev" data-price="12000" class="w-4 h-4 accent-cyan-400 rounded">
+                  <input type="checkbox" name="pool-service" value="bizdev" data-price="12000" data-range="12,000 – 20,000 EGP" class="w-4 h-4 accent-cyan-400 rounded">
                   <div>
                     <span class="text-sm font-bold text-white block">Business Development & Consulting</span>
                     <span class="text-[10px] text-slate-400">Sales enablement & B2B closing strategy</span>
                   </div>
                 </div>
-                <span class="text-xs font-mono font-bold text-slate-400">12,000 – 20,000 EGP</span>
+                <span class="price-display text-xs font-mono font-bold text-slate-400">12,000 – 20,000 EGP</span>
               </label>
             </div>
           </div>

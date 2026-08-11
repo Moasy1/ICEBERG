@@ -539,49 +539,70 @@ function initLeadForm(utmParams) {
 }
 
 // Hero Confidential Exhibitor Audit Lookup Logic
-async function initHeroAuditSearch() {
-  const searchInput = document.getElementById('hero-audit-search');
+async let selectedAuditCompany = 'Exhibitor Brand';
+
+function initHeroAuditSearch() {
+  const searchInput = document.getElementById('hero-exhibitor-search');
   const resultsContainer = document.getElementById('hero-search-results');
   const unlockBtn = document.getElementById('hero-unlock-audit-btn');
+  const gateModal = document.getElementById('audit-gate-modal');
+  const closeGateBtn = document.getElementById('modal-audit-close');
+  const gateForm = document.getElementById('audit-gate-form');
+  const gateCompanyEl = document.getElementById('gate-company-name');
 
-  if (!searchInput) return;
+  if (!searchInput || !resultsContainer) return;
 
-  let exhibitors = [];
-  try {
-    const res = await fetch('/IDEX Event/data.json');
-    if (res.ok) exhibitors = await res.json();
-  } catch (e) {
-    console.log('Error fetching data.json for hero search');
+  function openAuditGateModal(companyName) {
+    selectedAuditCompany = companyName || 'Exhibitor Brand';
+    if (gateCompanyEl) gateCompanyEl.textContent = selectedAuditCompany;
+    if (gateModal) gateModal.classList.remove('hidden');
+    lucide.createIcons();
   }
 
+  function closeAuditGateModal() {
+    if (gateModal) gateModal.classList.add('hidden');
+  }
+
+  closeGateBtn?.addEventListener('click', closeAuditGateModal);
+  gateModal?.addEventListener('click', (e) => {
+    if (e.target === gateModal) closeAuditGateModal();
+  });
+
+  fetch('/IDEX Event/data.json')
+    .then(r => r.json())
+    .then(data => {
+      window._idexExhibitorsData = data;
+    })
+    .catch(() => {});
+
   const renderResults = (query) => {
-    if (!resultsContainer) return;
-    const q = query.toLowerCase().trim();
-    if (!q) {
+    const data = window._idexExhibitorsData || [];
+    resultsContainer.innerHTML = '';
+    if (!query.trim()) {
       resultsContainer.classList.add('hidden');
       return;
     }
+    const matches = data.filter(item => item.name && item.name.toLowerCase().includes(query.toLowerCase())).slice(0, 5);
 
-    const matches = exhibitors.filter(e => e.name.toLowerCase().includes(q) || e.sector.toLowerCase().includes(q)).slice(0, 6);
     if (matches.length === 0) {
-      resultsContainer.innerHTML = '<div class="p-2 text-xs text-slate-400 text-center">No matching IDEX exhibitor found</div>';
+      resultsContainer.innerHTML = '<div class="p-3 text-xs text-slate-400">No exhibitor found. Click Unlock to request a custom audit.</div>';
       resultsContainer.classList.remove('hidden');
       return;
     }
 
-    resultsContainer.innerHTML = '';
     matches.forEach(m => {
       const div = document.createElement('div');
-      div.className = 'p-2 rounded-lg hover:bg-cyan-500/10 cursor-pointer flex items-center justify-between transition-colors';
+      div.className = 'p-3 hover:bg-cyan-500/10 cursor-pointer flex justify-between items-center text-sm border-b border-white/5';
       div.innerHTML = `
         <div>
-          <div class="text-xs font-bold text-white">${m.name}</div>
-          <div class="text-[10px] text-slate-400">${m.sector}</div>
+          <span class="font-bold text-white block">${m.name}</span>
+          <span class="text-xs text-slate-400">${m.category || 'Dental Brand'} | ${m.country || 'International'}</span>
         </div>
         <div class="text-xs font-bold text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">${m.score}/100</div>
       `;
       div.onclick = () => {
-        window.location.href = `/IDEX Event/index.html?company=${encodeURIComponent(m.name)}`;
+        openAuditGateModal(m.name);
+        resultsContainer.classList.add('hidden');
       };
       resultsContainer.appendChild(div);
     });
@@ -592,11 +613,46 @@ async function initHeroAuditSearch() {
 
   unlockBtn?.addEventListener('click', () => {
     const query = searchInput.value.trim();
-    if (query) {
-      window.location.href = `/IDEX Event/index.html?company=${encodeURIComponent(query)}`;
-    } else {
-      window.location.href = '/IDEX Event/index.html';
+    openAuditGateModal(query || 'IDEX Exhibitor Brand');
+  });
+
+  // Handle Form Submission -> Save Lead & Calendar Booking -> Redirect to Audit
+  gateForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('gate-name')?.value || '';
+    const email = document.getElementById('gate-email')?.value || '';
+    const phone = document.getElementById('gate-phone')?.value || '';
+    const timeSlot = document.getElementById('gate-time-slot')?.value || '10:00 AM';
+
+    const submitBtn = document.getElementById('gate-submit-btn');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = '🔒 Processing Lead & Reserving Time...';
     }
+
+    const leadData = {
+      name,
+      email,
+      phone,
+      company: selectedAuditCompany,
+      meeting_time: timeSlot,
+      source: 'idex.html (Confidential Audit Gate)',
+      requirements: ['Confidential Audit Access', 'Booth Consultation']
+    };
+
+    try {
+      await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(leadData)
+      });
+    } catch (err) {}
+
+    // Save to local storage
+    localStorage.setItem('iceberg_lead', JSON.stringify(leadData));
+
+    // Redirect to Audit page
+    window.location.href = `/IDEX Event/index.html?company=${encodeURIComponent(selectedAuditCompany)}&unlocked=true`;
   });
 }
 
@@ -621,17 +677,23 @@ function initPricingPoolEstimator() {
     }
 
     let grossVal = 0;
-    let prices = [];
+    let checkedPrices = [];
+
     checked.forEach(cb => {
       const price = parseInt(cb.getAttribute('data-price')) || 15000;
       grossVal += price;
-      prices.push(price);
+      checkedPrices.push({ cb, price });
     });
 
     let freeBonus = 0;
-    // Apply "Choose 3, Get 1 Free": If 4 or more services selected, the lowest priced checked service is 100% FREE!
-    if (count >= 4 && prices.length >= 4) {
-      freeBonus = Math.min(...prices);
+    let lowestCheckedItem = null;
+
+    // Apply "Choose 3, Get 1 Free": If 4 or more services selected, the LOWEST priced checked service is 100% FREE!
+    if (count >= 4 && checkedPrices.length >= 4) {
+      // Find lowest price item among checked
+      checkedPrices.sort((a, b) => a.price - b.price);
+      lowestCheckedItem = checkedPrices[0];
+      freeBonus = lowestCheckedItem.price;
     }
 
     const discountedBase = grossVal - freeBonus;
@@ -645,18 +707,43 @@ function initPricingPoolEstimator() {
     if (netTotalEl) netTotalEl.textContent = `${netTotal.toLocaleString()} EGP`;
     if (monthlyTotalEl) monthlyTotalEl.textContent = `~ ${monthlyVal.toLocaleString()} EGP / mo`;
 
-    // Highlight free item label if present
-    const freeLabel = document.getElementById('free-4th-label');
-    const freePrice = document.getElementById('free-4th-price');
-    if (freeLabel) {
-      if (count >= 4) {
-        freeLabel.classList.add('border-emerald-500/40', 'bg-emerald-950/20');
-        if (freePrice) freePrice.textContent = '0 EGP (FREE)';
+    // Dynamically update labels and free bonus badge
+    checkboxes.forEach(cb => {
+      const label = cb.closest('label');
+      if (!label) return;
+
+      const priceDisplay = label.querySelector('.price-display');
+      const defaultRange = cb.getAttribute('data-range') || '15,000 – 25,000 EGP';
+      const titleContainer = label.querySelector('div > div');
+
+      // Remove existing free bonus badges
+      const existingBadge = label.querySelector('.free-bonus-badge');
+      if (existingBadge) existingBadge.remove();
+
+      if (lowestCheckedItem && lowestCheckedItem.cb === cb) {
+        // This item is dynamically the LOWEST PRICE item -> gets the FREE bonus style!
+        label.className = 'pool-item-label flex items-center justify-between p-3 rounded-xl bg-emerald-950/20 border border-emerald-500/50 cursor-pointer hover:border-cyan-400 transition-all';
+        if (priceDisplay) {
+          priceDisplay.className = 'price-display text-xs font-mono font-extrabold text-emerald-400';
+          priceDisplay.textContent = '0 EGP (FREE)';
+        }
+        if (titleContainer) {
+          const badge = document.createElement('span');
+          badge.className = 'free-bonus-badge text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/20 border border-emerald-500/30 px-1.5 py-0.5 rounded inline-block mt-0.5';
+          badge.textContent = '🎁 FREE SERVICE BONUS';
+          titleContainer.appendChild(badge);
+        }
       } else {
-        freeLabel.classList.remove('border-emerald-500/40', 'bg-emerald-950/20');
-        if (freePrice) freePrice.textContent = '15,000 – 25,000 EGP';
+        // Normal item styling
+        label.className = cb.checked 
+          ? 'pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-cyan-500/30 cursor-pointer hover:border-cyan-400 transition-all'
+          : 'pool-item-label flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-white/10 cursor-pointer hover:border-cyan-400 transition-all';
+        if (priceDisplay) {
+          priceDisplay.className = cb.checked ? 'price-display text-xs font-mono font-bold text-cyan-400' : 'price-display text-xs font-mono font-bold text-slate-400';
+          priceDisplay.textContent = defaultRange;
+        }
       }
-    }
+    });
   }
 
   checkboxes.forEach(cb => cb.addEventListener('change', calculatePool));
