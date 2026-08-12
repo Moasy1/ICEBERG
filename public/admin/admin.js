@@ -1186,12 +1186,22 @@ function renderAdminAudits(audits) {
         const clientUrl = `/idex.html?audit_company=${encodeURIComponent(item.name)}`;
 
         const vulnStr = Array.isArray(item.vulnerabilities) ? item.vulnerabilities[0] : (item.vulnerabilities || 'N/A');
+        
+        let adminRowLinks = '';
+        if (item.website) adminRowLinks += `<a href="${item.website}" target="_blank" rel="noopener noreferrer" title="Website: ${item.website}" class="px-1.5 py-0.5 bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 rounded text-[10px] font-bold hover:bg-cyan-500/40 transition-all">🌐 Web</a> `;
+        if (item.social_links) {
+            if (item.social_links.facebook) adminRowLinks += `<a href="${item.social_links.facebook}" target="_blank" rel="noopener noreferrer" title="Facebook" class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded text-[10px] font-bold hover:bg-blue-500/40 transition-all">📘 FB</a> `;
+            if (item.social_links.instagram) adminRowLinks += `<a href="${item.social_links.instagram}" target="_blank" rel="noopener noreferrer" title="Instagram" class="px-1.5 py-0.5 bg-pink-500/20 text-pink-300 border border-pink-500/30 rounded text-[10px] font-bold hover:bg-pink-500/40 transition-all">📸 IG</a> `;
+            if (item.social_links.linkedin) adminRowLinks += `<a href="${item.social_links.linkedin}" target="_blank" rel="noopener noreferrer" title="LinkedIn" class="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded text-[10px] font-bold hover:bg-emerald-500/40 transition-all">💼 LI</a> `;
+            if (item.social_links.youtube) adminRowLinks += `<a href="${item.social_links.youtube}" target="_blank" rel="noopener noreferrer" title="YouTube" class="px-1.5 py-0.5 bg-red-500/20 text-red-300 border border-red-500/30 rounded text-[10px] font-bold hover:bg-red-500/40 transition-all">▶️ YT</a>`;
+        }
 
         tr.innerHTML = `
             <td class="p-4 text-center font-mono font-bold text-cyan-400 text-sm">${index + 1}</td>
             <td class="p-4">
                 <div class="font-bold text-white text-base">${item.name}</div>
-                <div class="text-xs text-slate-400">${item.tier || 'Tier 2'} | ${item.hall || 'IDEX Hall'} ${item.booth ? `Stand ${item.booth}` : ''}</div>
+                <div class="flex flex-wrap gap-1 mt-1">${adminRowLinks}</div>
+                <div class="text-xs text-slate-400 mt-1">${item.tier || 'Tier 2'} | ${item.hall || 'IDEX Hall'} ${item.booth ? `Stand ${item.booth}` : ''}</div>
             </td>
             <td class="p-4 text-xs">
                 <span class="px-2 py-0.5 bg-slate-800 text-cyan-400 rounded font-semibold">${item.sector || item.category || 'Dental Equipment'}</span>
@@ -1218,6 +1228,43 @@ function renderAdminAudits(audits) {
     });
     lucide.createIcons();
 }
+
+function exportExhibitorsCSV() {
+    if (!Array.isArray(allAdminAudits) || allAdminAudits.length === 0) {
+        showNotification('No exhibitor data to export', 'error');
+        return;
+    }
+
+    let csv = "ID,Exhibitor Name,Sector,Tier,Score,Est Leakage (EGP),Website,Facebook,Instagram,LinkedIn,YouTube\n";
+    
+    allAdminAudits.forEach(item => {
+        const row = [
+            item.id || '',
+            `"${(item.name || '').replace(/"/g, '""')}"`,
+            `"${(item.sector || item.category || '').replace(/"/g, '""')}"`,
+            `"${(item.tier || '').replace(/"/g, '""')}"`,
+            item.score || 0,
+            item.est_leakage || 0,
+            `"${(item.website || '').replace(/"/g, '""')}"`,
+            `"${(item.social_links?.facebook || '').replace(/"/g, '""')}"`,
+            `"${(item.social_links?.instagram || '').replace(/"/g, '""')}"`,
+            `"${(item.social_links?.linkedin || '').replace(/"/g, '""')}"`,
+            `"${(item.social_links?.youtube || '').replace(/"/g, '""')}"`
+        ];
+        csv += row.join(',') + "\n";
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "IDEX_2026_Exhibitor_Social_Links.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showNotification('Exported 140 Exhibitor Social & Website Links to CSV!', 'success');
+}
+window.exportAuditsCSV = exportExhibitorsCSV;
 
 function filterAdminAudits() {
     const q = (document.getElementById('admin-audit-search')?.value || '').toLowerCase().trim();
@@ -1278,6 +1325,39 @@ function viewAuditDetailsByName(name) {
 
     document.getElementById('view-audit-name').textContent = audit.name;
     document.getElementById('view-audit-meta').textContent = `${audit.sector || audit.category || 'Dental'} | ${audit.region || audit.country || 'MENA'} | Hall 2 Stand B14`;
+
+    let adminLinksEl = document.getElementById('view-audit-social-links');
+    if (!adminLinksEl) {
+        adminLinksEl = document.createElement('div');
+        adminLinksEl.id = 'view-audit-social-links';
+        adminLinksEl.className = 'flex flex-wrap gap-2 mt-2 mb-3 items-center';
+        const metaEl = document.getElementById('view-audit-meta');
+        if (metaEl && metaEl.parentNode) {
+            metaEl.parentNode.insertBefore(adminLinksEl, metaEl.nextSibling);
+        }
+    }
+    if (adminLinksEl && (audit.website || audit.social_links)) {
+        let lhtml = '';
+        if (audit.website) {
+            lhtml += `<a href="${audit.website}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 border border-cyan-500/40 rounded text-xs font-semibold flex items-center gap-1 transition-all">🌐 Website</a>`;
+        }
+        if (audit.social_links) {
+            if (audit.social_links.facebook) {
+                lhtml += `<a href="${audit.social_links.facebook}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/40 rounded text-xs font-semibold flex items-center gap-1 transition-all">📘 Facebook</a>`;
+            }
+            if (audit.social_links.instagram) {
+                lhtml += `<a href="${audit.social_links.instagram}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-pink-500/20 hover:bg-pink-500/30 text-pink-400 border border-pink-500/40 rounded text-xs font-semibold flex items-center gap-1 transition-all">📸 Instagram</a>`;
+            }
+            if (audit.social_links.linkedin) {
+                lhtml += `<a href="${audit.social_links.linkedin}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 rounded text-xs font-semibold flex items-center gap-1 transition-all">💼 LinkedIn</a>`;
+            }
+            if (audit.social_links.youtube) {
+                lhtml += `<a href="${audit.social_links.youtube}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 rounded text-xs font-semibold flex items-center gap-1 transition-all">▶️ YouTube</a>`;
+            }
+        }
+        adminLinksEl.innerHTML = lhtml;
+    }
+
     document.getElementById('view-audit-score-num').textContent = `${audit.score}/100`;
 
     const leakageEl = document.getElementById('view-audit-leakage');
