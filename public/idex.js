@@ -810,6 +810,37 @@ function renderPrivateAuditReport(companyName, contactName) {
   var titleEl = document.getElementById('audit-report-title');
   if (titleEl) titleEl.innerHTML = companyName + ' <span style="color:#22d3ee;">Confidential Executive Report</span>';
 
+  var linksEl = document.getElementById('audit-report-social-links');
+  if (!linksEl) {
+    linksEl = document.createElement('div');
+    linksEl.id = 'audit-report-social-links';
+    linksEl.style.cssText = 'margin: 10px 0 16px 0; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;';
+    if (titleEl && titleEl.parentNode) {
+      titleEl.parentNode.insertBefore(linksEl, titleEl.nextSibling);
+    }
+  }
+  if (linksEl && (brand.website || brand.social_links)) {
+    var lhtml = '';
+    if (brand.website) {
+      lhtml += '<a href="' + brand.website + '" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.4); color: #38bdf8; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">🌐 Website</a>';
+    }
+    if (brand.social_links) {
+      if (brand.social_links.facebook) {
+        lhtml += '<a href="' + brand.social_links.facebook + '" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">📘 Facebook</a>';
+      }
+      if (brand.social_links.instagram) {
+        lhtml += '<a href="' + brand.social_links.instagram + '" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); color: #f472b6; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">📸 Instagram</a>';
+      }
+      if (brand.social_links.linkedin) {
+        lhtml += '<a href="' + brand.social_links.linkedin + '" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">💼 LinkedIn</a>';
+      }
+      if (brand.social_links.youtube) {
+        lhtml += '<a href="' + brand.social_links.youtube + '" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">▶️ YouTube</a>';
+      }
+    }
+    linksEl.innerHTML = lhtml;
+  }
+
   var welcomeEl = document.getElementById('audit-report-welcome');
   if (welcomeEl) welcomeEl.textContent = 'Hello ' + (contactName || 'there') + ', your private access to ' + companyName + ' full audit has been granted. Our team will confirm your meeting slot shortly.';
 

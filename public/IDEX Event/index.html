@@ -1093,6 +1093,7 @@
                             <div class="brand-meta-info">
                                 <h2 id="audit-brand-name">Brand Name</h2>
                                 <p id="audit-brand-sector">Sector Description</p>
+                                <div id="audit-brand-links" class="brand-social-links" style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;"></div>
                             </div>
                             <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
                                 <span class="tier-badge" id="audit-tier-badge">Tier Badge</span>
@@ -9789,6 +9790,29 @@ Link: ${clientUrl}`);
 
             document.getElementById('audit-brand-name').innerText = e.name;
             document.getElementById('audit-brand-sector').innerText = `${e.sector} | ${e.region}`;
+
+            const linksContainer = document.getElementById('audit-brand-links');
+            if (linksContainer) {
+                let linksHtml = '';
+                if (e.website) {
+                    linksHtml += `<a href="${e.website}" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.4); color: #38bdf8; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">🌐 Website</a>`;
+                }
+                if (e.social_links) {
+                    if (e.social_links.facebook) {
+                        linksHtml += `<a href="${e.social_links.facebook}" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">📘 Facebook</a>`;
+                    }
+                    if (e.social_links.instagram) {
+                        linksHtml += `<a href="${e.social_links.instagram}" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); color: #f472b6; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">📸 Instagram</a>`;
+                    }
+                    if (e.social_links.linkedin) {
+                        linksHtml += `<a href="${e.social_links.linkedin}" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">💼 LinkedIn</a>`;
+                    }
+                    if (e.social_links.youtube) {
+                        linksHtml += `<a href="${e.social_links.youtube}" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">▶️ YouTube</a>`;
+                    }
+                }
+                linksContainer.innerHTML = linksHtml;
+            }
             
             const badge = document.getElementById('audit-tier-badge');
             badge.innerText = e.tier_name;
