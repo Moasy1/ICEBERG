@@ -1440,6 +1440,14 @@ function openAuditModal(auditId = null) {
             document.getElementById('edit-audit-bd-velocity').value = bd.content_velocity || '';
             document.getElementById('edit-audit-bd-engagement').value = bd.engagement || '';
             document.getElementById('edit-audit-bd-ads').value = bd.ad_infrastructure || '';
+
+            // Website & Social Links
+            if (document.getElementById('edit-audit-website')) document.getElementById('edit-audit-website').value = item.website || '';
+            const sl = item.social_links || {};
+            if (document.getElementById('edit-audit-link-fb')) document.getElementById('edit-audit-link-fb').value = sl.facebook || '';
+            if (document.getElementById('edit-audit-link-ig')) document.getElementById('edit-audit-link-ig').value = sl.instagram || '';
+            if (document.getElementById('edit-audit-link-li')) document.getElementById('edit-audit-link-li').value = sl.linkedin || '';
+            if (document.getElementById('edit-audit-link-yt')) document.getElementById('edit-audit-link-yt').value = sl.youtube || '';
         }
     }
 
@@ -1465,6 +1473,15 @@ function handleAuditSubmit(event) {
     const engagement_rate = parseFloat(document.getElementById('edit-audit-engagement').value) || 0;
     const avg_views = parseInt(document.getElementById('edit-audit-avg-views').value) || 0;
     const content_types = document.getElementById('edit-audit-content-types').value.trim();
+
+    // Website & Social Media URLs
+    const website = document.getElementById('edit-audit-website')?.value.trim() || '';
+    const social_links = {
+        facebook: document.getElementById('edit-audit-link-fb')?.value.trim() || '',
+        instagram: document.getElementById('edit-audit-link-ig')?.value.trim() || '',
+        linkedin: document.getElementById('edit-audit-link-li')?.value.trim() || '',
+        youtube: document.getElementById('edit-audit-link-yt')?.value.trim() || ''
+    };
 
     const followers_breakdown = {
         facebook: parseInt(document.getElementById('edit-audit-fb').value) || 0,
@@ -1498,6 +1515,8 @@ function handleAuditSubmit(event) {
         engagement_rate,
         avg_views,
         content_types,
+        website,
+        social_links,
         breakdown
     };
 
