@@ -128,11 +128,6 @@ function initServiceModals() {
       icon: 'palette',
       desc: 'Strengthen your brand positioning and visual identity for exhibition dominance. Includes complete visual guidelines, logo refinement, messaging architecture, and brand collateral.'
     },
-    printing: {
-      title: 'Exhibition Printing & Collateral',
-      icon: 'printer',
-      desc: 'Create high-impact physical materials tailored for IDEX attendees. Includes booth graphics, brochures, product catalogs, roll-ups, and premium giveaway branding.'
-    },
     media: {
       title: 'Targeted Media Buying',
       icon: 'megaphone',
@@ -916,8 +911,8 @@ function initPricingPoolEstimator() {
     let freeBonus = 0;
     let lowestCheckedItem = null;
 
-    // Apply "Choose 3, Get 1 Free": If 4 or more services selected, the LOWEST priced checked service is 100% FREE!
-    if (count >= 4 && checkedPrices.length >= 4) {
+    // Apply "Pay 2, Get 3": If 3 or more services selected, the LOWEST priced checked service is 100% FREE!
+    if (count >= 3 && checkedPrices.length >= 3) {
       // Find lowest price item among checked
       checkedPrices.sort((a, b) => a.price - b.price);
       lowestCheckedItem = checkedPrices[0];
