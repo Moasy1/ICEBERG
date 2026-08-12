@@ -822,20 +822,20 @@ function renderPrivateAuditReport(companyName, contactName) {
   if (linksEl && (brand.website || brand.social_links)) {
     var lhtml = '';
     if (brand.website) {
-      lhtml += '<a href="' + brand.website + '" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.4); color: #38bdf8; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">🌐 Website</a>';
+      lhtml += '<a href="' + brand.website + '" target="_blank" rel="noopener noreferrer" style="padding: 5px 12px; background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.4); color: #38bdf8; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;"><img src="/admin/globe-language-svgrepo-com.svg" style="width:14px;height:14px;" alt="Website"> Website</a>';
     }
     if (brand.social_links) {
       if (brand.social_links.facebook) {
-        lhtml += '<a href="' + brand.social_links.facebook + '" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">📘 Facebook</a>';
+        lhtml += '<a href="' + brand.social_links.facebook + '" target="_blank" rel="noopener noreferrer" style="padding: 5px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;"><img src="/admin/facebook-svgrepo-com.svg" style="width:14px;height:14px;" alt="Facebook"> Facebook</a>';
       }
       if (brand.social_links.instagram) {
-        lhtml += '<a href="' + brand.social_links.instagram + '" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); color: #f472b6; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">📸 Instagram</a>';
+        lhtml += '<a href="' + brand.social_links.instagram + '" target="_blank" rel="noopener noreferrer" style="padding: 5px 12px; background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); color: #f472b6; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;"><img src="/admin/instagram-logo-facebook-2-svgrepo-com.svg" style="width:14px;height:14px;" alt="Instagram"> Instagram</a>';
       }
       if (brand.social_links.linkedin) {
-        lhtml += '<a href="' + brand.social_links.linkedin + '" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">💼 LinkedIn</a>';
+        lhtml += '<a href="' + brand.social_links.linkedin + '" target="_blank" rel="noopener noreferrer" style="padding: 5px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;"><img src="/admin/linkedin-svgrepo-com.svg" style="width:14px;height:14px;" alt="LinkedIn"> LinkedIn</a>';
       }
       if (brand.social_links.youtube) {
-        lhtml += '<a href="' + brand.social_links.youtube + '" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">▶️ YouTube</a>';
+        lhtml += '<a href="' + brand.social_links.youtube + '" target="_blank" rel="noopener noreferrer" style="padding: 5px 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;"><img src="/admin/youtube-svgrepo-com.svg" style="width:14px;height:14px;" alt="YouTube"> YouTube</a>';
       }
     }
     linksEl.innerHTML = lhtml;

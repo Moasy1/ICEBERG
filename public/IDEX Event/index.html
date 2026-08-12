@@ -8170,12 +8170,155 @@
                 else if (e.score >= 45) scoreClass = 'score-mid';
 
                 let linksBar = '';
-                if (e.website) linksBar += `<a href="${e.website}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Website" style="color: #38bdf8; font-size: 10px; text-decoration: none; padding: 1px 5px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 4px; font-weight: 600;">🌐 Web</a> `;
+                if (e.website) linksBar += `<a href="${e.website}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Website" style="color: #38bdf8; font-size: 10px; text-decoration: none; padding: 2px 6px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;"><img src="/admin/globe-language-svgrepo-com.svg" style="width:12px;height:12px;" alt="Website"> Web</a> `;
                 if (e.social_links) {
-                    if (e.social_links.facebook) linksBar += `<a href="${e.social_links.facebook}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Facebook" style="color: #60a5fa; font-size: 10px; text-decoration: none; padding: 1px 5px; background: rgba(96, 165, 250, 0.15); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 4px; font-weight: 600;">📘 FB</a> `;
-                    if (e.social_links.instagram) linksBar += `<a href="${e.social_links.instagram}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Instagram" style="color: #f472b6; font-size: 10px; text-decoration: none; padding: 1px 5px; background: rgba(244, 114, 182, 0.15); border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 4px; font-weight: 600;">📸 IG</a> `;
-                    if (e.social_links.linkedin) linksBar += `<a href="${e.social_links.linkedin}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="LinkedIn" style="color: #34d399; font-size: 10px; text-decoration: none; padding: 1px 5px; background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.3); border-radius: 4px; font-weight: 600;">💼 LI</a> `;
-                    if (e.social_links.youtube) linksBar += `<a href="${e.social_links.youtube}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="YouTube" style="color: #f87171; font-size: 10px; text-decoration: none; padding: 1px 5px; background: rgba(248, 113, 113, 0.15); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 4px; font-weight: 600;">▶️ YT</a>`;
+                    if (e.social_links.facebook) linksBar += `<a href="${e.social_links.facebook}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Facebook" style="color: #60a5fa; font-size: 10px; text-decoration: none; padding: 2px 6px; background: rgba(96, 165, 250, 0.15); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;"><img src="/admin/facebook-svgrepo-com.svg" style="width:12px;height:12px;" alt="Facebook"> FB</a> `;
+                    if (e.social_links.instagram) linksBar += `<a href="${e.social_links.instagram}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Instagram" style="color: #f472b6; font-size: 10px; text-decoration: none; padding: 1px 6px; background: rgba(244, 114, 182, 0.15); border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;"><img src="/admin/instagram-logo-facebook-2-svgrepo-com.svg" style="width:12px;height:12px;" alt="Instagram"> IG</a> `;
+                    if (e.social_links.linkedin) linksBar += `<a href="${e.social_links.linkedin}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="LinkedIn" style="color: #34d399; font-size: 10px; text-decoration: none; padding: 2px 6px; background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.3); border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;"><img src="/admin/linkedin-svgrepo-com.svg" style="width:12px;height:12px;" alt="LinkedIn"> LI</a> `;
+                    if (e.social_links.youtube) linksBar += `<a href="${e.social_links.youtube}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="YouTube" style="color: #f87171; font-size: 10px; text-decoration: none; padding: 2px 6px; background: rgba(248, 113, 113, 0.15); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;"><img src="/admin/youtube-svgrepo-com.svg" style="width:12px;height:12px;" alt="YouTube"> YT</a>`;
+                }
+
+                const tierDisplay = e.tier_name ? e.tier_name.split(' & ')[0] : (e.tier || 'Tier 2');
+
+                card.innerHTML = `
+                    <div class="card-info">
+                        <div class="card-title">${e.name}</div>
+                        <div class="card-subtitle">${e.sector || 'Dental'}</div>
+                        <div class="card-quick-links" style="margin-top: 4px; display: flex; gap: 3px; flex-wrap: wrap;">${linksBar}</div>
+                        <div class="card-tags" style="margin-top: 6px;">
+                            <span class="card-tag ${tagClass}">${tierDisplay}</span>
+                            <span class="card-tag" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); cursor: pointer;" onclick="copyClientLink(exhibitorsData.find(x => x.id === ${e.id}), event)">🔗 Link</span>
+                        </div>
+                    </div>
+                    <div class="card-score ${scoreClass}">${e.score}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectExhibitor(id, forceSkipGate = false) {
+            selectedExhibitorId = id;
+            isEditingMetrics = false;
+            document.getElementById('edit-metrics-btn').innerText = 'Edit Metrics';
+            document.getElementById('edit-metrics-btn').className = 'btn-outline';
+            
+            toggleEditWrappers(false);
+            filterAndRenderList();
+
+            const e = exhibitorsData.find(ex => ex.id === id);
+            if (!e) return;
+
+            const isUnlocked = localStorage.getItem(`iceberg_unlocked_${e.name}`) === 'true' || 
+                               localStorage.getItem(`iceberg_unlocked_${e.id}`) === 'true' || 
+                               new URLSearchParams(window.location.search).get('unlocked') === 'true' || 
+                               !isClientViewMode || 
+                               forceSkipGate;
+
+            if (!isUnlocked && isClientViewMode) {
+                openAuditScheduleModal(e);
+            }
+
+            document.getElementById('audit-empty-state').classList.add('hidden');
+            document.getElementById('audit-detail-grid').classList.remove('hidden');
+
+            document.getElementById('audit-brand-name').innerText = e.name;
+            document.getElementById('audit-brand-sector').innerText = `${e.sector} | ${e.region}`;
+
+            const linksContainer = document.getElementById('audit-brand-links');
+            if (linksContainer) {
+                let linksHtml = '';
+                if (e.website) {
+                    linksHtml += `<a href="${e.website}" target="_blank" rel="noopener noreferrer" style="padding: 5px 12px; background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.4); color: #38bdf8; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;"><img src="/admin/globe-language-svgrepo-com.svg" style="width:14px;height:14px;" alt="Website"> Website</a>`;
+                }
+                if (e.social_links) {
+                    if (e.social_links.facebook) {
+                        linksHtml += `<a href="${e.social_links.facebook}" target="_blank" rel="noopener noreferrer" style="padding: 5px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;"><img src="/admin/facebook-svgrepo-com.svg" style="width:14px;height:14px;" alt="Facebook"> Facebook</a>`;
+                    }
+                    if (e.social_links.instagram) {
+                        linksHtml += `<a href="${e.social_links.instagram}" target="_blank" rel="noopener noreferrer" style="padding: 5px 12px; background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); color: #f472b6; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;"><img src="/admin/instagram-logo-facebook-2-svgrepo-com.svg" style="width:14px;height:14px;" alt="Instagram"> Instagram</a>`;
+                    }
+                    if (e.social_links.linkedin) {
+                        linksHtml += `<a href="${e.social_links.linkedin}" target="_blank" rel="noopener noreferrer" style="padding: 5px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;"><img src="/admin/linkedin-svgrepo-com.svg" style="width:14px;height:14px;" alt="LinkedIn"> LinkedIn</a>`;
+                    }
+                    if (e.social_links.youtube) {
+                        linksHtml += `<a href="${e.social_links.youtube}" target="_blank" rel="noopener noreferrer" style="padding: 5px 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;"><img src="/admin/youtube-svgrepo-com.svg" style="width:14px;height:14px;" alt="YouTube"> YouTube</a>`;
+                    }
+                }
+                linksContainer.innerHTML = linksHtml;
+            }
+            document.getElementById('stats-max-score').innerText = Math.max(...scores);
+
+            renderExhibitorsList(exhibitorsData);
+            renderCharts();
+        }
+
+        function setupEventListeners() {
+            const sb = document.getElementById('search-box');
+            if (sb) sb.addEventListener('input', filterAndRenderList);
+            const tf = document.getElementById('tier-filter');
+            if (tf) tf.addEventListener('change', filterAndRenderList);
+            const ss = document.getElementById('sort-select');
+            if (ss) ss.addEventListener('change', filterAndRenderList);
+        }
+
+        function filterAndRenderList() {
+            const sb = document.getElementById('search-box');
+            const query = sb ? sb.value.toLowerCase() : '';
+            const tf = document.getElementById('tier-filter');
+            const tierFilter = tf ? tf.value : 'ALL';
+            const ss = document.getElementById('sort-select');
+            const sortVal = ss ? ss.value : 'score-desc';
+
+            let filtered = exhibitorsData.filter(e => {
+                const nameMatches = (e.name || '').toLowerCase().includes(query);
+                const sectorMatches = (e.sector || '').toLowerCase().includes(query);
+                const tierMatches = tierFilter === 'ALL' || e.tier === tierFilter;
+                return (nameMatches || sectorMatches) && tierMatches;
+            });
+
+            if (sortVal === 'score-desc') {
+                filtered.sort((a, b) => b.score - a.score);
+            } else if (sortVal === 'score-asc') {
+                filtered.sort((a, b) => a.score - b.score);
+            } else if (sortVal === 'name-asc') {
+                filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            }
+
+            renderExhibitorsList(filtered);
+        }
+
+        function renderExhibitorsList(list) {
+            const container = document.getElementById('exhibitor-list-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (!Array.isArray(list) || list.length === 0) {
+                container.innerHTML = '<div style="color: var(--text-secondary); text-align: center; padding: 2rem; font-size: 0.85rem;">No brands found matching criteria</div>';
+                return;
+            }
+
+            list.forEach(e => {
+                const card = document.createElement('div');
+                card.className = `exhibitor-card ${selectedExhibitorId === e.id ? 'active' : ''}`;
+                card.onclick = () => selectExhibitor(e.id);
+
+                let tagClass = 'tag-tier1';
+                if (e.tier === 'Tier 2') tagClass = 'tag-tier2';
+                else if (e.tier === 'Tier 3') tagClass = 'tag-tier3';
+                else if (e.tier === 'Tier 4') tagClass = 'tag-tier4';
+
+                let scoreClass = 'score-low';
+                if (e.score >= 70) scoreClass = 'score-high';
+                else if (e.score >= 55) scoreClass = 'score-good';
+                else if (e.score >= 45) scoreClass = 'score-mid';
+
+                let linksBar = '';
+                if (e.website) linksBar += `<a href="${e.website}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Website" style="color: #38bdf8; font-size: 10px; text-decoration: none; padding: 2px 6px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;"><img src="/admin/globe-language-svgrepo-com.svg" style="width:12px;height:12px;" alt="Website"> Web</a> `;
+                if (e.social_links) {
+                    if (e.social_links.facebook) linksBar += `<a href="${e.social_links.facebook}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Facebook" style="color: #60a5fa; font-size: 10px; text-decoration: none; padding: 2px 6px; background: rgba(96, 165, 250, 0.15); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;"><img src="/admin/facebook-svgrepo-com.svg" style="width:12px;height:12px;" alt="Facebook"> FB</a> `;
+                    if (e.social_links.instagram) linksBar += `<a href="${e.social_links.instagram}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Instagram" style="color: #f472b6; font-size: 10px; text-decoration: none; padding: 2px 6px; background: rgba(244, 114, 182, 0.15); border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;"><img src="/admin/instagram-logo-facebook-2-svgrepo-com.svg" style="width:12px;height:12px;" alt="Instagram"> IG</a> `;
+                    if (e.social_links.linkedin) linksBar += `<a href="${e.social_links.linkedin}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="LinkedIn" style="color: #34d399; font-size: 10px; text-decoration: none; padding: 2px 6px; background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.3); border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;"><img src="/admin/linkedin-svgrepo-com.svg" style="width:12px;height:12px;" alt="LinkedIn"> LI</a> `;
+                    if (e.social_links.youtube) linksBar += `<a href="${e.social_links.youtube}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="YouTube" style="color: #f87171; font-size: 10px; text-decoration: none; padding: 2px 6px; background: rgba(248, 113, 113, 0.15); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;"><img src="/admin/youtube-svgrepo-com.svg" style="width:12px;height:12px;" alt="YouTube"> YT</a>`;
                 }
 
                 const tierDisplay = e.tier_name ? e.tier_name.split(' & ')[0] : (e.tier || 'Tier 2');
@@ -8283,62 +8426,7 @@ Link: ${clientUrl}`);
             document.getElementById('stats-avg-score').innerText = `${avg}/100`;
             const scores = exhibitorsData.map(e => e.score);
             document.getElementById('stats-min-score').innerText = Math.min(...scores);
-            document.getElementById('stats-max-score').innerText = Math.max(...scores);
 
-            renderExhibitorsList(exhibitorsData);
-            selectedExhibitorId = id;
-            isEditingMetrics = false;
-            document.getElementById('edit-metrics-btn').innerText = 'Edit Metrics';
-            document.getElementById('edit-metrics-btn').className = 'btn-outline';
-            
-            // Hide all edit input wrappers
-            toggleEditWrappers(false);
-
-            filterAndRenderList();
-
-            const e = exhibitorsData.find(ex => ex.id === id);
-            if (!e) return;
-
-            // Check if client audit is unlocked or requires scheduling a consultation meeting
-            const isUnlocked = localStorage.getItem(`iceberg_unlocked_${e.name}`) === 'true' || 
-                               localStorage.getItem(`iceberg_unlocked_${e.id}`) === 'true' || 
-                               new URLSearchParams(window.location.search).get('unlocked') === 'true' || 
-                               !isClientViewMode || 
-                               forceSkipGate;
-
-            if (!isUnlocked && isClientViewMode) {
-                openAuditScheduleModal(e);
-            }
-
-            document.getElementById('audit-empty-state').classList.add('hidden');
-            document.getElementById('audit-detail-grid').classList.remove('hidden');
-
-            document.getElementById('audit-brand-name').innerText = e.name;
-            document.getElementById('audit-brand-sector').innerText = `${e.sector} | ${e.region}`;
-
-            const linksContainer = document.getElementById('audit-brand-links');
-            if (linksContainer) {
-                let linksHtml = '';
-                if (e.website) {
-                    linksHtml += `<a href="${e.website}" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.4); color: #38bdf8; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">🌐 Website</a>`;
-                }
-                if (e.social_links) {
-                    if (e.social_links.facebook) {
-                        linksHtml += `<a href="${e.social_links.facebook}" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">📘 Facebook</a>`;
-                    }
-                    if (e.social_links.instagram) {
-                        linksHtml += `<a href="${e.social_links.instagram}" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); color: #f472b6; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">📸 Instagram</a>`;
-                    }
-                    if (e.social_links.linkedin) {
-                        linksHtml += `<a href="${e.social_links.linkedin}" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">💼 LinkedIn</a>`;
-                    }
-                    if (e.social_links.youtube) {
-                        linksHtml += `<a href="${e.social_links.youtube}" target="_blank" rel="noopener noreferrer" style="padding: 4px 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">▶️ YouTube</a>`;
-                    }
-                }
-                linksContainer.innerHTML = linksHtml;
-            }
-            
             const badge = document.getElementById('audit-tier-badge');
             badge.innerText = e.tier_name;
             badge.className = 'tier-badge';
