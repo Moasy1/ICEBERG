@@ -157,39 +157,43 @@ router.post('/hold', async (req, res) => {
 // POST /api/calendar/book - Confirm meeting booking
 router.post('/book', async (req, res) => {
   try {
-    const { date, time, name, email, phone, company, industry, position, notes, sessionId, utm } = req.body;
+    const { date, time, name, contact_name, email, phone, company, industry, position, notes, sessionId, utm } = req.body;
 
-    if (!date || !time || !name || !email || !company || !industry) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required booking fields (date, time, name, email, company, industry)'
-      });
-    }
+    const finalDate = date || new Date().toISOString().split('T')[0];
+    const finalTime = time || '10:00 AM';
+    const finalCompany = (company || name || 'IDEX Exhibitor').trim();
+    const finalName = (contact_name || name || finalCompany).trim();
+    const finalEmail = (email || `info@${finalCompany.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`).trim().toLowerCase();
 
-    const slotId = `slot_${date}_${time.replace(':', '')}`;
-    const meetingTimeDate = new Date(`${date}T${time}:00.000Z`);
+    const slotId = `slot_${finalDate}_${finalTime.replace(/[^a-zA-Z0-9]/g, '')}`;
+    const meetingTimeDate = new Date(`${finalDate}T${finalTime.includes(':') ? finalTime : '10:00'}:00.000Z`);
 
-    // Create/update Lead record in CRM with status SCHEDULED
+    // Create/update Lead record in CRM with status 📅 Consultation Booked
     const leadData = {
       lead_id: `lead_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
-      source: 'idex_meeting',
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
+      source: 'Strategy Consultation Calendar',
+      action: `Booked Consultation (${finalDate} ${finalTime})`,
+      name: finalName,
+      contact_name: finalName,
+      email: finalEmail,
       phone: (phone || '').trim(),
-      company: company.trim(),
-      industry: industry.trim(),
-      position: (position || '').trim(),
+      company: finalCompany,
+      industry: (industry || 'Dental').trim(),
+      sector: (industry || 'Dental').trim(),
+      position: (position || 'Executive Lead').trim(),
       requirements: ['IDEX Consultation Meeting'],
       interest_tag: 'growth_package',
-      meeting_time: meetingTimeDate,
-      status: 'SCHEDULED',
-      owner: 'Sales Team (Africa/Cairo)',
-      notes: (notes || '').trim(),
+      meeting_date: finalDate,
+      meeting_time: finalTime,
+      time_slot: finalTime,
+      status: '📅 Consultation Booked',
+      owner: 'Executive Desk 1',
+      notes: (notes || `Meeting scheduled for ${finalDate} at ${finalTime}`).trim(),
       utm: utm || {}
     };
 
     // Backup to disk
-    backupBookingToDisk({ date, time, ...leadData });
+    backupBookingToDisk({ date: finalDate, time: finalTime, ...leadData });
 
     // Update DB models
     try {
@@ -199,18 +203,25 @@ router.post('/book', async (req, res) => {
         { upsert: true, new: true }
       );
 
-      const { startTime, endTime } = parseSlotTimes(date, time);
+      const { startTime, endTime } = parseSlotTimes(finalDate, finalTime);
 
       await CalendarSlot.findOneAndUpdate(
         { slot_id: slotId },
         {
           slot_id: slotId,
+          date: finalDate,
+          time: finalTime,
           start_time: startTime,
           end_time: endTime,
           status: 'BOOKED',
+          company: finalCompany,
+          contact_name: finalName,
+          phone: leadData.phone,
+          notes: leadData.notes,
           held_until: null,
           lead_id: leadData.lead_id,
-          lead_email: leadData.email
+          lead_email: leadData.email,
+          owner: leadData.owner
         },
         { upsert: true, new: true }
       );
@@ -223,8 +234,9 @@ router.post('/book', async (req, res) => {
       message: 'Meeting confirmed successfully!',
       lead_id: leadData.lead_id,
       meeting_details: {
-        date,
-        time,
+        date: finalDate,
+        time: finalTime,
+        company: finalCompany,
         timezone: 'Africa/Cairo (UTC+2)',
         location: 'IDEX Exhibition Center / ICEBERG VIP Lounge & Online'
       }

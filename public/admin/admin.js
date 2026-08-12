@@ -2153,3 +2153,240 @@ function getLocalSlotsFallback(dateVal) {
         { slot_id: `slot_${dateVal}_5`, time: '05:00 PM', date: dateVal, status: 'AVAILABLE', owner: 'Executive Desk 2' }
     ];
 }
+
+
+// ==========================================
+// IDEX EXHIBITOR LEAD PIPELINE REAL-TIME ENGINE
+// ==========================================
+allAdminLeads = [];
+
+function loadIdexLeads() {
+    if (window.ICEBERGLeadTracker) {
+        allAdminLeads = window.ICEBERGLeadTracker.getAllLeads();
+    } else {
+        try {
+            const saved = localStorage.getItem('iceberg_idex_lead_pipeline') || localStorage.getItem('iceberg_admin_leads');
+            allAdminLeads = saved ? JSON.parse(saved) : getLocalLeadsFallback();
+        } catch(e) {
+            allAdminLeads = getLocalLeadsFallback();
+        }
+    }
+    renderAdminLeads(allAdminLeads);
+    updateLeadKPIs(allAdminLeads);
+}
+
+function updateLeadKPIs(leads) {
+    const totalEl = document.getElementById('lead-kpi-total') || document.getElementById('ov-leads-count');
+    if (totalEl) totalEl.textContent = leads.length;
+
+    const auditCount = leads.filter(l => (l.source || '').toLowerCase().includes('audit') || (l.action || '').toLowerCase().includes('audit')).length;
+    const auditEl = document.getElementById('lead-kpi-audits');
+    if (auditEl) auditEl.textContent = auditCount;
+
+    const consultCount = leads.filter(l => (l.source || '').toLowerCase().includes('consult') || (l.action || '').toLowerCase().includes('consult') || l.status === '📅 Consultation Booked' || l.status === 'SCHEDULED').length;
+    const consultEl = document.getElementById('lead-kpi-consultations');
+    if (consultEl) consultEl.textContent = consultCount;
+}
+
+function renderAdminLeads(leads) {
+    const tbody = document.getElementById('idex-leads-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (!Array.isArray(leads) || leads.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-gray-400">No leads captured in real-time pipeline yet.</td></tr>`;
+        return;
+    }
+
+    leads.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.className = 'table-row hover:bg-slate-800/60 transition-colors';
+
+        const dateStr = item.timestamp ? new Date(item.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : (item.created_at || 'Just now');
+        
+        let statusBadgeClass = 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+        if ((item.status || '').includes('High Intent')) statusBadgeClass = 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+        else if ((item.status || '').includes('Consultation Booked') || item.status === 'SCHEDULED') statusBadgeClass = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+        else if ((item.status || '').includes('Contacted')) statusBadgeClass = 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+
+        tr.innerHTML = `
+            <td class="p-4 font-mono text-xs">
+                <div class="font-bold text-cyan-400">${item.id || ('IDX-' + (1000 + index))}</div>
+                <div class="text-slate-400 text-[11px]">${dateStr}</div>
+            </td>
+            <td class="p-4">
+                <div class="font-bold text-white text-sm">${item.company || item.name || 'Exhibitor'}</div>
+                <div class="text-xs text-slate-300 flex items-center gap-2 mt-0.5">
+                    <span>👤 ${item.contact_name || item.name || 'Contact'}</span>
+                </div>
+                <div class="text-[11px] text-cyan-300/80 flex items-center gap-2 mt-0.5 font-mono">
+                    <span>📧 ${item.email || 'N/A'}</span>
+                    <span>📞 ${item.phone || 'N/A'}</span>
+                </div>
+            </td>
+            <td class="p-4 text-xs">
+                <span class="px-2 py-0.5 bg-slate-800 text-slate-300 rounded border border-slate-700 font-semibold">${item.sector || item.industry || 'Dental'}</span>
+            </td>
+            <td class="p-4 text-xs">
+                <span class="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded font-bold">${item.source || 'IDEX Landing Page'}</span>
+                <div class="text-[11px] text-gray-300 mt-1">${item.action || 'Form Submission'}</div>
+            </td>
+            <td class="p-4 text-xs text-gray-300 max-w-xs truncate" title="${item.notes || ''}">
+                ${item.notes || item.requirements || 'Live lead captured from IDEX Funnel.'}
+            </td>
+            <td class="p-4 text-xs">
+                <select onchange="updateLeadStatus('${item.id}', this.value)" class="px-2.5 py-1 rounded text-xs font-bold border ${statusBadgeClass} bg-slate-900 cursor-pointer outline-none">
+                    <option value="🆕 New Lead" ${item.status === '🆕 New Lead' || item.status === 'NEW' ? 'selected' : ''}>🆕 New Lead</option>
+                    <option value="🔥 High Intent" ${item.status === '🔥 High Intent' ? 'selected' : ''}>🔥 High Intent</option>
+                    <option value="📅 Consultation Booked" ${item.status === '📅 Consultation Booked' || item.status === 'SCHEDULED' ? 'selected' : ''}>📅 Consultation Booked</option>
+                    <option value="📞 Contacted" ${item.status === '📞 Contacted' || item.status === 'CONTACTED' ? 'selected' : ''}>📞 Contacted</option>
+                    <option value="✅ Converted Client" ${item.status === '✅ Converted Client' || item.status === 'CONVERTED' ? 'selected' : ''}>✅ Converted Client</option>
+                </select>
+            </td>
+            <td class="p-4 text-right space-x-1.5 whitespace-nowrap">
+                <button onclick="copyToClipboard('${item.email}')" title="Copy Email" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded text-xs font-bold transition-all">
+                    📧
+                </button>
+                <button onclick="copyToClipboard('${item.phone}')" title="Copy Phone" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-300 rounded text-xs font-bold transition-all">
+                    📞
+                </button>
+                <button onclick="deleteAdminLead('${item.id}')" title="Delete Lead" class="px-2 py-1 bg-red-500/20 hover:bg-red-500/40 text-red-300 rounded text-xs transition-all">
+                    🗑️
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function updateLeadStatus(leadId, newStatus) {
+    const lead = allAdminLeads.find(l => l.id === leadId || l.lead_id === leadId);
+    if (lead) {
+        lead.status = newStatus;
+        try {
+            localStorage.setItem('iceberg_idex_lead_pipeline', JSON.stringify(allAdminLeads));
+        } catch(e) {}
+        renderAdminLeads(allAdminLeads);
+        showNotification(`Updated lead status to: ${newStatus}`, 'success');
+    }
+}
+
+function deleteAdminLead(leadId) {
+    if (!confirm('Are you sure you want to remove this lead from the pipeline?')) return;
+    allAdminLeads = allAdminLeads.filter(l => l.id !== leadId && l.lead_id !== leadId);
+    try {
+        localStorage.setItem('iceberg_idex_lead_pipeline', JSON.stringify(allAdminLeads));
+    } catch(e) {}
+    renderAdminLeads(allAdminLeads);
+    updateLeadKPIs(allAdminLeads);
+    showNotification('Lead removed from real-time pipeline.', 'info');
+}
+
+function exportLeadsCSV() {
+    if (!Array.isArray(allAdminLeads) || allAdminLeads.length === 0) {
+        showNotification('No lead data to export', 'error');
+        return;
+    }
+
+    let csv = "Lead ID,Timestamp,Company,Contact Name,Email,Phone,Sector,Source,Action,Status,Notes\n";
+    allAdminLeads.forEach(l => {
+        const row = [
+            l.id || l.lead_id || '',
+            `"${l.timestamp || l.created_at || ''}"`,
+            `"${(l.company || l.name || '').replace(/"/g, '""')}"`,
+            `"${(l.contact_name || l.name || '').replace(/"/g, '""')}"`,
+            `"${(l.email || '').replace(/"/g, '""')}"`,
+            `"${(l.phone || '').replace(/"/g, '""')}"`,
+            `"${(l.sector || l.industry || '').replace(/"/g, '""')}"`,
+            `"${(l.source || '').replace(/"/g, '""')}"`,
+            `"${(l.action || '').replace(/"/g, '""')}"`,
+            `"${(l.status || '').replace(/"/g, '""')}"`,
+            `"${(l.notes || l.requirements || '').replace(/"/g, '""')}"`
+        ];
+        csv += row.join(',') + "\n";
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "IDEX_2026_Exhibitor_Lead_Pipeline.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showNotification(`Exported ${allAdminLeads.length} Exhibitor Leads to CSV!`, 'success');
+}
+window.exportLeadsCSV = exportLeadsCSV;
+
+function filterAdminLeads() {
+    const q = (document.getElementById('admin-lead-search')?.value || '').toLowerCase().trim();
+    const statusFilter = document.getElementById('admin-lead-status-filter')?.value || 'ALL';
+
+    let filtered = [...allAdminLeads];
+    if (q) {
+        filtered = filtered.filter(l => 
+            (l.company && l.company.toLowerCase().includes(q)) ||
+            (l.contact_name && l.contact_name.toLowerCase().includes(q)) ||
+            (l.email && l.email.toLowerCase().includes(q)) ||
+            (l.phone && l.phone.toLowerCase().includes(q)) ||
+            (l.source && l.source.toLowerCase().includes(q))
+        );
+    }
+
+    if (statusFilter !== 'ALL') {
+        filtered = filtered.filter(l => (l.status || '').toUpperCase().includes(statusFilter));
+    }
+
+    renderAdminLeads(filtered);
+}
+
+function openLeadModal() {
+    const company = prompt('Enter Exhibitor Company Name:');
+    if (!company) return;
+    const name = prompt('Enter Contact Person Name:');
+    const email = prompt('Enter Contact Email:');
+    const phone = prompt('Enter Contact Phone:');
+    
+    if (window.ICEBERGLeadTracker) {
+        const newLead = window.ICEBERGLeadTracker.captureLead({
+            company,
+            contact_name: name,
+            email,
+            phone,
+            source: 'Admin Manual Entry',
+            action: 'Added by Admin User',
+            status: '🆕 New Lead'
+        });
+        loadIdexLeads();
+        showNotification(`Lead captured for ${company}!`, 'success');
+    }
+}
+window.openLeadModal = openLeadModal;
+window.loadIdexLeads = loadIdexLeads;
+window.filterAdminLeads = filterAdminLeads;
+
+// Real-Time Cross-Tab Listener for Admin Pipeline Sync
+(function initRealtimeLeadListener() {
+    if ('BroadcastChannel' in window) {
+        try {
+            const channel = new BroadcastChannel('iceberg_lead_channel');
+            channel.onmessage = (event) => {
+                if (event.data && event.data.type === 'NEW_LEAD') {
+                    showNotification(`⚡ Real-Time Lead Captured: ${event.data.lead.company}`, 'success');
+                    if (typeof loadIdexLeads === 'function') loadIdexLeads();
+                }
+            };
+        } catch(e) {}
+    }
+
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'iceberg_idex_lead_pipeline') {
+            if (typeof loadIdexLeads === 'function') loadIdexLeads();
+        }
+    });
+
+    window.addEventListener('iceberg_lead_captured', (e) => {
+        if (typeof loadIdexLeads === 'function') loadIdexLeads();
+    });
+})();

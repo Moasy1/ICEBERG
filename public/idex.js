@@ -363,6 +363,18 @@ function initCalendarBookingFlow(utmParams) {
       const data = await res.json();
 
       if (data.success || true) { // Save booking locally & proceed
+        if (window.ICEBERGLeadTracker) {
+          window.ICEBERGLeadTracker.captureLead({
+            company: payload.company || 'IDEX Client',
+            contact_name: payload.name || 'Client Contact',
+            email: payload.email,
+            phone: payload.phone,
+            source: 'Strategy Consultation Calendar',
+            action: `Booked Consultation (${payload.date} ${payload.time})`,
+            status: '📅 Consultation Booked',
+            notes: payload.notes || `Industry: ${payload.industry}`
+          });
+        }
         try {
           const booked = JSON.parse(localStorage.getItem('iceberg_booked_slots') || '[]');
           booked.push({ date: selectedDate, time: selectedTime });
@@ -459,6 +471,19 @@ function initAuditForm(utmParams) {
       utm: utmParams
     };
 
+    if (window.ICEBERGLeadTracker) {
+      window.ICEBERGLeadTracker.captureLead({
+        company: payload.company || payload.name,
+        contact_name: payload.name,
+        email: payload.email,
+        phone: payload.phone,
+        source: 'Free Audit Form',
+        action: 'Submitted Free Audit Request',
+        status: '🆕 New Lead',
+        notes: `Industry: ${payload.industry}`
+      });
+    }
+
     try {
       const res = await fetch('/api/leads', {
         method: 'POST',
@@ -520,6 +545,19 @@ function initLeadForm(utmParams) {
       requirements,
       utm: utmParams
     };
+
+    if (window.ICEBERGLeadTracker) {
+      window.ICEBERGLeadTracker.captureLead({
+        company: payload.company || payload.name,
+        contact_name: payload.name,
+        email: payload.email,
+        phone: payload.phone,
+        source: 'Lead Qual Form',
+        action: 'Submitted Lead Qualification Form',
+        status: '🆕 New Lead',
+        notes: `Position: ${payload.position}, Industry: ${payload.industry}`
+      });
+    }
 
     try {
       const res = await fetch('/api/leads', {
@@ -642,6 +680,19 @@ function initHeroAuditSearch() {
     const phone = document.getElementById('gate-phone')?.value || '';
     const date = document.getElementById('gate-meeting-date')?.value || '2026-08-20';
     const timeSlot = document.getElementById('gate-time-slot')?.value || '10:00 AM';
+
+    if (window.ICEBERGLeadTracker) {
+      window.ICEBERGLeadTracker.captureLead({
+        company: selectedAuditCompany,
+        contact_name: name,
+        email: email,
+        phone: phone,
+        source: 'Hero Search Audit Gate',
+        action: `Unlocked Audit (${selectedAuditCompany}) & Booked Slot (${date} ${timeSlot})`,
+        status: '🔥 High Intent',
+        notes: `Meeting Date: ${date} at ${timeSlot}`
+      });
+    }
 
     const submitBtn = document.getElementById('gate-submit-btn');
     if (submitBtn) {
@@ -809,6 +860,18 @@ function renderPrivateAuditReport(companyName, contactName) {
   // Populate the HTML elements
   var titleEl = document.getElementById('audit-report-title');
   if (titleEl) titleEl.innerHTML = companyName + ' <span style="color:#22d3ee;">Confidential Executive Report</span>';
+
+  if (window.ICEBERGLeadTracker && brand) {
+    window.ICEBERGLeadTracker.captureLead({
+      company: brand.name || companyName,
+      contact_name: contactName || 'Executive Lead',
+      email: 'client@' + (companyName.toLowerCase().replace(/[^a-z0-9]/g, '')) + '.com',
+      source: 'Direct Audit URL View',
+      action: `Viewed Executive Report (${score}/100)`,
+      status: '🔥 High Intent',
+      sector: brand.sector || 'Dental'
+    });
+  }
 
   var linksEl = document.getElementById('audit-report-social-links');
   if (!linksEl) {

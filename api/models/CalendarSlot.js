@@ -7,18 +7,41 @@ const CalendarSlotSchema = new mongoose.Schema({
     unique: true,
     default: () => `slot_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`
   },
+  date: {
+    type: String,
+    default: ''
+  },
+  time: {
+    type: String,
+    default: ''
+  },
   start_time: {
     type: Date,
-    required: true
+    default: Date.now
   },
   end_time: {
     type: Date,
-    required: true
+    default: Date.now
   },
   status: {
     type: String,
-    enum: ['AVAILABLE', 'HELD', 'BOOKED', 'CANCELLED', 'COMPLETED', 'NO_SHOW'],
     default: 'AVAILABLE'
+  },
+  company: {
+    type: String,
+    default: ''
+  },
+  contact_name: {
+    type: String,
+    default: ''
+  },
+  phone: {
+    type: String,
+    default: ''
+  },
+  notes: {
+    type: String,
+    default: ''
   },
   held_until: {
     type: Date,
@@ -38,7 +61,7 @@ const CalendarSlotSchema = new mongoose.Schema({
   },
   owner: {
     type: String,
-    default: 'Sales Team (Africa/Cairo)'
+    default: 'Executive Desk 1'
   }
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }

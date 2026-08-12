@@ -9,8 +9,12 @@ const LeadSchema = new mongoose.Schema({
   },
   source: {
     type: String,
-    enum: ['idex_audit', 'idex_meeting', 'idex_lead_form', 'idex_qr'],
-    required: true
+    required: true,
+    default: 'IDEX Landing Page'
+  },
+  action: {
+    type: String,
+    default: 'Form Submission'
   },
   name: {
     type: String,
@@ -18,23 +22,26 @@ const LeadSchema = new mongoose.Schema({
     trim: true,
     maxlength: [100, 'Name cannot be more than 100 characters']
   },
+  contact_name: {
+    type: String,
+    trim: true,
+    default: ''
+  },
   email: {
     type: String,
     required: [true, 'Please provide an email'],
     trim: true,
-    lowercase: true,
-    match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Please provide a valid email address']
+    lowercase: true
   },
   phone: {
     type: String,
     trim: true,
-    maxlength: [50, 'Phone number cannot exceed 50 characters']
+    default: ''
   },
   company: {
     type: String,
     required: [true, 'Please provide a company name'],
-    trim: true,
-    maxlength: [250, 'Company name cannot exceed 250 characters']
+    trim: true
   },
   country: {
     type: String,
@@ -48,7 +55,12 @@ const LeadSchema = new mongoose.Schema({
   },
   industry: {
     type: String,
-    required: [true, 'Please select or provide an industry'],
+    default: 'Dental',
+    trim: true
+  },
+  sector: {
+    type: String,
+    default: 'Dental',
     trim: true
   },
   position: {
@@ -61,21 +73,27 @@ const LeadSchema = new mongoose.Schema({
   }],
   interest_tag: {
     type: String,
-    enum: ['growth_package', 'audit_only', 'multiple_services', 'other'],
-    default: 'other'
+    default: 'growth_package'
+  },
+  meeting_date: {
+    type: String,
+    default: ''
   },
   meeting_time: {
-    type: Date,
-    default: null
+    type: String,
+    default: ''
+  },
+  time_slot: {
+    type: String,
+    default: ''
   },
   status: {
     type: String,
-    enum: ['NEW', 'CONTACTED', 'QUALIFIED', 'SCHEDULED', 'PROPOSAL', 'CLOSED', 'LOST'],
-    default: 'NEW'
+    default: '🆕 New Lead'
   },
   owner: {
     type: String,
-    default: 'Sales Team (Round-Robin)'
+    default: 'Executive Desk 1'
   },
   notes: {
     type: String,
