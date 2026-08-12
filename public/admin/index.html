@@ -766,6 +766,7 @@
                         <table class="w-full text-left">
                             <thead class="bg-slate-800/80 text-gray-400 text-xs uppercase tracking-wider">
                                 <tr>
+                                    <th class="p-4 w-12 text-center">#</th>
                                     <th class="p-4">Exhibitor Company</th>
                                     <th class="p-4">Category / Region</th>
                                     <th class="p-4">Audit Score</th>
@@ -776,7 +777,7 @@
                             </thead>
                             <tbody id="idex-audits-tbody" class="divide-y divide-slate-800 text-sm text-gray-300">
                                 <tr>
-                                    <td colspan="6" class="p-6 text-center text-gray-400">Loading exhibitor audit database...</td>
+                                    <td colspan="7" class="p-6 text-center text-gray-400">Loading exhibitor audit database...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1429,6 +1430,81 @@
                 <div>
                     <label class="block text-xs font-bold text-gray-300 mb-1">Recommended Growth Actions (One per line)</label>
                     <textarea id="edit-audit-actions" rows="3" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="Shift social copy to ROI&#10;Run pre-booking ads"></textarea>
+                </div>
+
+                <!-- ── Social Audit Metrics Section ── -->
+                <div class="border-t border-slate-700 pt-4 mt-2">
+                    <h4 class="text-sm font-bold text-cyan-400 mb-3 flex items-center gap-2">
+                        <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                        Social Audit Metrics
+                    </h4>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 mb-1">Total Followers</label>
+                            <input type="number" id="edit-audit-followers" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white font-mono" placeholder="19852">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 mb-1">Engagement Rate (%)</label>
+                            <input type="number" id="edit-audit-engagement" step="0.01" min="0" max="100" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white font-mono" placeholder="1.92">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 mb-1">Avg. Views / Post</label>
+                            <input type="number" id="edit-audit-avg-views" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white font-mono" placeholder="1219">
+                        </div>
+                    </div>
+
+                    <!-- Platform Breakdown -->
+                    <div class="mt-3">
+                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Followers Breakdown by Platform</label>
+                        <div class="grid grid-cols-4 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-blue-400 mb-1">📘 Facebook</label>
+                                <input type="number" id="edit-audit-fb" class="form-input w-full px-3 py-1.5 rounded-lg text-xs bg-slate-800 text-white font-mono" placeholder="3409">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-pink-400 mb-1">📸 Instagram</label>
+                                <input type="number" id="edit-audit-ig" class="form-input w-full px-3 py-1.5 rounded-lg text-xs bg-slate-800 text-white font-mono" placeholder="15012">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-sky-400 mb-1">💼 LinkedIn</label>
+                                <input type="number" id="edit-audit-li" class="form-input w-full px-3 py-1.5 rounded-lg text-xs bg-slate-800 text-white font-mono" placeholder="1363">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-cyan-300 mb-1">🎵 TikTok</label>
+                                <input type="number" id="edit-audit-tt" class="form-input w-full px-3 py-1.5 rounded-lg text-xs bg-slate-800 text-white font-mono" placeholder="68">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Types -->
+                    <div class="mt-3">
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Content Types Breakdown</label>
+                        <input type="text" id="edit-audit-content-types" class="form-input w-full px-3 py-2 rounded-lg text-sm bg-slate-800 text-white" placeholder="e.g. Technical Spec Sheets (65%), Reels (25%), Event Posts (10%)">
+                    </div>
+
+                    <!-- Score Breakdown -->
+                    <div class="mt-3">
+                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Audit Score Breakdown (0-25 each)</label>
+                        <div class="grid grid-cols-4 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-indigo-400 mb-1">🎨 Visual Identity</label>
+                                <input type="number" id="edit-audit-bd-visual" min="0" max="25" class="form-input w-full px-3 py-1.5 rounded-lg text-xs bg-slate-800 text-white font-mono" placeholder="18">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-amber-400 mb-1">⚡ Content Velocity</label>
+                                <input type="number" id="edit-audit-bd-velocity" min="0" max="25" class="form-input w-full px-3 py-1.5 rounded-lg text-xs bg-slate-800 text-white font-mono" placeholder="13">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-emerald-400 mb-1">💬 Engagement Quality</label>
+                                <input type="number" id="edit-audit-bd-engagement" min="0" max="25" class="form-input w-full px-3 py-1.5 rounded-lg text-xs bg-slate-800 text-white font-mono" placeholder="13">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-red-400 mb-1">📢 Ad Infrastructure</label>
+                                <input type="number" id="edit-audit-bd-ads" min="0" max="25" class="form-input w-full px-3 py-1.5 rounded-lg text-xs bg-slate-800 text-white font-mono" placeholder="14">
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">

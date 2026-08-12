@@ -1120,7 +1120,7 @@ async function loadIdexOverview() {
 async function loadIdexAudits() {
     const tbody = document.getElementById('idex-audits-tbody');
     if (tbody) {
-        tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-cyan-400 animate-pulse">Loading IDEX exhibitor audit database...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-cyan-400 animate-pulse">Loading IDEX exhibitor audit database...</td></tr>';
     }
 
     const urls = [
@@ -1169,12 +1169,12 @@ function renderAdminAudits(audits) {
     if (!tbody) return;
 
     if (!Array.isArray(audits) || audits.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-gray-400">No exhibitors match your filter.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-gray-400">No exhibitors match your filter.</td></tr>';
         return;
     }
 
     tbody.innerHTML = '';
-    audits.forEach(item => {
+    audits.forEach((item, index) => {
         const tr = document.createElement('tr');
         tr.className = 'table-row border-b border-slate-800 hover:bg-slate-800/40 transition-colors';
 
@@ -1188,6 +1188,7 @@ function renderAdminAudits(audits) {
         const vulnStr = Array.isArray(item.vulnerabilities) ? item.vulnerabilities[0] : (item.vulnerabilities || 'N/A');
 
         tr.innerHTML = `
+            <td class="p-4 text-center font-mono font-bold text-cyan-400 text-sm">${index + 1}</td>
             <td class="p-4">
                 <div class="font-bold text-white text-base">${item.name}</div>
                 <div class="text-xs text-slate-400">${item.tier || 'Tier 2'} | ${item.hall || 'IDEX Hall'} ${item.booth ? `Stand ${item.booth}` : ''}</div>
@@ -1339,6 +1340,26 @@ function openAuditModal(auditId = null) {
             document.getElementById('edit-audit-booth').value = item.booth || '';
             document.getElementById('edit-audit-vulnerabilities').value = Array.isArray(item.vulnerabilities) ? item.vulnerabilities.join('\n') : (item.vulnerabilities || '');
             document.getElementById('edit-audit-actions').value = Array.isArray(item.actions) ? item.actions.join('\n') : (item.actions || '');
+
+            // Social Audit Metrics
+            document.getElementById('edit-audit-followers').value = item.followers || '';
+            document.getElementById('edit-audit-engagement').value = item.engagement_rate || '';
+            document.getElementById('edit-audit-avg-views').value = item.avg_views || '';
+            document.getElementById('edit-audit-content-types').value = item.content_types || '';
+
+            // Platform breakdown
+            const fb = item.followers_breakdown || {};
+            document.getElementById('edit-audit-fb').value = fb.facebook || '';
+            document.getElementById('edit-audit-ig').value = fb.instagram || '';
+            document.getElementById('edit-audit-li').value = fb.linkedin || '';
+            document.getElementById('edit-audit-tt').value = fb.tiktok || '';
+
+            // Score breakdown
+            const bd = item.breakdown || {};
+            document.getElementById('edit-audit-bd-visual').value = bd.visual_identity || '';
+            document.getElementById('edit-audit-bd-velocity').value = bd.content_velocity || '';
+            document.getElementById('edit-audit-bd-engagement').value = bd.engagement || '';
+            document.getElementById('edit-audit-bd-ads').value = bd.ad_infrastructure || '';
         }
     }
 
@@ -1359,6 +1380,26 @@ function handleAuditSubmit(event) {
     const vuln = document.getElementById('edit-audit-vulnerabilities').value.trim();
     const actions = document.getElementById('edit-audit-actions').value.trim().split('\n').filter(Boolean);
 
+    // Social Audit Metrics
+    const followers = parseInt(document.getElementById('edit-audit-followers').value) || 0;
+    const engagement_rate = parseFloat(document.getElementById('edit-audit-engagement').value) || 0;
+    const avg_views = parseInt(document.getElementById('edit-audit-avg-views').value) || 0;
+    const content_types = document.getElementById('edit-audit-content-types').value.trim();
+
+    const followers_breakdown = {
+        facebook: parseInt(document.getElementById('edit-audit-fb').value) || 0,
+        instagram: parseInt(document.getElementById('edit-audit-ig').value) || 0,
+        linkedin: parseInt(document.getElementById('edit-audit-li').value) || 0,
+        tiktok: parseInt(document.getElementById('edit-audit-tt').value) || 0
+    };
+
+    const breakdown = {
+        visual_identity: parseInt(document.getElementById('edit-audit-bd-visual').value) || 0,
+        content_velocity: parseInt(document.getElementById('edit-audit-bd-velocity').value) || 0,
+        engagement: parseInt(document.getElementById('edit-audit-bd-engagement').value) || 0,
+        ad_infrastructure: parseInt(document.getElementById('edit-audit-bd-ads').value) || 0
+    };
+
     const newAudit = {
         id: id || Date.now(),
         name,
@@ -1371,7 +1412,13 @@ function handleAuditSubmit(event) {
         region: country,
         booth,
         vulnerabilities: vuln ? [vuln] : ['Unoptimized lead funnel'],
-        actions: actions.length > 0 ? actions : ['Shift copy focus to clinical ROI']
+        actions: actions.length > 0 ? actions : ['Shift copy focus to clinical ROI'],
+        followers,
+        followers_breakdown,
+        engagement_rate,
+        avg_views,
+        content_types,
+        breakdown
     };
 
     if (id) {
