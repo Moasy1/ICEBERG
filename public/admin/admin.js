@@ -1611,6 +1611,21 @@ async function loadIdexLeads() {
     renderAdminLeads(allAdminLeads);
 }
 
+function formatTo12HourTime(timeStr) {
+    if (!timeStr) return '';
+    if (/am|pm/i.test(timeStr)) return timeStr.trim();
+    const parts = timeStr.split(':');
+    if (parts.length < 2) return timeStr;
+    let hr = parseInt(parts[0], 10);
+    const min = parts[1].substring(0, 2);
+    if (isNaN(hr)) return timeStr;
+    const ampm = hr >= 12 ? 'PM' : 'AM';
+    hr = hr % 12;
+    if (hr === 0) hr = 12;
+    const formattedHr = hr < 10 ? `0${hr}` : `${hr}`;
+    return `${formattedHr}:${min} ${ampm}`;
+}
+
 function renderAdminLeads(leads) {
     const tbody = document.getElementById('idex-leads-tbody');
     if (!tbody) return;
@@ -1629,32 +1644,40 @@ function renderAdminLeads(leads) {
         tr.className = 'table-row border-b border-slate-800 hover:bg-slate-800/40 transition-colors';
 
         const reqList = Array.isArray(lead.requirements) ? lead.requirements.join(', ') : (lead.requirements || 'IDEX Growth Package');
-        const dateStr = lead.created_at ? new Date(lead.created_at).toLocaleDateString() : new Date().toLocaleDateString();
+        const dateStr = lead.created_at ? new Date(lead.created_at).toLocaleDateString() : (lead.timestamp ? new Date(lead.timestamp).toLocaleDateString() : new Date().toLocaleDateString());
+
+        const mDate = lead.meeting_date || lead.appointmentDate || '';
+        const mTime = lead.meeting_time || lead.time_slot || lead.appointmentTime || '';
+        const meetingBadge = mDate ? `📅 ${mDate} @ ${formatTo12HourTime(mTime)}` : '';
 
         tr.innerHTML = `
             <td class="p-4 font-mono text-xs">
-                <div class="font-bold text-white">${lead.lead_id || `IDX-2026-${8800 + index}`}</div>
+                <div class="font-bold text-white">${lead.lead_id || lead.id || `IDX-2026-${8800 + index}`}</div>
                 <div class="text-gray-400">${dateStr}</div>
             </td>
             <td class="p-4">
-                <div class="font-bold text-white text-sm">${lead.name || 'N/A'}</div>
+                <div class="font-bold text-white text-sm">${lead.company || lead.name || 'N/A'}</div>
+                <div class="text-xs text-gray-300 flex items-center gap-1 mt-0.5">
+                    <span>👤 ${lead.contact_name || lead.name || 'Contact'}</span>
+                </div>
                 <div class="text-xs text-gray-400">${lead.email || ''} | ${lead.phone || ''}</div>
-                <div class="text-xs font-bold text-cyan-400 mt-0.5">${lead.company || ''}</div>
+                ${meetingBadge ? `<div class="mt-1.5 inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-md text-xs font-extrabold shadow-sm">${meetingBadge}</div>` : ''}
             </td>
             <td class="p-4 text-xs">
-                <div class="font-semibold text-gray-200">${lead.industry || 'Dental Sector'}</div>
+                <div class="font-semibold text-gray-200">${lead.industry || lead.sector || 'Dental Sector'}</div>
                 <div class="text-gray-400">${lead.position || 'Decision Maker'}</div>
             </td>
             <td class="p-4 text-xs">
                 <span class="px-2 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono border border-slate-700">${lead.source || 'idex.html'}</span>
+                <div class="text-[11px] text-gray-400 mt-1">${lead.action || 'Form Submission'}</div>
             </td>
             <td class="p-4 text-xs text-gray-300 max-w-xs truncate" title="${reqList}">${reqList}</td>
             <td class="p-4">
                 <select onchange="updateLeadStatus('${lead.lead_id || lead._id || lead.name}', this.value)" class="form-input px-2 py-1 rounded text-xs font-bold bg-slate-900 border border-slate-700 text-white">
-                    <option value="NEW" ${lead.status === 'NEW' ? 'selected' : ''}>NEW</option>
+                    <option value="NEW" ${lead.status === 'NEW' || lead.status === '🆕 New Lead' ? 'selected' : ''}>NEW</option>
                     <option value="CONTACTED" ${lead.status === 'CONTACTED' ? 'selected' : ''}>CONTACTED</option>
                     <option value="QUALIFIED" ${lead.status === 'QUALIFIED' ? 'selected' : ''}>QUALIFIED</option>
-                    <option value="SCHEDULED" ${lead.status === 'SCHEDULED' ? 'selected' : ''}>SCHEDULED</option>
+                    <option value="SCHEDULED" ${lead.status === 'SCHEDULED' || lead.status === '📅 Consultation Booked' ? 'selected' : ''}>SCHEDULED</option>
                     <option value="CONVERTED" ${lead.status === 'CONVERTED' ? 'selected' : ''}>CONVERTED</option>
                     <option value="CLOSED" ${lead.status === 'CLOSED' ? 'selected' : ''}>CLOSED</option>
                 </select>
@@ -1666,7 +1689,7 @@ function renderAdminLeads(leads) {
         `;
         tbody.appendChild(tr);
     });
-    lucide.createIcons();
+    if (window.lucide) lucide.createIcons();
 }
 
 function filterAdminLeads() {
@@ -1842,9 +1865,12 @@ function renderAdminCalendar(slots, dateVal) {
         if (slot.status === 'HELD') statusBadge = '<span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded text-xs font-bold">⏳ HELD</span>';
 
         tr.innerHTML = `
-            <td class="p-4 font-mono font-bold text-cyan-400 text-sm">${slot.time} (${slot.date || dateVal})</td>
+            <td class="p-4 font-mono font-bold text-cyan-400 text-sm">${formatTo12HourTime(slot.time)} (${slot.date || dateVal})</td>
             <td class="p-4">${statusBadge}</td>
-            <td class="p-4 text-xs font-semibold text-white">${slot.lead_email || slot.held_by_session || 'Open Slot'}</td>
+            <td class="p-4 text-xs font-semibold text-white">
+                <div class="font-bold text-white text-sm">${slot.contact_name || slot.name || slot.lead_email || (slot.status === 'HELD' ? 'Slot Held' : 'Open Slot')}</div>
+                ${slot.lead_email ? `<div class="text-[11px] text-gray-400 font-mono mt-0.5">${slot.lead_email}</div>` : ''}
+            </td>
             <td class="p-4 text-xs text-gray-300 font-bold">${slot.company || '—'}</td>
             <td class="p-4 text-xs text-gray-400 font-mono">${slot.owner || 'Executive Desk'}</td>
             <td class="p-4 text-right space-x-2">
@@ -2220,6 +2246,10 @@ function renderAdminLeads(leads) {
         else if ((item.status || '').includes('Consultation Booked') || item.status === 'SCHEDULED') statusBadgeClass = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
         else if ((item.status || '').includes('Contacted')) statusBadgeClass = 'bg-purple-500/20 text-purple-300 border-purple-500/30';
 
+        const itemMDate = item.meeting_date || item.appointmentDate || '';
+        const itemMTime = item.meeting_time || item.time_slot || item.appointmentTime || '';
+        const itemMeetingBadge = itemMDate ? `📅 ${itemMDate} @ ${formatTo12HourTime(itemMTime)}` : '';
+
         tr.innerHTML = `
             <td class="p-4 font-mono text-xs">
                 <div class="font-bold text-cyan-400">${item.id || ('IDX-' + (1000 + index))}</div>
@@ -2234,6 +2264,7 @@ function renderAdminLeads(leads) {
                     <span>📧 ${item.email || 'N/A'}</span>
                     <span>📞 ${item.phone || 'N/A'}</span>
                 </div>
+                ${itemMeetingBadge ? `<div class="mt-1.5 inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-md text-xs font-extrabold shadow-sm">${itemMeetingBadge}</div>` : ''}
             </td>
             <td class="p-4 text-xs">
                 <span class="px-2 py-0.5 bg-slate-800 text-slate-300 rounded border border-slate-700 font-semibold">${item.sector || item.industry || 'Dental'}</span>

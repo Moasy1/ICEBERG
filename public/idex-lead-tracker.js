@@ -71,24 +71,46 @@
         return defaultLeads;
     }
 
+    function formatTo12Hour(timeStr) {
+        if (!timeStr) return '';
+        if (/am|pm/i.test(timeStr)) return timeStr.trim();
+        const parts = timeStr.split(':');
+        if (parts.length < 2) return timeStr;
+        let hr = parseInt(parts[0], 10);
+        const min = parts[1].substring(0, 2);
+        if (isNaN(hr)) return timeStr;
+        const ampm = hr >= 12 ? 'PM' : 'AM';
+        hr = hr % 12;
+        if (hr === 0) hr = 12;
+        const formattedHr = hr < 10 ? `0${hr}` : `${hr}`;
+        return `${formattedHr}:${min} ${ampm}`;
+    }
+
     function captureIDEXLead(leadData) {
         if (!leadData) return null;
         
         const timestamp = new Date().toISOString();
         const id = 'LEAD-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
         
+        const rawTime = leadData.meeting_time || leadData.time_slot || leadData.appointmentTime || '';
+        const meetingTime12 = formatTo12Hour(rawTime);
+
         const newLead = {
             id: leadData.id || id,
             timestamp: leadData.timestamp || timestamp,
-            company: leadData.company || leadData.name || 'Unknown Exhibitor',
-            contact_name: leadData.contact_name || leadData.name || 'Not Provided',
+            company: leadData.company || leadData.contact_name || leadData.name || 'Unknown Exhibitor',
+            contact_name: leadData.contact_name || leadData.name || leadData.company || 'Not Provided',
+            name: leadData.contact_name || leadData.name || leadData.company || 'Not Provided',
             email: leadData.email || 'info@' + (leadData.company || 'exhibitor').toLowerCase().replace(/[^a-z0-9]/g, '') + '.com',
-            phone: leadData.phone || '+20 10' + Math.floor(10000000 + Math.random() * 90000000),
+            phone: leadData.phone || '',
             source: leadData.source || 'IDEX Audit View',
             action: leadData.action || 'View / Unlock Audit',
-            status: leadData.status || '🆕 New Lead',
-            sector: leadData.sector || 'Dental Equipment',
+            status: leadData.status || (leadData.meeting_date || leadData.appointmentDate ? '📅 Consultation Booked' : '🆕 New Lead'),
+            sector: leadData.sector || leadData.industry || 'Dental Equipment',
             notes: leadData.notes || '',
+            meeting_date: leadData.meeting_date || leadData.appointmentDate || '',
+            meeting_time: meetingTime12,
+            time_slot: meetingTime12,
             url: window.location.href
         };
 

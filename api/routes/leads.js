@@ -37,6 +37,22 @@ const getDiskBackupLeads = () => {
   }
 };
 
+// Helper to convert time strings to 12-hour format ("02:00 PM")
+const formatTo12Hour = (timeStr) => {
+  if (!timeStr) return '';
+  if (/am|pm/i.test(timeStr)) return timeStr.trim();
+  const parts = timeStr.split(':');
+  if (parts.length < 2) return timeStr;
+  let hr = parseInt(parts[0], 10);
+  const min = parts[1].substring(0, 2);
+  if (isNaN(hr)) return timeStr;
+  const ampm = hr >= 12 ? 'PM' : 'AM';
+  hr = hr % 12;
+  if (hr === 0) hr = 12;
+  const formattedHr = hr < 10 ? `0${hr}` : `${hr}`;
+  return `${formattedHr}:${min} ${ampm}`;
+};
+
 // POST /api/leads - Create/Submit new lead (Supports meeting slots)
 router.post('/', async (req, res) => {
   try {
@@ -59,6 +75,8 @@ router.post('/', async (req, res) => {
       interest_tag,
       meeting_date,
       meeting_time,
+      appointmentDate,
+      appointmentTime,
       time_slot,
       status,
       owner,
@@ -71,8 +89,11 @@ router.post('/', async (req, res) => {
     const finalCompany = (company || name || 'IDEX Exhibitor').trim();
 
     const uniqueId = id || lead_id || `IDX-${Date.now().toString().slice(-6)}`;
-    const finalMeetingDate = meeting_date || '';
-    const finalTimeSlot = time_slot || meeting_time || '';
+    const rawMeetingDate = meeting_date || appointmentDate || '';
+    const rawMeetingTime = time_slot || meeting_time || appointmentTime || '';
+    const finalMeetingDate = rawMeetingDate;
+    const finalTimeSlot = formatTo12Hour(rawMeetingTime);
+
     const finalStatus = status || (finalMeetingDate ? '📅 Consultation Booked' : '🆕 New Lead');
     const finalSource = source || 'IDEX Landing Page';
     const finalAction = action || (finalMeetingDate ? `Booked Meeting Slot (${finalMeetingDate} ${finalTimeSlot})` : 'Form Submission');

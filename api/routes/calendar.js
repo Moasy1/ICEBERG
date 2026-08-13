@@ -22,27 +22,50 @@ const backupBookingToDisk = (bookingData) => {
   }
 };
 
+// Helper to convert time strings (e.g., "14:00" or "14:00:00") to 12-hour format ("02:00 PM")
+const formatTo12Hour = (timeStr) => {
+  if (!timeStr) return '';
+  if (/am|pm/i.test(timeStr)) return timeStr.trim();
+  const parts = timeStr.split(':');
+  if (parts.length < 2) return timeStr;
+  let hr = parseInt(parts[0], 10);
+  const min = parts[1].substring(0, 2);
+  if (isNaN(hr)) return timeStr;
+  const ampm = hr >= 12 ? 'PM' : 'AM';
+  hr = hr % 12;
+  if (hr === 0) hr = 12;
+  const formattedHr = hr < 10 ? `0${hr}` : `${hr}`;
+  return `${formattedHr}:${min} ${ampm}`;
+};
+
 const parseSlotTimes = (dateStr, timeStr) => {
-  const [hrStr, minStr = '00'] = (timeStr || '09:00').split(':');
-  const hr = parseInt(hrStr, 10);
+  let [hrStr, minStr = '00'] = (timeStr || '09:00').split(':');
+  let hr = parseInt(hrStr, 10);
+  if (/pm/i.test(timeStr) && hr < 12) hr += 12;
+  if (/am/i.test(timeStr) && hr === 12) hr = 0;
   const min = parseInt(minStr, 10);
   const startTime = new Date(`${dateStr}T${String(hr).padStart(2, '0')}:${String(min).padStart(2, '0')}:00.000Z`);
   const endTime = new Date(startTime.getTime() + 60 * 60 * 1000);
   return { startTime, endTime };
 };
 
-// Generate default slots for a given date (09:00 - 17:00 Africa/Cairo)
+// Generate default slots for a given date in 12-hour format
 const getDefaultSlotsForDate = (dateStr) => {
-  const hours = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'];
-  return hours.map(h => {
+  const hours24 = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'];
+  return hours24.map(h => {
     const { startTime, endTime } = parseSlotTimes(dateStr, h);
+    const time12 = formatTo12Hour(h);
     return {
       slot_id: `slot_${dateStr}_${h.replace(':', '')}`,
       date: dateStr,
-      time: h,
+      time: time12,
       start_time: startTime.toISOString(),
       end_time: endTime.toISOString(),
       status: 'AVAILABLE',
+      company: '',
+      contact_name: '',
+      phone: '',
+      lead_email: '',
       owner: 'Sales Team (Africa/Cairo)'
     };
   });
@@ -63,14 +86,19 @@ router.get('/slots', async (req, res) => {
       );
     } catch (e) {}
 
-    // Find custom slots from DB
+    // Find custom/booked slots from DB
     let dbSlots = [];
     try {
       dbSlots = await CalendarSlot.find({
-        start_time: {
-          $gte: new Date(`${targetDate}T00:00:00.000Z`),
-          $lte: new Date(`${targetDate}T23:59:59.999Z`)
-        }
+        $or: [
+          { date: targetDate },
+          {
+            start_time: {
+              $gte: new Date(`${targetDate}T00:00:00.000Z`),
+              $lte: new Date(`${targetDate}T23:59:59.999Z`)
+            }
+          }
+        ]
       });
     } catch (e) {}
 
@@ -80,16 +108,22 @@ router.get('/slots', async (req, res) => {
     defaultSlots.forEach(s => slotsMap.set(s.time, s));
 
     dbSlots.forEach(dbS => {
-      const timeStr = dbS.start_time.toISOString().substring(11, 16);
-      slotsMap.set(timeStr, {
+      const time12 = formatTo12Hour(dbS.time || dbS.start_time.toISOString().substring(11, 16));
+      slotsMap.set(time12, {
         slot_id: dbS.slot_id,
-        date: targetDate,
-        time: timeStr,
+        date: dbS.date || targetDate,
+        time: time12,
         start_time: dbS.start_time,
         end_time: dbS.end_time,
         status: dbS.status,
+        company: dbS.company || '',
+        contact_name: dbS.contact_name || '',
+        phone: dbS.phone || '',
+        lead_email: dbS.lead_email || '',
+        lead_id: dbS.lead_id || '',
+        notes: dbS.notes || '',
         held_until: dbS.held_until,
-        owner: dbS.owner
+        owner: dbS.owner || 'Executive Desk 1'
       });
     });
 
@@ -160,13 +194,12 @@ router.post('/book', async (req, res) => {
     const { date, time, name, contact_name, email, phone, company, industry, position, notes, sessionId, utm } = req.body;
 
     const finalDate = date || new Date().toISOString().split('T')[0];
-    const finalTime = time || '10:00 AM';
+    const finalTime = formatTo12Hour(time || '10:00 AM');
     const finalCompany = (company || name || 'IDEX Exhibitor').trim();
     const finalName = (contact_name || name || finalCompany).trim();
     const finalEmail = (email || `info@${finalCompany.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`).trim().toLowerCase();
 
     const slotId = `slot_${finalDate}_${finalTime.replace(/[^a-zA-Z0-9]/g, '')}`;
-    const meetingTimeDate = new Date(`${finalDate}T${finalTime.includes(':') ? finalTime : '10:00'}:00.000Z`);
 
     // Create/update Lead record in CRM with status 📅 Consultation Booked
     const leadData = {

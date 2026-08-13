@@ -372,6 +372,8 @@ function initCalendarBookingFlow(utmParams) {
             source: 'Strategy Consultation Calendar',
             action: `Booked Consultation (${payload.date} ${payload.time})`,
             status: '📅 Consultation Booked',
+            meeting_date: payload.date,
+            meeting_time: payload.time,
             notes: payload.notes || `Industry: ${payload.industry}`
           });
         }
