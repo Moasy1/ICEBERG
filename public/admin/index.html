@@ -88,13 +88,7 @@
       function handleLogin(e) {
         if (e) e.preventDefault();
         quickAdminLogin();
-      }
-    </script>
-
-    <script src="/idex-lead-tracker.js"></script>
-</head>
-
-<body class="antialiased">
+<body class="antialiased bg-slate-950 text-slate-100">
     <!-- Login Modal Overlay -->
     <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-xl p-4 transition-all duration-300">
         <div class="glass-card max-w-md w-full p-8 rounded-2xl border border-slate-700/80 shadow-2xl shadow-cyan-950/60">
@@ -142,35 +136,103 @@
     </div>
 
     <!-- Admin Header -->
-    <header class="glass-card border-b border-slate-700">
-        <div class="container mx-auto px-6 py-4">
+    <header class="glass-card border-b border-slate-700 sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md">
+        <div class="container mx-auto px-4 md:px-6 py-3 md:py-4">
             <div class="flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div
-                        class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <div class="flex items-center gap-2 md:gap-3">
+                    <!-- Mobile Hamburger Toggle -->
+                    <button id="mobile-menu-btn" onclick="toggleMobileSidebar()" class="md:hidden p-2 text-gray-300 hover:text-white rounded-lg hover:bg-slate-800 transition-colors" aria-label="Toggle Navigation">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+
+                    <div class="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center shadow-md shadow-cyan-500/20">
                         <i data-lucide="layers" class="w-5 h-5 text-white"></i>
                     </div>
-                    <h1 class="text-xl font-bold text-white">Iceberg Admin</h1>
+                    <h1 class="text-lg md:text-xl font-bold text-white tracking-tight">Iceberg Admin</h1>
                 </div>
-                <div class="flex items-center gap-4">
+
+                <div class="flex items-center gap-2 md:gap-4">
+                    <!-- Notification Center Bell Button -->
+                    <div class="relative">
+                        <button id="notif-bell-btn" onclick="toggleNotificationCenter()" class="relative p-2 md:p-2.5 bg-slate-800/80 hover:bg-slate-700 text-gray-300 hover:text-white rounded-xl border border-slate-700/80 transition-all flex items-center justify-center">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <span id="notif-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-rose-600 text-white font-bold text-[10px] rounded-full flex items-center justify-center border-2 border-slate-900 shadow-md">3</span>
+                        </button>
+
+                        <!-- Notification Center Dropdown Panel -->
+                        <div id="notification-center-dropdown" class="hidden absolute right-0 mt-3 w-80 sm:w-96 glass-card bg-slate-900/95 border border-slate-700/80 rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl transition-all">
+                            <!-- Header -->
+                            <div class="p-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="bell-ring" class="w-4 h-4 text-cyan-400"></i>
+                                    <h3 class="text-sm font-bold text-white tracking-wide">Notification Center</h3>
+                                    <span id="notif-count-pill" class="px-2 py-0.5 text-[10px] font-extrabold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-full">3 New</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="markAllNotificationsAsRead()" class="text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 hover:underline">Mark all read</button>
+                                    <button onclick="toggleNotificationCenter()" class="text-slate-400 hover:text-white p-1">
+                                        <i data-lucide="x" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Notification Filters -->
+                            <div class="px-3 py-2 bg-slate-950/40 border-b border-slate-800/80 flex items-center gap-1.5 overflow-x-auto text-[11px]">
+                                <button onclick="filterNotifications('all')" id="notif-filter-all" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">All</button>
+                                <button onclick="filterNotifications('unread')" id="notif-filter-unread" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Unread</button>
+                                <button onclick="filterNotifications('leads')" id="notif-filter-leads" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Leads</button>
+                                <button onclick="filterNotifications('audits')" id="notif-filter-audits" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Audits</button>
+                            </div>
+
+                            <!-- Notification List -->
+                            <div id="notification-list" class="max-h-80 overflow-y-auto divide-y divide-slate-800/60">
+                                <!-- Rendered dynamically by admin.js -->
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="p-3 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between text-xs">
+                                <button onclick="clearAllNotifications()" class="text-slate-400 hover:text-rose-400 transition-colors flex items-center gap-1">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear Notifications
+                                </button>
+                                <button onclick="showSection('idex-leads'); toggleNotificationCenter();" class="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1">
+                                    View Leads <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <button onclick="initializeData()"
-                        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors">
-                        <i data-lucide="refresh-cw" class="w-4 h-4 inline mr-2"></i>
-                        Initialize Data
+                        class="hidden sm:flex items-center px-3 md:px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 rounded-lg text-xs md:text-sm font-medium transition-colors">
+                        <i data-lucide="refresh-cw" class="w-4 h-4 inline mr-1.5 text-cyan-400"></i>
+                        Init Data
                     </button>
                     <button onclick="logout()"
-                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors">
-                        <i data-lucide="log-out" class="w-4 h-4 inline mr-2"></i>
-                        Logout
+                        class="px-3 md:px-4 py-2 bg-red-600/90 hover:bg-red-600 text-white rounded-lg text-xs md:text-sm font-medium transition-colors flex items-center gap-1.5">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Logout</span>
                     </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <div class="flex">
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div id="sidebar-backdrop" onclick="closeMobileSidebar()" class="fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm hidden md:hidden transition-opacity"></div>
+
+    <div class="flex relative min-h-screen">
         <!-- Sidebar -->
-        <aside class="w-64 glass-card min-h-screen border-r border-slate-700">
+        <aside id="admin-sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 glass-card min-h-screen border-r border-slate-700 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out bg-slate-900/95 md:bg-transparent overflow-y-auto shrink-0">
+            <!-- Mobile Sidebar Header -->
+            <div class="p-4 flex items-center justify-between md:hidden border-b border-slate-800 mb-1">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
+                    <span class="text-xs font-bold uppercase tracking-wider text-cyan-400">Admin Navigation</span>
+                </div>
+                <button onclick="closeMobileSidebar()" class="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
             <nav class="p-4">
                 <ul class="space-y-2">
                     <li>
@@ -273,11 +335,10 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 p-6">
+        <main class="flex-1 p-4 md:p-6 min-w-0 w-full overflow-x-hidden">
             <!-- Dashboard Section -->
             <section id="dashboard" class="content-section">
                 <h2 class="text-2xl font-bold text-white mb-6">Dashboard Overview</h2>
-
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div class="glass-card p-6 rounded-xl">
                         <div class="flex items-center justify-between mb-4">

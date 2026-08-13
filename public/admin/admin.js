@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', function () {
         quickBtn.onclick = quickAdminLogin;
     }
     checkAuth();
+    if (typeof initNotificationCenter === 'function') {
+        initNotificationCenter();
+    }
 });
 
 // Authentication Handlers
@@ -30,6 +33,9 @@ function checkAuth() {
         if (loginModal) loginModal.classList.add('hidden');
         showSection('dashboard');
         setupEventListeners();
+        if (typeof initNotificationCenter === 'function') {
+            initNotificationCenter();
+        }
     } else {
         if (loginModal) loginModal.classList.remove('hidden');
     }
@@ -102,6 +108,11 @@ function setupEventListeners() {
 
 // Navigation
 function showSection(sectionId) {
+    // Fold back navigation panel on mobile when showing the screen of each panel
+    if (window.innerWidth < 768) {
+        closeMobileSidebar();
+    }
+
     // Hide all sections
     document.querySelectorAll('.content-section').forEach(section => {
         section.classList.add('hidden');
@@ -2388,5 +2399,244 @@ window.filterAdminLeads = filterAdminLeads;
 
     window.addEventListener('iceberg_lead_captured', (e) => {
         if (typeof loadIdexLeads === 'function') loadIdexLeads();
+        if (e && e.detail && typeof addAdminNotification === 'function') {
+            addAdminNotification({
+                type: 'leads',
+                icon: 'sparkles',
+                color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+                title: 'New IDEX Exhibitor Lead',
+                message: `${e.detail.name || 'Exhibitor'} from ${e.detail.company || 'Dental Brand'} captured.`,
+                section: 'idex-leads'
+            });
+        }
     });
 })();
+
+/* ==========================================================================
+   MOBILE NAVIGATION DRAWER HELPERS
+   ========================================================================== */
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('admin-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (!sidebar) return;
+    const isClosed = sidebar.classList.contains('-translate-x-full');
+    if (isClosed) {
+        sidebar.classList.remove('-translate-x-full');
+        if (backdrop) backdrop.classList.remove('hidden');
+    } else {
+        sidebar.classList.add('-translate-x-full');
+        if (backdrop) backdrop.classList.add('hidden');
+    }
+}
+
+function closeMobileSidebar() {
+    const sidebar = document.getElementById('admin-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebar) sidebar.classList.add('-translate-x-full');
+    if (backdrop) backdrop.classList.add('hidden');
+}
+
+window.toggleMobileSidebar = toggleMobileSidebar;
+window.closeMobileSidebar = closeMobileSidebar;
+
+/* ==========================================================================
+   ADMIN NOTIFICATION CENTER SYSTEM
+   ========================================================================== */
+let adminNotifications = [
+    {
+        id: 'notif-1',
+        type: 'leads',
+        icon: 'sparkles',
+        color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+        title: 'New IDEX Exhibitor Lead',
+        message: 'Dr. Ahmed Hassan (Septodont) requested a 90-day package quote.',
+        time: '5 mins ago',
+        read: false,
+        section: 'idex-leads'
+    },
+    {
+        id: 'notif-2',
+        type: 'audits',
+        icon: 'shield-alert',
+        color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
+        title: 'Confidential Audit Unlocked',
+        message: 'Kerr Dental audit report accessed from IDEX Hero Portal.',
+        time: '18 mins ago',
+        read: false,
+        section: 'idex-audits'
+    },
+    {
+        id: 'notif-3',
+        type: 'leads',
+        icon: 'calendar',
+        color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+        title: 'IDEX Consultation Slot Booked',
+        message: 'Meeting scheduled for Today, 11:30 AM at IDEX Booth.',
+        time: '1 hour ago',
+        read: false,
+        section: 'idex-calendar'
+    },
+    {
+        id: 'notif-4',
+        type: 'system',
+        icon: 'check-circle',
+        color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+        title: 'System Initialization',
+        message: 'IDEX Lead Tracker and CMS database successfully connected.',
+        time: '3 hours ago',
+        read: true,
+        section: 'dashboard'
+    }
+];
+
+let activeNotifFilter = 'all';
+
+function initNotificationCenter() {
+    const saved = localStorage.getItem('iceberg_admin_notifications');
+    if (saved) {
+        try {
+            adminNotifications = JSON.parse(saved);
+        } catch (e) {
+            console.error('Error parsing notifications:', e);
+        }
+    }
+    renderNotifications();
+}
+
+function saveNotifications() {
+    localStorage.setItem('iceberg_admin_notifications', JSON.stringify(adminNotifications));
+}
+
+function toggleNotificationCenter() {
+    const dropdown = document.getElementById('notification-center-dropdown');
+    if (!dropdown) return;
+    const isHidden = dropdown.classList.contains('hidden');
+    if (isHidden) {
+        dropdown.classList.remove('hidden');
+        renderNotifications();
+    } else {
+        dropdown.classList.add('hidden');
+    }
+}
+
+function renderNotifications() {
+    const listEl = document.getElementById('notification-list');
+    const badgeEl = document.getElementById('notif-badge');
+    const countPillEl = document.getElementById('notif-count-pill');
+    if (!listEl) return;
+
+    const unreadCount = adminNotifications.filter(n => !n.read).length;
+    if (badgeEl) {
+        badgeEl.textContent = unreadCount;
+        if (unreadCount === 0) {
+            badgeEl.classList.add('hidden');
+        } else {
+            badgeEl.classList.remove('hidden');
+        }
+    }
+
+    if (countPillEl) {
+        countPillEl.textContent = `${unreadCount} New`;
+    }
+
+    let filtered = adminNotifications;
+    if (activeNotifFilter === 'unread') {
+        filtered = adminNotifications.filter(n => !n.read);
+    } else if (activeNotifFilter !== 'all') {
+        filtered = adminNotifications.filter(n => n.type === activeNotifFilter);
+    }
+
+    if (filtered.length === 0) {
+        listEl.innerHTML = `
+            <div class="p-6 text-center text-slate-400">
+                <i data-lucide="bell-off" class="w-8 h-8 mx-auto mb-2 text-slate-500"></i>
+                <p class="text-xs font-semibold">No notifications found</p>
+            </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+        return;
+    }
+
+    listEl.innerHTML = filtered.map(n => `
+        <div onclick="handleNotificationClick('${n.id}', '${n.section}')" 
+            class="p-3.5 flex items-start gap-3 cursor-pointer transition-colors hover:bg-slate-800/80 ${n.read ? 'opacity-70 bg-transparent' : 'bg-cyan-500/5'} relative group border-b border-slate-800/40">
+            <div class="w-8 h-8 rounded-lg ${n.color || 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'} flex items-center justify-center shrink-0 border mt-0.5">
+                <i data-lucide="${n.icon || 'bell'}" class="w-4 h-4"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-1 mb-0.5">
+                    <h4 class="text-xs font-bold text-white truncate">${n.title}</h4>
+                    <span class="text-[10px] text-slate-400 font-mono shrink-0">${n.time}</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-snug line-clamp-2">${n.message}</p>
+            </div>
+            ${!n.read ? `<span class="w-2 h-2 rounded-full bg-cyan-400 shrink-0 mt-1.5 shadow-sm shadow-cyan-400"></span>` : ''}
+        </div>
+    `).join('');
+
+    if (window.lucide) lucide.createIcons();
+}
+
+function handleNotificationClick(notifId, sectionId) {
+    const notif = adminNotifications.find(n => n.id === notifId);
+    if (notif) {
+        notif.read = true;
+        saveNotifications();
+        renderNotifications();
+    }
+    const dropdown = document.getElementById('notification-center-dropdown');
+    if (dropdown) dropdown.classList.add('hidden');
+
+    if (sectionId && typeof showSection === 'function') {
+        showSection(sectionId);
+    }
+}
+
+function filterNotifications(filterType) {
+    activeNotifFilter = filterType;
+    document.querySelectorAll('.notif-filter-btn').forEach(btn => {
+        btn.className = 'notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white transition-all';
+    });
+    const targetBtn = document.getElementById(`notif-filter-${filterType}`);
+    if (targetBtn) {
+        targetBtn.className = 'notif-filter-btn px-2.5 py-1 rounded-lg font-semibold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 transition-all';
+    }
+    renderNotifications();
+}
+
+function markAllNotificationsAsRead() {
+    adminNotifications.forEach(n => n.read = true);
+    saveNotifications();
+    renderNotifications();
+}
+
+function clearAllNotifications() {
+    adminNotifications = [];
+    saveNotifications();
+    renderNotifications();
+}
+
+function addAdminNotification({ type, title, message, section, icon, color }) {
+    const newNotif = {
+        id: 'notif-' + Date.now(),
+        type: type || 'system',
+        icon: icon || 'sparkles',
+        color: color || 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
+        title: title || 'New Notification',
+        message: message || '',
+        time: 'Just now',
+        read: false,
+        section: section || 'idex-leads'
+    };
+    adminNotifications.unshift(newNotif);
+    saveNotifications();
+    renderNotifications();
+}
+
+window.initNotificationCenter = initNotificationCenter;
+window.toggleNotificationCenter = toggleNotificationCenter;
+window.filterNotifications = filterNotifications;
+window.markAllNotificationsAsRead = markAllNotificationsAsRead;
+window.clearAllNotifications = clearAllNotifications;
+window.handleNotificationClick = handleNotificationClick;
+window.addAdminNotification = addAdminNotification;
