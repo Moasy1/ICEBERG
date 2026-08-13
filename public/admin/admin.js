@@ -180,13 +180,13 @@ function showSection(sectionId) {
     lucide.createIcons();
 }
 
-// Dashboard Functions
+// // Dashboard Functions
 async function loadDashboardData() {
     try {
         const safeFetch = async (url) => {
             try {
                 const controller = new AbortController();
-                const timer = setTimeout(() => controller.abort(), 1500);
+                const timer = setTimeout(() => controller.abort(), 3000);
                 const res = await fetch(url, { signal: controller.signal });
                 clearTimeout(timer);
                 if (!res.ok) return { data: null };
@@ -196,13 +196,16 @@ async function loadDashboardData() {
             }
         };
 
-        const [content, projects, services, contacts] = await Promise.all([
+        const [content, projects, services, contacts, pageviews, meetings] = await Promise.all([
             safeFetch(`${API_BASE}/content`),
             safeFetch(`${API_BASE}/projects`),
             safeFetch(`${API_BASE}/services`),
-            safeFetch(`${API_BASE}/contact/submissions`)
+            safeFetch(`${API_BASE}/contact/submissions`),
+            safeFetch(`${API_BASE}/analytics/pageviews`),
+            safeFetch(`${API_BASE}/calendar/bookings`)
         ]);
 
+        // ── Original 4 stat cards ──────────────────────────────────
         const contentCountEl = document.getElementById('content-count');
         const projectsCountEl = document.getElementById('projects-count');
         const servicesCountEl = document.getElementById('services-count');
@@ -213,15 +216,122 @@ async function loadDashboardData() {
         if (servicesCountEl) servicesCountEl.textContent = (services && Array.isArray(services.data)) ? services.data.length : 5;
         if (contactsCountEl) contactsCountEl.textContent = (contacts && Array.isArray(contacts.data)) ? contacts.data.length : 3;
 
+        // ── Page Views card ────────────────────────────────────────
+        renderPageViews(pageviews);
+
+        // ── Scheduled Meetings card ────────────────────────────────
+        renderMeetings(meetings);
+
         loadRecentActivity();
-        loadPageViews();
     } catch (error) {
         console.error('Error loading dashboard data:', error);
     }
 }
 
+function renderPageViews(data) {
+    const totalEl = document.getElementById('pageviews-total');
+    const listEl  = document.getElementById('pageviews-list');
+    const updEl   = document.getElementById('pageviews-updated');
+
+    const pages = (data && data.pages) ? data.pages : [];
+    const total = (data && data.total != null) ? data.total : 0;
+
+    if (totalEl) totalEl.textContent = total.toLocaleString();
+
+    if (updEl) {
+        updEl.innerHTML = `<i data-lucide="refresh-cw" class="w-3 h-3"></i> Updated ${new Date().toLocaleTimeString()}`;
+    }
+
+    if (!listEl) return;
+
+    if (pages.length === 0) {
+        listEl.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-6 text-center">
+                <div class="w-10 h-10 bg-violet-500/10 rounded-full flex items-center justify-center mb-2">
+                    <i data-lucide="bar-chart-2" class="w-5 h-5 text-violet-400/50"></i>
+                </div>
+                <p class="text-gray-500 text-sm">No page view data yet.</p>
+                <p class="text-gray-600 text-xs mt-1">Views will appear once visitors browse the site.</p>
+            </div>`;
+        lucide.createIcons();
+        return;
+    }
+
+    const maxCount = pages[0].count || 1;
+    listEl.innerHTML = pages.slice(0, 12).map(p => {
+        const pct = Math.round((p.count / maxCount) * 100);
+        const label = p.resource && p.resource !== p.page ? p.resource : (p.page || '—');
+        return `
+        <div class="group">
+            <div class="flex items-center justify-between mb-1">
+                <span class="text-xs text-gray-300 truncate max-w-[70%]" title="${p.page}">${label}</span>
+                <span class="text-xs font-semibold text-violet-400 ml-2 shrink-0">${p.count.toLocaleString()}</span>
+            </div>
+            <div class="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-violet-500 to-purple-400 rounded-full transition-all duration-500"
+                     style="width:${pct}%"></div>
+            </div>
+        </div>`;
+    }).join('');
+    lucide.createIcons();
+}
+
+function renderMeetings(data) {
+    const totalEl    = document.getElementById('meetings-total');
+    const todayEl    = document.getElementById('meetings-today');
+    const upcomingEl = document.getElementById('meetings-upcoming');
+    const listEl     = document.getElementById('meetings-list');
+
+    const bookings = (data && data.bookings) ? data.bookings : [];
+    const total    = (data && data.count != null)    ? data.count    : 0;
+    const today    = (data && data.today != null)    ? data.today    : 0;
+    const upcoming = (data && data.upcoming != null) ? data.upcoming : 0;
+
+    if (totalEl)    totalEl.textContent    = total;
+    if (todayEl)    todayEl.textContent    = today;
+    if (upcomingEl) upcomingEl.textContent = upcoming;
+
+    if (!listEl) return;
+
+    if (bookings.length === 0) {
+        listEl.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-5 text-center">
+                <div class="w-10 h-10 bg-emerald-500/10 rounded-full flex items-center justify-center mb-2">
+                    <i data-lucide="calendar-check-2" class="w-5 h-5 text-emerald-400/50"></i>
+                </div>
+                <p class="text-gray-500 text-sm">No booked meetings yet.</p>
+                <p class="text-gray-600 text-xs mt-1">Bookings will appear here once scheduled.</p>
+            </div>`;
+        lucide.createIcons();
+        return;
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    listEl.innerHTML = bookings.slice(0, 5).map(m => {
+        const isToday = m.date === todayStr;
+        const badgeCls = isToday
+            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25'
+            : 'bg-slate-700/60 text-gray-400 border border-slate-700/40';
+        return `
+        <div class="flex items-start gap-3 p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40 hover:border-emerald-500/20 transition-colors">
+            <div class="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                <i data-lucide="calendar" class="w-4 h-4 text-emerald-400"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-sm font-medium text-white truncate">${m.company}</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${badgeCls}">${isToday ? 'Today' : m.date}</span>
+                </div>
+                <p class="text-xs text-gray-400 mt-0.5">${m.time} · ${m.contact_name !== '—' ? m.contact_name : ''} ${m.owner ? '· ' + m.owner : ''}</p>
+            </div>
+        </div>`;
+    }).join('');
+    lucide.createIcons();
+}
+
 function loadRecentActivity() {
     const activityDiv = document.getElementById('recent-activity');
+    if (!activityDiv) return;
     activityDiv.innerHTML = `
         <div class="flex items-center gap-3 text-sm">
             <div class="w-2 h-2 bg-green-500 rounded-full"></div>
