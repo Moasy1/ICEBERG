@@ -153,6 +153,56 @@
             overflow: hidden;
         }
 
+        /* Mobile Responsive Layout Overrides */
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+            .sidebar {
+                border-right: none !important;
+                border-bottom: 1px solid var(--border-color);
+                max-height: 480px !important;
+            }
+            .workspace {
+                height: auto !important;
+                overflow: visible !important;
+                padding: 1rem !important;
+            }
+            header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 0.75rem !important;
+                padding: 1rem !important;
+            }
+            .header-meta {
+                width: 100% !important;
+                justify-content: space-between !important;
+            }
+        }
+        @media (max-width: 640px) {
+            .overview-grid, .vuln-actions-grid {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+            .search-filter-panel {
+                padding: 0.75rem !important;
+            }
+            .filter-controls {
+                grid-template-columns: 1fr !important;
+            }
+            .meta-stat-value {
+                font-size: 0.95rem !important;
+            }
+            .card-quick-links {
+                gap: 4px !important;
+            }
+            .exhibitor-card {
+                padding: 0.75rem !important;
+            }
+        }
+
         /* Sidebar: Exhibitor List */
         .sidebar {
             border-right: 1px solid var(--border-color);
