@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const Lead = require('../models/Lead');
 const CalendarSlot = require('../models/CalendarSlot');
+const Notification = require('../models/Notification');
 const metaCapi = require('../services/metaCapi');
 
 // Emergency Disk Backup Logger
@@ -145,6 +146,32 @@ router.post('/', async (req, res) => {
         }).catch(err => console.error('[Meta CAPI Lead Event Error]:', err));
       }
     } catch (e) {}
+
+    // Auto-create Admin Notification for new lead
+    try {
+      const isBooking = !!finalMeetingDate;
+      const notifObj = {
+        notif_id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+        type: isBooking ? 'calendar' : 'leads',
+        icon: isBooking ? 'calendar' : (finalAction.includes('Audit') ? 'shield-alert' : 'sparkles'),
+        color: isBooking ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : (finalAction.includes('Audit') ? 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20' : 'text-amber-400 bg-amber-500/10 border-amber-500/20'),
+        title: isBooking ? 'IDEX Consultation Slot Booked' : (finalAction.includes('Audit') ? 'Confidential Audit Unlocked' : 'New IDEX Exhibitor Lead'),
+        message: `${finalName} (${finalCompany}) ${isBooking ? `booked a slot for ${finalMeetingDate} ${finalTimeSlot}` : 'requested details.'}`,
+        time: 'Just now',
+        read: false,
+        section: isBooking ? 'idex-calendar' : (finalAction.includes('Audit') ? 'idex-audits' : 'idex-leads'),
+        createdAt: new Date()
+      };
+
+      // Backup to disk
+      const notifBackupFile = path.join(__dirname, '../notifications_backup.jsonl');
+      fs.appendFileSync(notifBackupFile, JSON.stringify(notifObj) + '\n', 'utf8');
+
+      // Save to MongoDB
+      Notification.create(notifObj).catch(err => console.warn('[DB Notif Save Warn]:', err.message));
+    } catch (notifErr) {
+      console.warn('[Notification Creation Notice]:', notifErr.message);
+    }
 
     return res.status(201).json({
       success: true,

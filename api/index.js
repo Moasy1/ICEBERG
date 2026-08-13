@@ -93,6 +93,7 @@ const serviceRoutes = require('./routes/services');
 const metaRoutes = require('./routes/meta');
 const leadsRoutes = require('./routes/leads');
 const calendarRoutes = require('./routes/calendar');
+const notificationRoutes = require('./routes/notifications');
 
 // API Routes
 app.use('/api/content', contentRoutes);
@@ -102,6 +103,7 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/meta', metaRoutes);
 app.use('/api/leads', leadsRoutes);
 app.use('/api/calendar', calendarRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.get('/api/idex/data', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/IDEX Event/data.json'));
 });

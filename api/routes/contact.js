@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const router = express.Router();
 const Message = require('../models/Message');
+const Notification = require('../models/Notification');
 const metaCapi = require('../services/metaCapi');
 
 // Ensure public/uploads exists
@@ -239,6 +240,31 @@ router.post('/submit', handleUpload, async (req, res) => {
       }
     } else {
       console.log('[Nodemailer Notice] SMTP credentials not configured (EMAIL_USER / EMAIL_PASS). Form message saved to DB & Disk.');
+    }
+
+    // Auto-create Admin Notification for new contact message / appointment
+    try {
+      const notifObj = {
+        notif_id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+        type: appointmentDate ? 'calendar' : 'contact',
+        icon: appointmentDate ? 'calendar' : 'mail',
+        color: appointmentDate ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-purple-400 bg-purple-500/10 border-purple-500/20',
+        title: appointmentDate ? 'New Consultation Appointment Booked' : 'New Contact Form Submission',
+        message: `${name} (${email}) ${appointmentDate ? `booked ${appointmentDate} ${appointmentTime || ''}` : 'sent a new message.'}`,
+        time: 'Just now',
+        read: false,
+        section: appointmentDate ? 'idex-calendar' : 'messages',
+        createdAt: new Date()
+      };
+
+      // Disk Backup
+      const notifBackupFile = path.join(__dirname, '../notifications_backup.jsonl');
+      fs.appendFileSync(notifBackupFile, JSON.stringify(notifObj) + '\n', 'utf8');
+
+      // Save to DB
+      Notification.create(notifObj).catch(err => console.warn('[DB Contact Notif Warn]:', err.message));
+    } catch (notifErr) {
+      console.warn('[Contact Notification Notice]:', notifErr.message);
     }
 
     res.json({

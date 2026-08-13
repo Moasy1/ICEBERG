@@ -2442,65 +2442,47 @@ window.closeMobileSidebar = closeMobileSidebar;
 /* ==========================================================================
    ADMIN NOTIFICATION CENTER SYSTEM
    ========================================================================== */
-let adminNotifications = [
-    {
-        id: 'notif-1',
-        type: 'leads',
-        icon: 'sparkles',
-        color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-        title: 'New IDEX Exhibitor Lead',
-        message: 'Dr. Ahmed Hassan (Septodont) requested a 90-day package quote.',
-        time: '5 mins ago',
-        read: false,
-        section: 'idex-leads'
-    },
-    {
-        id: 'notif-2',
-        type: 'audits',
-        icon: 'shield-alert',
-        color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
-        title: 'Confidential Audit Unlocked',
-        message: 'Kerr Dental audit report accessed from IDEX Hero Portal.',
-        time: '18 mins ago',
-        read: false,
-        section: 'idex-audits'
-    },
-    {
-        id: 'notif-3',
-        type: 'leads',
-        icon: 'calendar',
-        color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-        title: 'IDEX Consultation Slot Booked',
-        message: 'Meeting scheduled for Today, 11:30 AM at IDEX Booth.',
-        time: '1 hour ago',
-        read: false,
-        section: 'idex-calendar'
-    },
-    {
-        id: 'notif-4',
-        type: 'system',
-        icon: 'check-circle',
-        color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
-        title: 'System Initialization',
-        message: 'IDEX Lead Tracker and CMS database successfully connected.',
-        time: '3 hours ago',
-        read: true,
-        section: 'dashboard'
-    }
-];
-
+let adminNotifications = [];
 let activeNotifFilter = 'all';
+let notifPollInterval = null;
 
-function initNotificationCenter() {
+async function fetchNotificationsFromAPI() {
+    try {
+        const response = await fetch('/api/notifications');
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && Array.isArray(data.notifications)) {
+                adminNotifications = data.notifications;
+                saveNotifications();
+                renderNotifications();
+                return;
+            }
+        }
+    } catch (err) {
+        console.warn('[Notifications Fetch Notice] Server offline or unreachable, loading local cache:', err.message);
+    }
+
+    // Local fallback if API fails or offline
     const saved = localStorage.getItem('iceberg_admin_notifications');
     if (saved) {
         try {
             adminNotifications = JSON.parse(saved);
         } catch (e) {
-            console.error('Error parsing notifications:', e);
+            console.error('Error parsing cached notifications:', e);
         }
     }
     renderNotifications();
+}
+
+function initNotificationCenter() {
+    fetchNotificationsFromAPI();
+
+    // Setup periodic polling every 30s to keep notifications fresh live
+    if (!notifPollInterval) {
+        notifPollInterval = setInterval(() => {
+            fetchNotificationsFromAPI();
+        }, 30000);
+    }
 }
 
 function saveNotifications() {
@@ -2513,7 +2495,7 @@ function toggleNotificationCenter() {
     const isHidden = dropdown.classList.contains('hidden');
     if (isHidden) {
         dropdown.classList.remove('hidden');
-        renderNotifications();
+        fetchNotificationsFromAPI();
     } else {
         dropdown.classList.add('hidden');
     }
@@ -2577,12 +2559,15 @@ function renderNotifications() {
     if (window.lucide) lucide.createIcons();
 }
 
-function handleNotificationClick(notifId, sectionId) {
+async function handleNotificationClick(notifId, sectionId) {
     const notif = adminNotifications.find(n => n.id === notifId);
     if (notif) {
         notif.read = true;
         saveNotifications();
         renderNotifications();
+        try {
+            fetch(`/api/notifications/${notifId}/read`, { method: 'PUT' }).catch(() => {});
+        } catch (e) {}
     }
     const dropdown = document.getElementById('notification-center-dropdown');
     if (dropdown) dropdown.classList.add('hidden');
@@ -2604,19 +2589,25 @@ function filterNotifications(filterType) {
     renderNotifications();
 }
 
-function markAllNotificationsAsRead() {
+async function markAllNotificationsAsRead() {
     adminNotifications.forEach(n => n.read = true);
     saveNotifications();
     renderNotifications();
+    try {
+        await fetch('/api/notifications/read-all', { method: 'PUT' });
+    } catch (e) {}
 }
 
-function clearAllNotifications() {
+async function clearAllNotifications() {
     adminNotifications = [];
     saveNotifications();
     renderNotifications();
+    try {
+        await fetch('/api/notifications', { method: 'DELETE' });
+    } catch (e) {}
 }
 
-function addAdminNotification({ type, title, message, section, icon, color }) {
+async function addAdminNotification({ type, title, message, section, icon, color }) {
     const newNotif = {
         id: 'notif-' + Date.now(),
         type: type || 'system',
@@ -2631,6 +2622,14 @@ function addAdminNotification({ type, title, message, section, icon, color }) {
     adminNotifications.unshift(newNotif);
     saveNotifications();
     renderNotifications();
+
+    try {
+        fetch('/api/notifications', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newNotif)
+        }).catch(() => {});
+    } catch (e) {}
 }
 
 window.initNotificationCenter = initNotificationCenter;
