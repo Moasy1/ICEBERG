@@ -214,6 +214,7 @@ async function loadDashboardData() {
         if (contactsCountEl) contactsCountEl.textContent = (contacts && Array.isArray(contacts.data)) ? contacts.data.length : 3;
 
         loadRecentActivity();
+        loadPageViews();
     } catch (error) {
         console.error('Error loading dashboard data:', error);
     }
@@ -233,6 +234,74 @@ function loadRecentActivity() {
             <span class="text-gray-500 text-xs">Just now</span>
         </div>
     `;
+}
+
+async function loadPageViews() {
+    const container = document.getElementById('pageviews-container');
+    const totalEl = document.getElementById('pageviews-total');
+    if (!container) return;
+
+    container.innerHTML = '<p class="text-gray-400 text-sm">Loading...</p>';
+
+    try {
+        const res = await fetch(`${API_BASE}/analytics/pageviews`);
+        if (!res.ok) throw new Error('Failed to fetch');
+        const data = await res.json();
+
+        if (totalEl) totalEl.textContent = (data.total || 0).toLocaleString();
+
+        if (!data.pages || data.pages.length === 0) {
+            container.innerHTML = '<p class="text-gray-500 text-sm">No page view data recorded yet.</p>';
+            return;
+        }
+
+        const maxCount = data.pages[0].count || 1;
+
+        const rows = data.pages.map((entry, i) => {
+            const pct = Math.round((entry.count / maxCount) * 100);
+            const barColor = i === 0 ? 'bg-cyan-500' : i === 1 ? 'bg-blue-500' : i === 2 ? 'bg-purple-500' : 'bg-slate-500';
+            return `
+                <tr class="table-row border-b border-slate-700/40 last:border-0 transition-colors">
+                    <td class="py-3 pr-4 text-xs font-mono text-cyan-300 whitespace-nowrap">${escapeHtml(entry.page)}</td>
+                    <td class="py-3 pr-4 text-sm text-gray-200">${escapeHtml(entry.resource || entry.page)}</td>
+                    <td class="py-3 pr-4 min-w-[120px]">
+                        <div class="flex items-center gap-2">
+                            <div class="flex-1 bg-slate-700/60 rounded-full h-2 overflow-hidden">
+                                <div class="${barColor} h-2 rounded-full transition-all duration-500" style="width:${pct}%"></div>
+                            </div>
+                            <span class="text-xs text-gray-300 w-8 text-right">${pct}%</span>
+                        </div>
+                    </td>
+                    <td class="py-3 text-right">
+                        <span class="text-sm font-bold text-white">${entry.count.toLocaleString()}</span>
+                    </td>
+                </tr>`;
+        }).join('');
+
+        container.innerHTML = `
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-xs uppercase text-gray-500 border-b border-slate-700/60">
+                            <th class="pb-3 pr-4 font-semibold">Page Path</th>
+                            <th class="pb-3 pr-4 font-semibold">Resource</th>
+                            <th class="pb-3 pr-4 font-semibold">Share</th>
+                            <th class="pb-3 text-right font-semibold">Views</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            </div>
+            <p class="text-xs text-gray-500 mt-4">Total: <span class="text-gray-300 font-semibold">${(data.total || 0).toLocaleString()}</span> views across ${data.pages.length} page${data.pages.length !== 1 ? 's' : ''}.</p>
+        `;
+    } catch (e) {
+        container.innerHTML = '<p class="text-gray-500 text-sm">Could not load page view data. Make sure the server is running.</p>';
+        if (totalEl) totalEl.textContent = '—';
+    }
+}
+
+function escapeHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // Content Management Functions

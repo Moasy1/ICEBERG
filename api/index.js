@@ -104,6 +104,48 @@ app.use('/api/meta', metaRoutes);
 app.use('/api/leads', leadsRoutes);
 app.use('/api/calendar', calendarRoutes);
 app.use('/api/notifications', notificationRoutes);
+
+// ---------- Lightweight Page-View Analytics ----------
+// In-memory store: { pagePath: count }
+const _pageViewStore = {};
+const PAGE_VIEW_FILE = path.join(__dirname, 'pageviews.json');
+
+// Load persisted counts on startup
+(() => {
+  try {
+    const fs = require('fs');
+    if (fs.existsSync(PAGE_VIEW_FILE)) {
+      const data = JSON.parse(fs.readFileSync(PAGE_VIEW_FILE, 'utf8'));
+      Object.assign(_pageViewStore, data);
+    }
+  } catch (e) { /* start fresh */ }
+})();
+
+// POST /api/analytics/pageview  { page: '/idex', resource: 'IDEX Landing' }
+app.post('/api/analytics/pageview', (req, res) => {
+  const page = (req.body && req.body.page) ? String(req.body.page).substring(0, 120) : '/unknown';
+  const label = (req.body && req.body.resource) ? String(req.body.resource).substring(0, 80) : page;
+  const key = `${page}||${label}`;
+  _pageViewStore[key] = (_pageViewStore[key] || 0) + 1;
+  // Persist asynchronously
+  try {
+    const fs = require('fs');
+    fs.writeFileSync(PAGE_VIEW_FILE, JSON.stringify(_pageViewStore));
+  } catch (e) {}
+  res.json({ success: true, page, views: _pageViewStore[key] });
+});
+
+// GET /api/analytics/pageviews  → returns sorted list of pages + counts
+app.get('/api/analytics/pageviews', (req, res) => {
+  const entries = Object.entries(_pageViewStore).map(([key, count]) => {
+    const [page, resource] = key.split('||');
+    return { page, resource, count };
+  }).sort((a, b) => b.count - a.count);
+  const total = entries.reduce((s, e) => s + e.count, 0);
+  res.json({ success: true, total, pages: entries });
+});
+// ---------------------------------------------------------
+
 app.get('/api/idex/data', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/IDEX Event/data.json'));
 });

@@ -299,6 +299,52 @@ router.post('/cancel', async (req, res) => {
   }
 });
 
+// GET /api/calendar/bookings - All booked meetings summary for dashboard
+router.get('/bookings', async (req, res) => {
+  try {
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+
+    let bookings = [];
+    try {
+      bookings = await CalendarSlot.find({ status: 'BOOKED' }).sort({ start_time: 1 });
+    } catch (e) {
+      return res.json({ success: true, count: 0, upcoming: 0, today: 0, bookings: [] });
+    }
+
+    const upcoming = bookings.filter(b => {
+      const d = b.date || (b.start_time ? b.start_time.toISOString().split('T')[0] : '');
+      return d >= todayStr;
+    });
+    const todayMeetings = bookings.filter(b => {
+      const d = b.date || (b.start_time ? b.start_time.toISOString().split('T')[0] : '');
+      return d === todayStr;
+    });
+
+    const formatted = bookings.map(b => ({
+      slot_id: b.slot_id,
+      date: b.date || (b.start_time ? b.start_time.toISOString().split('T')[0] : ''),
+      time: b.time,
+      company: b.company || '—',
+      contact_name: b.contact_name || '—',
+      phone: b.phone || '—',
+      notes: b.notes || '',
+      owner: b.owner || 'Executive Desk 1'
+    }));
+
+    return res.json({
+      success: true,
+      count: bookings.length,
+      upcoming: upcoming.length,
+      today: todayMeetings.length,
+      bookings: formatted
+    });
+  } catch (err) {
+    console.error('[Calendar Bookings GET Error]:', err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // GET /api/calendar/owner/:id/slots - Owner slots
 router.get('/owner/:id/slots', async (req, res) => {
   try {
