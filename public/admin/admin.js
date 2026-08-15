@@ -1,4 +1,4 @@
-// Initialize Lucide icons
+﻿// Initialize Lucide icons
 lucide.createIcons();
 
 // API Base URL
@@ -176,57 +176,214 @@ function showSection(sectionId) {
         case 'idex-screens':
             loadIdexScreens();
             break;
+        case 'analytics':
+            loadAnalytics();
+            break;
     }
     lucide.createIcons();
 }
 
-// // Dashboard Functions
-async function loadDashboardData() {
+// ─── Analytics ─────────────────────────────────────────────────────────────
+
+/** Currently selected day-range for the Analytics panel. */
+var _analyticsRange = 30;
+
+/** Set the date-range filter and reload analytics. */
+function setAnalyticsRange(days) {
+    _analyticsRange = days;
+    // Update button states
+    [7, 30, 90].forEach(function (d) {
+        var btn = document.getElementById('analytics-range-' + d);
+        if (!btn) return;
+        if (d === days) {
+            btn.className = 'analytics-range-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-violet-500/20 text-violet-300 border border-violet-500/30 transition-all';
+        } else {
+            btn.className = 'analytics-range-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition-all';
+        }
+    });
+    var label = document.getElementById('an-range-label');
+    if (label) label.textContent = 'Last ' + days + ' days';
+    loadAnalytics();
+}
+
+/** Source metadata: colour palette + icons for each source label. */
+var SOURCE_META = {
+    organic:  { color: '#22c55e',  label: 'Organic Search',  icon: 'search' },
+    paid:     { color: '#f59e0b',  label: 'Paid / Ads',      icon: 'megaphone' },
+    social:   { color: '#818cf8',  label: 'Social Media',    icon: 'share-2' },
+    email:    { color: '#06b6d4',  label: 'Email',           icon: 'mail' },
+    referral: { color: '#ec4899',  label: 'Referral',        icon: 'external-link' },
+    direct:   { color: '#94a3b8',  label: 'Direct',          icon: 'navigation' }
+};
+
+/** Main analytics data loader. */
+async function loadAnalytics() {
+    var days = _analyticsRange || 30;
     try {
-        const safeFetch = async (url) => {
-            try {
-                const controller = new AbortController();
-                const timer = setTimeout(() => controller.abort(), 3000);
-                const res = await fetch(url, { signal: controller.signal });
-                clearTimeout(timer);
-                if (!res.ok) return { data: null };
-                return await res.json();
-            } catch (e) {
-                return { data: null };
-            }
-        };
+        var controller = new AbortController();
+        var timer = setTimeout(function () { controller.abort(); }, 8000);
+        var res = await fetch(API_BASE + '/analytics/summary?days=' + days, { signal: controller.signal });
+        clearTimeout(timer);
+        var data = await res.json();
 
-        const [content, projects, services, contacts, pageviews, meetings] = await Promise.all([
-            safeFetch(`${API_BASE}/content`),
-            safeFetch(`${API_BASE}/projects`),
-            safeFetch(`${API_BASE}/services`),
-            safeFetch(`${API_BASE}/contact/submissions`),
-            safeFetch(`${API_BASE}/analytics/pageviews`),
-            safeFetch(`${API_BASE}/calendar/bookings`)
-        ]);
+        if (!data.success || (!data.total && !data.uniquePages)) {
+            // Show no-data state
+            var nd = document.getElementById('an-no-data');
+            if (nd) nd.classList.remove('hidden');
+            setAnalyticsHero({ total: 0, uniquePages: 0, pages: [], sources: [] });
+            renderAnalyticsSources([]);
+            renderTrendChart([]);
+            renderTopPages([], 0);
+            return;
+        }
 
-        // ── Original 4 stat cards ──────────────────────────────────
-        const contentCountEl = document.getElementById('content-count');
-        const projectsCountEl = document.getElementById('projects-count');
-        const servicesCountEl = document.getElementById('services-count');
-        const contactsCountEl = document.getElementById('contacts-count');
+        var nd = document.getElementById('an-no-data');
+        if (nd) nd.classList.add('hidden');
 
-        if (contentCountEl) contentCountEl.textContent = (content && content.data && typeof content.data === 'object') ? Object.keys(content.data).length : 14;
-        if (projectsCountEl) projectsCountEl.textContent = (projects && Array.isArray(projects.data)) ? projects.data.length : 8;
-        if (servicesCountEl) servicesCountEl.textContent = (services && Array.isArray(services.data)) ? services.data.length : 5;
-        if (contactsCountEl) contactsCountEl.textContent = (contacts && Array.isArray(contacts.data)) ? contacts.data.length : 3;
+        setAnalyticsHero(data);
+        renderAnalyticsSources(data.sources || []);
+        renderTrendChart(data.trend || []);
+        renderTopPages(data.pages || [], data.total || 0);
 
-        // ── Page Views card ────────────────────────────────────────
-        renderPageViews(pageviews);
-
-        // ── Scheduled Meetings card ────────────────────────────────
-        renderMeetings(meetings);
-
-        loadRecentActivity();
-    } catch (error) {
-        console.error('Error loading dashboard data:', error);
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    } catch (err) {
+        console.warn('[Analytics] load error:', err.message);
+        // Show placeholder zeros on network error
+        setAnalyticsHero({ total: 0, uniquePages: 0, pages: [], sources: [] });
+        renderAnalyticsSources([]);
+        renderTrendChart([]);
+        renderTopPages([], 0);
     }
 }
+
+/** Update hero stat cards. */
+function setAnalyticsHero(data) {
+    var totalEl     = document.getElementById('an-total');
+    var uniqueEl    = document.getElementById('an-unique');
+    var topPageEl   = document.getElementById('an-top-page');
+    var topPageViews= document.getElementById('an-top-page-views');
+    var topSrcEl    = document.getElementById('an-top-source');
+    var topSrcShare = document.getElementById('an-top-source-share');
+
+    if (totalEl)  totalEl.textContent  = (data.total || 0).toLocaleString();
+    if (uniqueEl) uniqueEl.textContent = (data.uniquePages || 0).toLocaleString();
+
+    var topPage = (data.pages && data.pages[0]) || null;
+    if (topPageEl)   topPageEl.textContent   = topPage ? (topPage.label || topPage.page) : '—';
+    if (topPageViews) topPageViews.textContent = topPage ? topPage.count.toLocaleString() + ' views' : '—';
+
+    var topSrc = (data.sources && data.sources[0]) || null;
+    if (topSrcEl)   topSrcEl.textContent   = topSrc ? (SOURCE_META[topSrc.source] ? SOURCE_META[topSrc.source].label : topSrc.source) : '—';
+    if (topSrcShare) topSrcShare.textContent = topSrc ? topSrc.share + ' % of traffic' : '—';
+}
+
+/** Render the traffic-by-source bar list. */
+function renderAnalyticsSources(sources) {
+    var el = document.getElementById('an-sources');
+    if (!el) return;
+    if (!sources || !sources.length) {
+        el.innerHTML = '<p class="text-gray-500 text-sm">No source data yet. Visitors will show up here after browsing the site.</p>';
+        return;
+    }
+    el.innerHTML = sources.map(function (s) {
+        var meta  = SOURCE_META[s.source] || { color: '#94a3b8', label: s.source, icon: 'circle' };
+        var share = s.share || 0;
+        return [
+            '<div class="space-y-1">',
+              '<div class="flex items-center justify-between text-xs mb-1">',
+                '<div class="flex items-center gap-2">',
+                  '<span class="w-2 h-2 rounded-full shrink-0" style="background:' + meta.color + '"></span>',
+                  '<span class="font-medium text-gray-200">' + meta.label + '</span>',
+                '</div>',
+                '<div class="flex items-center gap-2 text-gray-400">',
+                  '<span class="font-semibold text-white">' + s.count.toLocaleString() + '</span>',
+                  '<span>' + share + '%</span>',
+                '</div>',
+              '</div>',
+              '<div class="w-full bg-slate-700/50 rounded-full h-1.5 overflow-hidden">',
+                '<div class="h-full rounded-full transition-all duration-700" style="width:' + share + '%;background:' + meta.color + '"></div>',
+              '</div>',
+            '</div>'
+        ].join('');
+    }).join('');
+}
+
+/** Render the daily trend as an inline SVG sparkline. */
+function renderTrendChart(trend) {
+    var el     = document.getElementById('an-trend-chart');
+    var labels = document.getElementById('an-trend-labels');
+    if (!el) return;
+
+    if (!trend || !trend.length) {
+        el.innerHTML = '<p class="text-gray-500 text-sm">No trend data available yet.</p>';
+        if (labels) labels.innerHTML = '<span></span><span></span>';
+        return;
+    }
+
+    var counts = trend.map(function (t) { return t.count; });
+    var maxVal = Math.max.apply(null, counts) || 1;
+    var W = 400, H = 80, PAD = 6;
+    var pts = counts.map(function (v, i) {
+        var x = PAD + (i / Math.max(counts.length - 1, 1)) * (W - PAD * 2);
+        var y = H - PAD - ((v / maxVal) * (H - PAD * 2));
+        return x.toFixed(1) + ',' + y.toFixed(1);
+    }).join(' ');
+
+    // Build area fill (polygon below the polyline)
+    var firstX = PAD.toFixed(1), lastX = (W - PAD).toFixed(1);
+    var bottomY = (H - PAD).toFixed(1);
+    var polygon = firstX + ',' + bottomY + ' ' + pts + ' ' + lastX + ',' + bottomY;
+
+    el.innerHTML = [
+        '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" class="w-full" style="height:80px">',
+          '<defs>',
+            '<linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">',
+              '<stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.35"/>',
+              '<stop offset="100%" stop-color="#8b5cf6" stop-opacity="0.02"/>',
+            '</linearGradient>',
+          '</defs>',
+          '<polygon points="' + polygon + '" fill="url(#sparkGrad)"/>',
+          '<polyline points="' + pts + '" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>',
+        '</svg>'
+    ].join('');
+
+    if (labels) {
+        var firstDate = trend[0].date;
+        var lastDate  = trend[trend.length - 1].date;
+        labels.innerHTML = '<span>' + firstDate + '</span><span>' + lastDate + '</span>';
+    }
+}
+
+/** Render top pages table rows. */
+function renderTopPages(pages, total) {
+    var tbody = document.getElementById('an-pages-tbody');
+    if (!tbody) return;
+    if (!pages || !pages.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-8 text-center text-gray-500">No page data yet.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = pages.map(function (p, i) {
+        var share = total > 0 ? Math.round((p.count / total) * 100) : (p.share || 0);
+        return [
+            '<tr class="table-row transition-colors">',
+              '<td class="px-5 py-3 text-gray-500 font-mono text-xs">' + (i + 1) + '</td>',
+              '<td class="px-5 py-3 font-mono text-xs text-cyan-400">' + escHtml(p.page) + '</td>',
+              '<td class="px-5 py-3 text-gray-200 text-xs">' + escHtml(p.label || p.page) + '</td>',
+              '<td class="px-5 py-3 text-right font-semibold text-white">' + p.count.toLocaleString() + '</td>',
+              '<td class="px-5 py-3 text-right">',
+                '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-violet-500/10 text-violet-300 border border-violet-500/20">' + share + '%</span>',
+              '</td>',
+            '</tr>'
+        ].join('');
+    }).join('');
+}
+
+/** Tiny HTML-escape helper used by renderTopPages. */
+function escHtml(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 function renderPageViews(data) {
     const totalEl = document.getElementById('pageviews-total');

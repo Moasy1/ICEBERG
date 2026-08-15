@@ -58,8 +58,15 @@ const MessageSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now,
+        index: true
     }
 });
 
+// Indexes for fast querying in Contact Messages panel
+MessageSchema.index({ status: 1 });
+MessageSchema.index({ email: 1 });
+MessageSchema.index({ status: 1, createdAt: -1 });
+
 module.exports = mongoose.model('Message', MessageSchema);
+

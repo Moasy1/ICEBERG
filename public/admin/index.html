@@ -249,6 +249,13 @@
                         </a>
                     </li>
                     <li>
+                        <a href="#" onclick="showSection('analytics')"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                            Analytics
+                        </a>
+                    </li>
+                    <li>
                         <a href="#" onclick="showSection('content')"
                             class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
                             <i data-lucide="file-text" class="w-5 h-5"></i>
@@ -477,6 +484,155 @@
                         <p class="text-gray-400">Loading recent activity...</p>
                     </div>
                 </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════════════════════
+                 Analytics Section
+            ══════════════════════════════════════════════════════════ -->
+            <section id="analytics" class="content-section hidden">
+
+                <!-- Header row -->
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Analytics</h2>
+                        <p class="text-sm text-gray-400 mt-0.5">Page insights &amp; traffic sources</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <!-- Date-range filter -->
+                        <div class="flex items-center gap-1 bg-slate-800/80 rounded-xl border border-slate-700 p-1">
+                            <button id="analytics-range-7"  onclick="setAnalyticsRange(7)"  class="analytics-range-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition-all">7d</button>
+                            <button id="analytics-range-30" onclick="setAnalyticsRange(30)" class="analytics-range-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-violet-500/20 text-violet-300 border border-violet-500/30 transition-all">30d</button>
+                            <button id="analytics-range-90" onclick="setAnalyticsRange(90)" class="analytics-range-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition-all">90d</button>
+                        </div>
+                        <button onclick="loadAnalytics()" class="flex items-center gap-2 px-4 py-2 bg-violet-600/80 hover:bg-violet-600 text-white text-xs font-semibold rounded-xl border border-violet-500/40 transition-all">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hero stat cards -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="glass-card p-5 rounded-xl">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-9 h-9 bg-violet-500/20 rounded-lg flex items-center justify-center shrink-0">
+                                <i data-lucide="eye" class="w-4 h-4 text-violet-400"></i>
+                            </div>
+                            <span class="text-xs text-gray-400 uppercase tracking-wider">Total Views</span>
+                        </div>
+                        <p class="text-2xl font-bold text-white" id="an-total">—</p>
+                        <p class="text-[11px] text-gray-500 mt-1" id="an-range-label">Last 30 days</p>
+                    </div>
+                    <div class="glass-card p-5 rounded-xl">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-9 h-9 bg-cyan-500/20 rounded-lg flex items-center justify-center shrink-0">
+                                <i data-lucide="layout-list" class="w-4 h-4 text-cyan-400"></i>
+                            </div>
+                            <span class="text-xs text-gray-400 uppercase tracking-wider">Unique Pages</span>
+                        </div>
+                        <p class="text-2xl font-bold text-white" id="an-unique">—</p>
+                        <p class="text-[11px] text-gray-500 mt-1">Tracked paths</p>
+                    </div>
+                    <div class="glass-card p-5 rounded-xl">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-9 h-9 bg-emerald-500/20 rounded-lg flex items-center justify-center shrink-0">
+                                <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i>
+                            </div>
+                            <span class="text-xs text-gray-400 uppercase tracking-wider">Top Page</span>
+                        </div>
+                        <p class="text-sm font-bold text-white truncate" id="an-top-page">—</p>
+                        <p class="text-[11px] text-gray-500 mt-1" id="an-top-page-views">— views</p>
+                    </div>
+                    <div class="glass-card p-5 rounded-xl">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-9 h-9 bg-amber-500/20 rounded-lg flex items-center justify-center shrink-0">
+                                <i data-lucide="globe" class="w-4 h-4 text-amber-400"></i>
+                            </div>
+                            <span class="text-xs text-gray-400 uppercase tracking-wider">Top Source</span>
+                        </div>
+                        <p class="text-sm font-bold text-white capitalize" id="an-top-source">—</p>
+                        <p class="text-[11px] text-gray-500 mt-1" id="an-top-source-share">— % of traffic</p>
+                    </div>
+                </div>
+
+                <!-- Middle row: Source Breakdown + Trend Chart -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+                    <!-- Traffic by Source -->
+                    <div class="glass-card p-6 rounded-xl">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-9 h-9 bg-amber-500/20 rounded-lg flex items-center justify-center shrink-0">
+                                <i data-lucide="pie-chart" class="w-4 h-4 text-amber-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-semibold text-white">Traffic by Source</h3>
+                                <p class="text-[11px] text-gray-500">Where visitors come from</p>
+                            </div>
+                        </div>
+                        <div id="an-sources" class="space-y-3">
+                            <p class="text-gray-500 text-sm">Loading…</p>
+                        </div>
+                    </div>
+
+                    <!-- Daily Trend Sparkline -->
+                    <div class="glass-card p-6 rounded-xl">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-9 h-9 bg-violet-500/20 rounded-lg flex items-center justify-center shrink-0">
+                                <i data-lucide="activity" class="w-4 h-4 text-violet-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-semibold text-white">Daily Trend</h3>
+                                <p class="text-[11px] text-gray-500">Views per day</p>
+                            </div>
+                        </div>
+                        <!-- SVG sparkline rendered by JS -->
+                        <div id="an-trend-chart" class="w-full">
+                            <p class="text-gray-500 text-sm">Loading…</p>
+                        </div>
+                        <!-- X-axis labels (start/end date) -->
+                        <div class="flex justify-between text-[10px] text-gray-600 mt-2 px-1" id="an-trend-labels">
+                            <span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Pages Table -->
+                <div class="glass-card rounded-xl overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-700/60 flex items-center gap-3">
+                        <div class="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center shrink-0">
+                            <i data-lucide="bar-chart-2" class="w-4 h-4 text-cyan-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white">Top Pages</h3>
+                            <p class="text-[11px] text-gray-500">Views ranked by popularity</p>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-slate-800/40">
+                                <tr>
+                                    <th class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-400">#</th>
+                                    <th class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-400">Page</th>
+                                    <th class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-400">Label</th>
+                                    <th class="px-5 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-400">Views</th>
+                                    <th class="px-5 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-400">Share</th>
+                                </tr>
+                            </thead>
+                            <tbody id="an-pages-tbody" class="divide-y divide-slate-700/40">
+                                <tr><td colspan="5" class="px-5 py-8 text-center text-gray-500">Loading…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- No-data state (shown when DB offline) -->
+                <div id="an-no-data" class="hidden mt-6 glass-card p-8 rounded-xl text-center">
+                    <div class="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="database-zap" class="w-6 h-6 text-gray-500"></i>
+                    </div>
+                    <p class="text-white font-semibold mb-1">No data yet</p>
+                    <p class="text-gray-500 text-sm">Analytics data will appear here as visitors browse the site.<br>Make sure MongoDB is connected for persistence.</p>
+                </div>
+
             </section>
 
             <!-- Content Management Section -->

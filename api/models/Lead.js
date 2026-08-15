@@ -109,4 +109,14 @@ const LeadSchema = new mongoose.Schema({
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
+// Indexes for high-performance querying and sorting across Admin panels
+LeadSchema.index({ email: 1 });
+LeadSchema.index({ status: 1 });
+LeadSchema.index({ action: 1 });
+LeadSchema.index({ source: 1 });
+LeadSchema.index({ created_at: -1 });
+LeadSchema.index({ action: 1, created_at: -1 });
+LeadSchema.index({ status: 1, created_at: -1 });
+
 module.exports = mongoose.models.Lead || mongoose.model('Lead', LeadSchema);
+

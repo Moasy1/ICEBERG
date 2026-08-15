@@ -44,8 +44,16 @@ const NotificationSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    index: true
   }
 });
 
+// Indexes for fast Notification Center badge counts and filtering
+NotificationSchema.index({ read: 1 });
+NotificationSchema.index({ type: 1 });
+NotificationSchema.index({ read: 1, createdAt: -1 });
+NotificationSchema.index({ type: 1, createdAt: -1 });
+
 module.exports = mongoose.models.Notification || mongoose.model('Notification', NotificationSchema);
+

@@ -88,5 +88,8 @@ const projectSchema = new mongoose.Schema({
 projectSchema.index({ category: 1 });
 projectSchema.index({ featured: 1 });
 projectSchema.index({ status: 1 });
+projectSchema.index({ status: 1, featured: 1 });
+projectSchema.index({ status: 1, completedDate: -1 });
 
 module.exports = mongoose.model('Project', projectSchema);
+

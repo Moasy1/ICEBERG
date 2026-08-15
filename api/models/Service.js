@@ -103,5 +103,7 @@ const serviceSchema = new mongoose.Schema({
 serviceSchema.index({ featured: 1 });
 serviceSchema.index({ status: 1 });
 serviceSchema.index({ order: 1 });
+serviceSchema.index({ status: 1, order: 1 });
 
 module.exports = mongoose.model('Service', serviceSchema);
+

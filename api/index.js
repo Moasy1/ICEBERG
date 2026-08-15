@@ -94,6 +94,7 @@ const metaRoutes = require('./routes/meta');
 const leadsRoutes = require('./routes/leads');
 const calendarRoutes = require('./routes/calendar');
 const notificationRoutes = require('./routes/notifications');
+const analyticsRoutes = require('./routes/analytics');
 
 // API Routes
 app.use('/api/content', contentRoutes);
@@ -104,47 +105,42 @@ app.use('/api/meta', metaRoutes);
 app.use('/api/leads', leadsRoutes);
 app.use('/api/calendar', calendarRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
-// ---------- Lightweight Page-View Analytics ----------
-// In-memory store: { pagePath: count }
-const _pageViewStore = {};
-const PAGE_VIEW_FILE = path.join(__dirname, 'pageviews.json');
+// ---------- Analytics Legacy Compat Shims ----------
+// The new analytics logic lives in api/routes/analytics.js (MongoDB-backed).
+// These shims translate the old page-tracker.js POST format to the new endpoint
+// so any cached script versions keep working without changes.
 
-// Load persisted counts on startup
-(() => {
-  try {
-    const fs = require('fs');
-    if (fs.existsSync(PAGE_VIEW_FILE)) {
-      const data = JSON.parse(fs.readFileSync(PAGE_VIEW_FILE, 'utf8'));
-      Object.assign(_pageViewStore, data);
-    }
-  } catch (e) { /* start fresh */ }
-})();
-
-// POST /api/analytics/pageview  { page: '/idex', resource: 'IDEX Landing' }
+// POST /api/analytics/pageview  (legacy) → delegates to /api/analytics/track
 app.post('/api/analytics/pageview', (req, res) => {
-  const page = (req.body && req.body.page) ? String(req.body.page).substring(0, 120) : '/unknown';
-  const label = (req.body && req.body.resource) ? String(req.body.resource).substring(0, 80) : page;
-  const key = `${page}||${label}`;
-  _pageViewStore[key] = (_pageViewStore[key] || 0) + 1;
-  // Persist asynchronously
-  try {
-    const fs = require('fs');
-    fs.writeFileSync(PAGE_VIEW_FILE, JSON.stringify(_pageViewStore));
-  } catch (e) {}
-  res.json({ success: true, page, views: _pageViewStore[key] });
+  const page  = (req.body && req.body.page)     ? String(req.body.page).substring(0, 200)     : '/unknown';
+  const label = (req.body && req.body.resource) ? String(req.body.resource).substring(0, 150) : page;
+  // Forward to the new route handler internals by re-calling the router
+  req.body = { page, label, referrer: req.body.referrer || '', utm_source: '', utm_medium: '', utm_campaign: '' };
+  req.url = '/track';
+  analyticsRoutes(req, res, () => res.json({ success: true, page }));
 });
 
-// GET /api/analytics/pageviews  → returns sorted list of pages + counts
-app.get('/api/analytics/pageviews', (req, res) => {
-  const entries = Object.entries(_pageViewStore).map(([key, count]) => {
-    const [page, resource] = key.split('||');
-    return { page, resource, count };
-  }).sort((a, b) => b.count - a.count);
-  const total = entries.reduce((s, e) => s + e.count, 0);
-  res.json({ success: true, total, pages: entries });
+// GET /api/analytics/pageviews  (legacy) → returns summary in old format
+app.get('/api/analytics/pageviews', async (req, res) => {
+  try {
+    const mongoose = require('mongoose');
+    const PageView = require('./models/PageView');
+    if (mongoose.connection.readyState !== 1) return res.json({ success: true, total: 0, pages: [] });
+    const agg = await PageView.aggregate([
+      { $group: { _id: { page: '$page', label: '$label' }, count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 50 }
+    ]);
+    const pages = agg.map(d => ({ page: d._id.page, resource: d._id.label, count: d.count }));
+    const total = pages.reduce((s, p) => s + p.count, 0);
+    res.json({ success: true, total, pages });
+  } catch (e) {
+    res.json({ success: true, total: 0, pages: [] });
+  }
 });
-// ---------------------------------------------------------
+// -------------------------------------------------------
 
 app.get('/api/idex/data', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/IDEX Event/data.json'));

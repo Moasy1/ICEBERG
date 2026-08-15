@@ -34,5 +34,7 @@ const contentSchema = new mongoose.Schema({
 
 // Index for faster queries
 contentSchema.index({ category: 1 });
+contentSchema.index({ category: 1, key: 1 });
 
 module.exports = mongoose.model('Content', contentSchema);
+

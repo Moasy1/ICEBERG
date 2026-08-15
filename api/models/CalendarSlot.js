@@ -67,4 +67,15 @@ const CalendarSlotSchema = new mongoose.Schema({
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
+// Indexes for fast meeting slot and booking lookups
+CalendarSlotSchema.index({ status: 1 });
+CalendarSlotSchema.index({ date: 1 });
+CalendarSlotSchema.index({ start_time: 1 });
+CalendarSlotSchema.index({ lead_id: 1 });
+CalendarSlotSchema.index({ owner: 1 });
+CalendarSlotSchema.index({ status: 1, date: 1 });
+CalendarSlotSchema.index({ status: 1, start_time: 1 });
+CalendarSlotSchema.index({ date: 1, time: 1 });
+
 module.exports = mongoose.models.CalendarSlot || mongoose.model('CalendarSlot', CalendarSlotSchema);
+
