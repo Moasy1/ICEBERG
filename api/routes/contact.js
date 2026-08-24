@@ -5,6 +5,8 @@ const path = require('path');
 const fs = require('fs');
 const router = express.Router();
 const Message = require('../models/Message');
+const Lead = require('../models/Lead');
+const CalendarSlot = require('../models/CalendarSlot');
 const Notification = require('../models/Notification');
 const metaCapi = require('../services/metaCapi');
 
@@ -103,22 +105,94 @@ router.post('/submit', handleUpload, async (req, res) => {
       attachment: req.file ? `/uploads/${req.file.filename}` : undefined
     });
 
-    // Save message to database
-    const newMessage = new Message({
-      name: name.substring(0, 100),
-      email: email.trim(),
-      message: finalMessage,
-      phone: (phone || '').substring(0, 50),
-      company: (company || finalBusinessName || '').substring(0, 250),
-      businessName: finalBusinessName,
-      businessLink: finalBusinessLink,
-      appointmentDate,
-      appointmentTime,
-      meetingType,
-      notes,
-      attachment: req.file ? `/uploads/${req.file.filename}` : undefined
-    });
-    await newMessage.save();
+    // 1. Save message to database (with safe fallback)
+    let savedMessageId = `msg_${Date.now()}`;
+    try {
+      const newMessage = new Message({
+        name: name.substring(0, 100),
+        email: email.trim(),
+        message: finalMessage,
+        phone: (phone || '').substring(0, 50),
+        company: (company || finalBusinessName || '').substring(0, 250),
+        businessName: finalBusinessName,
+        businessLink: finalBusinessLink,
+        appointmentDate,
+        appointmentTime,
+        meetingType,
+        notes,
+        attachment: req.file ? `/uploads/${req.file.filename}` : undefined
+      });
+      const saved = await newMessage.save();
+      if (saved && saved._id) savedMessageId = saved._id;
+    } catch (msgDbErr) {
+      console.warn('[DB Message Save Warning]:', msgDbErr.message);
+    }
+
+    // 2. Save / Upsert Lead into Lead collection for the Admin Leads Dashboard
+    try {
+      const leadUniqueId = `LEAD-${Date.now().toString().slice(-6)}`;
+      const leadPayload = {
+        lead_id: leadUniqueId,
+        source: 'Website Contact / Wizard Form',
+        action: appointmentDate ? `Booked Discovery Call (${appointmentDate} ${appointmentTime || ''})` : 'Form Submission',
+        name: name.substring(0, 100),
+        contact_name: name.substring(0, 100),
+        email: email.trim().toLowerCase(),
+        phone: (phone || '').substring(0, 50),
+        company: (finalBusinessName || company || name).substring(0, 250),
+        country: 'Egypt / MENA',
+        website: finalBusinessLink,
+        industry: 'Digital Marketing / Growth',
+        sector: 'Agency Client',
+        position: 'Business Lead',
+        requirements: [company || 'Performance & Digital Marketing'],
+        interest_tag: appointmentDate ? 'consultation' : 'inquiry',
+        meeting_date: appointmentDate || '',
+        meeting_time: appointmentTime || '',
+        time_slot: appointmentTime || '',
+        status: appointmentDate ? '📅 Consultation Booked' : '🆕 New Lead',
+        owner: 'Executive Desk 1',
+        notes: finalMessage,
+        utm: {
+          source: req.body.utm_source || (req.body.utm && req.body.utm.source) || '',
+          medium: req.body.utm_medium || (req.body.utm && req.body.utm.medium) || '',
+          campaign: req.body.utm_campaign || (req.body.utm && req.body.utm.campaign) || ''
+        }
+      };
+
+      await Lead.findOneAndUpdate(
+        { email: email.trim().toLowerCase() },
+        leadPayload,
+        { upsert: true, new: true }
+      );
+    } catch (leadDbErr) {
+      console.warn('[DB Lead Save Warning]:', leadDbErr.message);
+    }
+
+    // 3. Auto-reserve CalendarSlot if meeting date/time provided
+    if (appointmentDate && appointmentTime) {
+      try {
+        const slotId = `slot_${appointmentDate}_${(appointmentTime || '').replace(/[^a-zA-Z0-9]/g, '')}`;
+        await CalendarSlot.findOneAndUpdate(
+          { slot_id: slotId },
+          {
+            slot_id: slotId,
+            date: appointmentDate,
+            time: appointmentTime,
+            status: 'BOOKED',
+            company: finalBusinessName || name,
+            contact_name: name,
+            phone: phone || '',
+            lead_email: email.trim().toLowerCase(),
+            notes: notes || finalMessage,
+            owner: 'Executive Desk 1'
+          },
+          { upsert: true, new: true }
+        );
+      } catch (slotErr) {
+        console.warn('[DB Slot Save Warning]:', slotErr.message);
+      }
+    }
 
     // Trigger Meta Conversions API (CAPI) Lead/Schedule Event
     const eventId = req.body.eventId || req.body.event_id || `lead_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -271,7 +345,7 @@ router.post('/submit', handleUpload, async (req, res) => {
       success: true,
       message: 'Your wizard setup and appointment request have been confirmed!',
       data: {
-        id: newMessage._id,
+        id: savedMessageId,
         name,
         email,
         appointmentDate,

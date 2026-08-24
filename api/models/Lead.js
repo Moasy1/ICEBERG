@@ -40,8 +40,8 @@ const LeadSchema = new mongoose.Schema({
   },
   company: {
     type: String,
-    required: [true, 'Please provide a company name'],
-    trim: true
+    trim: true,
+    default: 'Direct Client'
   },
   country: {
     type: String,
