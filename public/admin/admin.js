@@ -1079,7 +1079,7 @@ async function loadFallbackLeads() {
                             ${msg.phone ? `<div class="text-xs text-gray-500 mt-0.5">${msg.phone}</div>` : ''}
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-300">${msg.company || msg.businessName || 'N/A'}</td>
-                        <td class="px-6 py-4 text-sm text-gray-300 max-w-xs truncate">${msg.message}</td>
+                        <td class="px-6 py-4 text-sm text-gray-300 max-w-xs truncate">${msg.message || msg.notes || msg.action || (msg.date ? `Booked ${msg.date} ${msg.time || ''}` : 'Lead Submission')}</td>
                         <td class="px-6 py-4 text-sm text-gray-300">${date}</td>
                         <td class="px-6 py-4 text-sm">
                             <span class="px-2 py-1 text-xs font-semibold rounded-full border bg-purple-500/20 text-purple-300 border-purple-500/30">
