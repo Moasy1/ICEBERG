@@ -230,8 +230,7 @@ const runHeroEntrance = () => {
         .to("#hero-desc", { opacity: 1, y: 0, duration: 1, ease: "power4.out" }, "-=1")
         .to("#hero-cta", { opacity: 1, y: 0, duration: 1, ease: "power4.out" }, "-=0.8");
 
-    // Additional animations that were part of the original mobile entrance, now applied generally
-    gsap.to("#scroll-hint", {
+    tl.to("#scroll-hint", {
         opacity: 1,
         y: -20,
         duration: 1,
