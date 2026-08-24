@@ -69,7 +69,10 @@
 
     // Load actual Meta Pixel Script dynamically if Pixel ID is configured
     function loadPixelScript(pixelId) {
-        if (!pixelId || document.getElementById('meta-pixel-script')) return;
+        if (!pixelId) return;
+        if (document.querySelector('script[src*="fbevents.js"]') || (window.fbq && (window.fbq.loaded || window._fbq))) {
+            return;
+        }
         initFBQStub();
         
         const script = document.createElement('script');
@@ -91,6 +94,10 @@
 
     // Check for Pixel ID via window configuration or fetch server status
     function initMetaPixel() {
+        if (document.querySelector('script[src*="fbevents.js"]') || (window.fbq && (window.fbq.loaded || window._fbq))) {
+            return;
+        }
+
         // Priority 1: Global window variable window.FB_PIXEL_ID or window.META_PIXEL_ID
         const globalPixelId = window.FB_PIXEL_ID || window.META_PIXEL_ID;
         if (globalPixelId) {
