@@ -1,4 +1,4 @@
-﻿// Initialize Lucide icons
+// Initialize Lucide icons
 lucide.createIcons();
 
 // API Base URL
@@ -181,6 +181,98 @@ function showSection(sectionId) {
             break;
     }
     lucide.createIcons();
+}
+
+// ─── Dashboard Overview Data Loader ─────────────────────────────────────────
+async function loadDashboardData() {
+    try {
+        const [contentRes, projectsRes, servicesRes, contactsRes, pageviewsRes, meetingsRes] = await Promise.allSettled([
+            fetch(`${API_BASE}/content`).then(r => r.json()),
+            fetch(`${API_BASE}/projects`).then(r => r.json()),
+            fetch(`${API_BASE}/services`).then(r => r.json()),
+            fetch(`${API_BASE}/contact/submissions`).then(r => r.json()),
+            fetch(`${API_BASE}/analytics/pageviews`).then(r => r.json()),
+            fetch(`${API_BASE}/calendar/bookings`).then(r => r.json())
+        ]);
+
+        // Content Count
+        const contentEl = document.getElementById('content-count');
+        if (contentEl) {
+            let count = 0;
+            if (contentRes.status === 'fulfilled' && contentRes.value?.success) {
+                if (typeof contentRes.value.total === 'number') count = contentRes.value.total;
+                else if (contentRes.value.data) count = Object.keys(contentRes.value.data).length;
+            }
+            contentEl.textContent = count;
+        }
+
+        // Projects Count
+        const projectsEl = document.getElementById('projects-count');
+        if (projectsEl) {
+            let count = 0;
+            if (projectsRes.status === 'fulfilled' && projectsRes.value?.success) {
+                count = projectsRes.value.pagination?.total || (Array.isArray(projectsRes.value.data) ? projectsRes.value.data.length : 0);
+            }
+            projectsEl.textContent = count;
+        }
+
+        // Services Count
+        const servicesEl = document.getElementById('services-count');
+        if (servicesEl) {
+            let count = 0;
+            if (servicesRes.status === 'fulfilled' && servicesRes.value?.success) {
+                count = Array.isArray(servicesRes.value.data) ? servicesRes.value.data.length : 0;
+            }
+            servicesEl.textContent = count;
+        }
+
+        // Messages Count
+        const contactsEl = document.getElementById('contacts-count');
+        if (contactsEl) {
+            let count = 0;
+            if (contactsRes.status === 'fulfilled' && contactsRes.value?.success) {
+                count = contactsRes.value.count || (Array.isArray(contactsRes.value.data) ? contactsRes.value.data.length : 0);
+            }
+            contactsEl.textContent = count;
+        }
+
+        // Render Page Views Card
+        if (pageviewsRes.status === 'fulfilled' && pageviewsRes.value?.success) {
+            renderPageViews(pageviewsRes.value);
+        } else {
+            renderPageViews({ total: 0, pages: [] });
+        }
+
+        // Render Meetings Card
+        if (meetingsRes.status === 'fulfilled' && meetingsRes.value?.success) {
+            renderMeetings(meetingsRes.value);
+        } else {
+            renderMeetings({ count: 0, today: 0, upcoming: 0, bookings: [] });
+        }
+
+        loadRecentActivity();
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    } catch (err) {
+        console.error('Error loading dashboard overview:', err);
+    }
+}
+
+// ─── Initialize Default Sample Data (Init Data Button) ─────────────────────
+async function initializeData() {
+    showNotification('Initializing website CMS content, projects, and services...', 'info');
+    try {
+        await Promise.allSettled([
+            fetch(`${API_BASE}/content/init`, { method: 'POST' }).then(r => r.json()),
+            fetch(`${API_BASE}/projects/init`, { method: 'POST' }).then(r => r.json()),
+            fetch(`${API_BASE}/services/init`, { method: 'POST' }).then(r => r.json())
+        ]);
+
+        showNotification('Default CMS data initialized successfully!', 'success');
+        await loadDashboardData();
+    } catch (err) {
+        console.error('Init data error:', err);
+        showNotification('Error initializing CMS data: ' + err.message, 'error');
+    }
 }
 
 // ─── Analytics ─────────────────────────────────────────────────────────────

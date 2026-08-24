@@ -363,12 +363,74 @@ router.post('/submit', handleUpload, async (req, res) => {
   }
 });
 
-// Get contact submissions (for admin)
+// Get contact submissions (for admin - merges Messages, Leads, and Disk Backups)
 router.get('/submissions', async (req, res) => {
   try {
-    const messages = await Message.find().sort({ createdAt: -1 });
+    let messages = [];
+    try {
+      messages = await Message.find().sort({ createdAt: -1 });
+    } catch (e) {
+      console.warn('[DB Message Find Warn]:', e.message);
+    }
+
+    // Also fetch Leads to ensure all form/wizard submissions appear in Messages table
+    let leads = [];
+    try {
+      leads = await Lead.find().sort({ created_at: -1 });
+    } catch (e) {
+      console.warn('[DB Lead Find Warn]:', e.message);
+    }
+
+    const existingEmails = new Set(messages.map(m => (m.email || '').toLowerCase()));
+    
+    leads.forEach(l => {
+      if (l.email && !existingEmails.has(l.email.toLowerCase())) {
+        messages.push({
+          _id: l.lead_id || l._id,
+          name: l.name || l.contact_name || 'Client',
+          email: l.email,
+          phone: l.phone || '',
+          company: l.company || l.website || '',
+          message: l.notes || l.action || (l.meeting_date ? `Booked ${l.meeting_date} ${l.meeting_time || ''}` : 'Form Submission'),
+          status: l.status?.includes('Booked') ? 'new' : (l.status || 'new'),
+          createdAt: l.created_at || new Date()
+        });
+        existingEmails.add(l.email.toLowerCase());
+      }
+    });
+
+    // Also check disk backup logs
+    const backupFile = path.join(__dirname, '../leads_backup.jsonl');
+    if (fs.existsSync(backupFile)) {
+      try {
+        const lines = fs.readFileSync(backupFile, 'utf8').trim().split('\n').filter(Boolean);
+        lines.forEach(line => {
+          try {
+            const obj = JSON.parse(line);
+            if (obj.email && !existingEmails.has(obj.email.toLowerCase())) {
+              messages.push({
+                _id: obj.id || `fallback_${Date.now()}`,
+                name: obj.name || obj.contact_name || 'Client',
+                email: obj.email,
+                phone: obj.phone || '',
+                company: obj.company || obj.businessName || '',
+                message: obj.message || obj.notes || (obj.appointmentDate ? `Booked ${obj.appointmentDate} ${obj.appointmentTime || ''}` : 'Form Submission'),
+                status: 'new',
+                createdAt: obj.timestamp || new Date()
+              });
+              existingEmails.add(obj.email.toLowerCase());
+            }
+          } catch (e) {}
+        });
+      } catch (e) {}
+    }
+
+    // Sort by createdAt descending
+    messages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
     res.json({
       success: true,
+      count: messages.length,
       data: messages
     });
   } catch (error) {
