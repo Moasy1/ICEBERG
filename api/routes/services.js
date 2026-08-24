@@ -192,7 +192,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Initialize sample services
-router.post('/initialize', async (req, res) => {
+router.post(['/initialize', '/init'], async (req, res) => {
   try {
     const sampleServices = [
       {

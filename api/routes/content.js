@@ -165,7 +165,7 @@ router.delete('/:key', async (req, res) => {
 });
 
 // Initialize default content
-router.post('/initialize', async (req, res) => {
+router.post(['/initialize', '/init'], async (req, res) => {
   try {
     const defaultContent = [
       // Navigation

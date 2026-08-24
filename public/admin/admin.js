@@ -262,13 +262,16 @@ async function initializeData() {
     showNotification('Initializing website CMS content, projects, and services...', 'info');
     try {
         await Promise.allSettled([
-            fetch(`${API_BASE}/content/init`, { method: 'POST' }).then(r => r.json()),
-            fetch(`${API_BASE}/projects/init`, { method: 'POST' }).then(r => r.json()),
-            fetch(`${API_BASE}/services/init`, { method: 'POST' }).then(r => r.json())
+            fetch(`${API_BASE}/content/initialize`, { method: 'POST' }).then(r => r.json()),
+            fetch(`${API_BASE}/projects/initialize`, { method: 'POST' }).then(r => r.json()),
+            fetch(`${API_BASE}/services/initialize`, { method: 'POST' }).then(r => r.json())
         ]);
 
         showNotification('Default CMS data initialized successfully!', 'success');
         await loadDashboardData();
+        if (typeof loadContent === 'function') loadContent();
+        if (typeof loadProjects === 'function') loadProjects();
+        if (typeof loadServices === 'function') loadServices();
     } catch (err) {
         console.error('Init data error:', err);
         showNotification('Error initializing CMS data: ' + err.message, 'error');

@@ -210,7 +210,7 @@ router.get('/categories/list', async (req, res) => {
 });
 
 // Initialize sample projects from clients
-router.post('/initialize', async (req, res) => {
+router.post(['/initialize', '/init'], async (req, res) => {
   try {
     const Content = require('../models/Content');
     const clientContent = await Content.findOne({ key: 'gallery_clients' });
