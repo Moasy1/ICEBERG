@@ -156,22 +156,6 @@ router.get('/', async (req, res) => {
     });
   }
 });
-      success: true,
-      data,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
-      }
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
 
 // Get project by slug
 router.get('/:slug', async (req, res) => {
