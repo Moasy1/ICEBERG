@@ -17,11 +17,13 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https:", "https://www.facebook.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://connect.facebook.net"],
-      connectSrc: ["'self'", "https://api.strapi.io", "https://www.facebook.com", "https://connect.facebook.net", "https://graph.facebook.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://*.facebook.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+      imgSrc: ["'self'", "data:", "https:", "https://www.facebook.com", "https://*.facebook.com", "https://*.fbcdn.net"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdnjs.cloudflare.com", "https://connect.facebook.net", "https://*.facebook.com", "https://*.fbcdn.net", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://cdn.jsdelivr.net"],
+      connectSrc: ["'self'", "https://api.strapi.io", "https://www.facebook.com", "https://*.facebook.com", "https://connect.facebook.net", "https://graph.facebook.com", "https://*.fbcdn.net"],
+      frameSrc: ["'self'", "https://www.facebook.com", "https://*.facebook.com", "https://web.facebook.com"],
+      childSrc: ["'self'", "https://www.facebook.com", "https://*.facebook.com", "https://web.facebook.com"],
     },
   },
 }));
