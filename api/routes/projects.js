@@ -2,6 +2,81 @@ const express = require('express');
 const Project = require('../models/Project');
 const router = express.Router();
 
+const DEFAULT_PROJECTS = [
+  {
+    _id: 'proj_1',
+    title: { en: 'FMS Coffee Shop', ar: 'إف إم إس كافيه' },
+    slug: 'fms-coffee-shop',
+    description: { en: 'Comprehensive visual branding, menu engineering, and promotional reels.', ar: 'هوية بصرية شاملة وهندسة القوائم وتصوير ريلز دعائية.' },
+    category: 'branding',
+    client: 'FMS Coffee',
+    technologies: ['Branding', 'Videography', 'Social Media'],
+    clientLogo: 'clients-logos/fms_coffe_shop.png',
+    featured: true,
+    status: 'published'
+  },
+  {
+    _id: 'proj_2',
+    title: { en: 'The Drum Shop Egypt', ar: 'ذا درام شوب مصر' },
+    slug: 'the-drum-shop-egypt',
+    description: { en: 'Brand identity expansion and high-converting performance ads.', ar: 'توسيع الهوية التجارية وإعلانات أداء عالية التحويل.' },
+    category: 'performance',
+    client: 'The Drum Shop',
+    technologies: ['Performance Ads', 'Media Buying', 'Content Strategy'],
+    clientLogo: 'clients-logos/drum_shop_egypt.png',
+    featured: true,
+    status: 'published'
+  },
+  {
+    _id: 'proj_3',
+    title: { en: 'Dentaquick Dental Portal', ar: 'منصة دينتاكويك للأسنان' },
+    slug: 'dentaquick-dental-portal',
+    description: { en: 'Brand strategy and patient acquisition funnels for medical clinics.', ar: 'استراتيجية العلامة التجارية ومسارات اكتساب المرضى للعيادات.' },
+    category: 'performance',
+    client: 'Dentaquick',
+    technologies: ['Lead Generation', 'Branding', 'Funnel Design'],
+    clientLogo: 'clients-logos/denta_quick_.png',
+    featured: true,
+    status: 'published'
+  },
+  {
+    _id: 'proj_4',
+    title: { en: 'Ghost Note Music', ar: 'جوست نوت للإنتاج' },
+    slug: 'ghost-note-music',
+    description: { en: 'Brand positioning, artist showcase decks, and social media dominance.', ar: 'تموضع العلامة التجارية وعروض الفنانين وإدارة وسائل التواصل.' },
+    category: 'social-media',
+    client: 'Ghost Note',
+    technologies: ['Social Media', 'Creative Direction', 'Brand Strategy'],
+    clientLogo: 'clients-logos/ghost_note_.png',
+    featured: true,
+    status: 'published'
+  },
+  {
+    _id: 'proj_5',
+    title: { en: 'Crown Eterna', ar: 'كراون إيتيرنا' },
+    slug: 'crown-eterna',
+    description: { en: 'Luxury brand identity, corporate deck, and high-end video showcase.', ar: 'هوية تجارية فاخرة وعرض للشركات وتوثيق فيديو متميز.' },
+    category: 'branding',
+    client: 'Crown Eterna',
+    technologies: ['Luxury Branding', 'Videography', 'UI/UX'],
+    clientLogo: 'clients-logos/crown_eterna.png',
+    featured: true,
+    status: 'published'
+  },
+  {
+    _id: 'proj_6',
+    title: { en: 'Penates Real Estate Developments', ar: 'بيناتيس للتطوير العقاري' },
+    slug: 'penates-real-estate',
+    description: { en: 'Full corporate identity and project launch marketing campaigns.', ar: 'هوية شركات متكاملة وحملات إطلاق المشاريع العقارية.' },
+    category: 'branding',
+    client: 'Penates Developments',
+    technologies: ['Real Estate Marketing', 'Identity Design', 'Media Buying'],
+    clientLogo: 'clients-logos/penates_developments.png',
+    featured: true,
+    status: 'published'
+  }
+];
+
 // Get all projects with filtering
 router.get('/', async (req, res) => {
   try {
@@ -14,45 +89,73 @@ router.get('/', async (req, res) => {
       limit = 10
     } = req.query;
 
-    let query = { status };
-
+    let query = {};
+    if (status && status !== 'all') query.status = status;
     if (category) query.category = category;
     if (featured === 'true') query.featured = true;
 
     const skip = (page - 1) * limit;
 
-    const projects = await Project.find(query)
-      .sort({ featured: -1, completedDate: -1 })
-      .skip(skip)
-      .limit(parseInt(limit));
+    let projects = [];
+    let total = 0;
+
+    try {
+      projects = await Project.find(query)
+        .sort({ featured: -1, completedDate: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+      total = await Project.countDocuments(query);
+    } catch (dbErr) {
+      console.warn('[Project DB Find Warn]:', dbErr.message);
+    }
+
+    if (!projects || projects.length === 0) {
+      projects = DEFAULT_PROJECTS;
+      if (category) projects = projects.filter(p => p.category === category);
+      if (featured === 'true') projects = projects.filter(p => p.featured);
+      total = projects.length;
+    }
 
     // Transform projects based on language if not raw mode
     let data = projects;
     if (req.query.raw !== 'true') {
       data = projects.map(project => ({
         _id: project._id,
-        title: project.title[lang] || project.title.en,
+        title: (project.title && (project.title[lang] || project.title.en)) || project.title || '',
         slug: project.slug,
-        description: project.description[lang] || project.description.en,
+        description: (project.description && (project.description[lang] || project.description.en)) || project.description || '',
         category: project.category,
         client: project.client,
-        technologies: project.technologies,
-        images: project.images,
+        technologies: project.technologies || [],
+        images: project.images || [],
         featured: project.featured,
-        completedDate: project.completedDate,
+        completedDate: project.completedDate || new Date(),
         clientLogo: project.clientLogo,
         projectUrl: project.projectUrl,
         caseStudy: project.caseStudy ? (project.caseStudy[lang] || project.caseStudy.en) : null,
         results: project.results,
         seo: project.seo,
-        status: project.status
+        status: project.status || 'published'
       }));
     }
 
-    const total = await Project.countDocuments(query);
-    console.log(`API [GET /projects]: Found ${projects.length} / ${total}`);
-
     res.json({
+      success: true,
+      data,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
       success: true,
       data,
       pagination: {

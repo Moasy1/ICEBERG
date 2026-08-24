@@ -2,6 +2,20 @@ const express = require('express');
 const Content = require('../models/Content');
 const router = express.Router();
 
+const DEFAULT_CONTENTS = [
+  { key: 'nav_services', value: { en: 'Services', ar: 'خدماتنا' }, category: 'navigation' },
+  { key: 'nav_process', value: { en: 'Process', ar: 'كيف نعمل' }, category: 'navigation' },
+  { key: 'nav_work', value: { en: 'Work', ar: 'أعمالنا' }, category: 'navigation' },
+  { key: 'nav_about', value: { en: 'About', ar: 'عن الشركة' }, category: 'navigation' },
+  { key: 'nav_contact', value: { en: 'Contact', ar: 'تواصل معنا' }, category: 'navigation' },
+  { key: 'hero_badge', value: { en: 'DIGITAL GROWTH AGENCY', ar: 'وكالة نمو رقمي' }, category: 'hero' },
+  { key: 'hero_title_1', value: { en: 'We Reveal Your', ar: 'نحن نكشف عن' }, category: 'hero' },
+  { key: 'hero_title_2', value: { en: 'Hidden Potential.', ar: 'إمكاناتك الكامنة.' }, category: 'hero' },
+  { key: 'hero_subtitle', value: { en: 'Like an iceberg, your brand has depth. We help you showcase the massive value lying beneath the surface.', ar: 'مثل الجبل الجليدي، علامتك التجارية لها عمق. نحن نساعدك على إظهار القيمة الهائلة الكامنة تحت السطح.' }, category: 'hero' },
+  { key: 'contact_title', value: { en: "Let's Break the Ice", ar: 'لنكسر الجليد' }, category: 'contact' },
+  { key: 'contact_sub', value: { en: 'Ready to grow? Send us a message.', ar: 'مستعد للنمو؟ أرسل لنا رسالة.' }, category: 'contact' }
+];
+
 // Get all content or filtered by category
 router.get('/', async (req, res) => {
   try {
@@ -12,12 +26,21 @@ router.get('/', async (req, res) => {
       query.category = category;
     }
 
-    const contents = await Content.find(query).sort({ category: 1, key: 1 });
+    let contents = [];
+    try {
+      contents = await Content.find(query).sort({ category: 1, key: 1 });
+    } catch (e) {
+      console.warn('[Content Find Warn]:', e.message);
+    }
+
+    if (!contents || contents.length === 0) {
+      contents = category ? DEFAULT_CONTENTS.filter(c => c.category === category) : DEFAULT_CONTENTS;
+    }
 
     // Transform content based on language
     const transformedContent = {};
     contents.forEach(content => {
-      transformedContent[content.key] = content.value[lang] || content.value.en;
+      transformedContent[content.key] = (content.value && (content.value[lang] || content.value.en)) || content.value || '';
     });
 
     res.json({

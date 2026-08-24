@@ -54,6 +54,9 @@ app.use(express.static(path.join(__dirname, '../public'), {
   index: 'index.html'
 }));
 
+// Disable Mongoose command buffering so serverless requests never hang for 10s if DB is cold/offline
+mongoose.set('bufferCommands', false);
+
 // MongoDB connection helper
 let cachedConnection = null;
 
@@ -62,16 +65,21 @@ const connectToDatabase = async () => {
     return cachedConnection;
   }
 
-  console.log('Connecting to MongoDB...');
+  if (!process.env.MONGODB_URI) {
+    console.warn('[MongoDB Warn]: No MONGODB_URI configured, operating in resilient memory/disk fallback mode.');
+    return null;
+  }
+
   try {
-    cachedConnection = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/iceberg_cms', {
-      serverSelectionTimeoutMS: 1000, // Timeout after 5s
+    cachedConnection = await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 3000,
+      connectTimeoutMS: 3000
     });
     console.log('Connected to MongoDB');
     return cachedConnection;
   } catch (err) {
-    console.error('MongoDB connection error:', err);
-    throw err;
+    console.warn('[MongoDB Connection Warning]:', err.message);
+    return null;
   }
 };
 

@@ -2,6 +2,81 @@ const express = require('express');
 const Service = require('../models/Service');
 const router = express.Router();
 
+const DEFAULT_SERVICES = [
+  {
+    _id: 'srv_1',
+    title: { en: 'SEO & Search Engine Domination', ar: 'تحسين محركات البحث والظهور الرقمي' },
+    slug: 'seo-visibility',
+    shortDescription: { en: 'Dominate organic search results and drive high-intent leads.', ar: 'السيطرة على نتائج البحث وجذب عملاء محتملين مهتمين.' },
+    description: { en: 'Get found by the right people. We optimize your technical structure and content depth.', ar: 'اجعل عملاءك يجدونك بسهولة عبر استراتيجية تحسين محركات البحث العميقة.' },
+    icon: 'search',
+    iconColor: 'blue',
+    featured: true,
+    order: 1,
+    status: 'published'
+  },
+  {
+    _id: 'srv_2',
+    title: { en: 'Social Media Management & Growth', ar: 'إدارة وتنمية وسائل التواصل الاجتماعي' },
+    slug: 'social-media',
+    shortDescription: { en: 'Engaging content and community building that drives loyalty.', ar: 'محتوى جذاب وبناء مجتمعات وفية لعلامتك التجارية.' },
+    description: { en: 'Build a passionate, loyal audience across Instagram, TikTok, Facebook, and LinkedIn.', ar: 'بناء جمهور شغوف ومخلص عبر مختلف منصات التواصل الاجتماعي.' },
+    icon: 'megaphone',
+    iconColor: 'cyan',
+    featured: true,
+    order: 2,
+    status: 'published'
+  },
+  {
+    _id: 'srv_3',
+    title: { en: 'Performance Marketing & Media Buying', ar: 'التسويق بالأداء وشراء الوسائط الإعلانية' },
+    slug: 'performance-marketing',
+    shortDescription: { en: 'High-ROI paid ad campaigns that scale your sales profitably.', ar: 'حملات إعلانية مدفوعة ذات عائد استثمار مرتفع لتوسيع مبيعاتك.' },
+    description: { en: 'Precision-targeted Meta, Google, and TikTok ad funnels engineered for maximum conversion.', ar: 'إعلانات مدروسة ومستهدفة بدقة عبر ميتا وجوجل وتيك توك لتحقيق أعلى تحويل.' },
+    icon: 'trending-up',
+    iconColor: 'emerald',
+    featured: true,
+    order: 3,
+    status: 'published'
+  },
+  {
+    _id: 'srv_4',
+    title: { en: 'Web Development & Custom Platforms', ar: 'تطوير المواقع والمنصات الرقمية' },
+    slug: 'web-development',
+    shortDescription: { en: 'Fast, secure, and beautiful digital experiences that convert.', ar: 'تجارب رقمية سريعة وآمنة وجذابة تحقق أعلى نسب تحويل.' },
+    description: { en: 'Fast, modern web architectures built on solid foundations with high converting UX.', ar: 'مواقع وتطبيقات ويب سريعة وحديثة مبنية على أسس متينة لتحويل الزوار إلى عملاء.' },
+    icon: 'code',
+    iconColor: 'purple',
+    featured: true,
+    order: 4,
+    status: 'published'
+  },
+  {
+    _id: 'srv_5',
+    title: { en: 'Branding & Visual Identity', ar: 'بناء العلامات التجارية والهوية البصرية' },
+    slug: 'branding',
+    shortDescription: { en: 'Distinctive brand identity systems that stand out in crowded markets.', ar: 'أنظمة هوية بصرية متميزة تبرز علامتك في الأسواق التنافسية.' },
+    description: { en: 'Complete brand positioning, logos, typography, style guides, and collateral.', ar: 'تموضع شامل للعلامة التجارية، وتصميم الشعارات ودليل الهوية الكامل.' },
+    icon: 'sparkles',
+    iconColor: 'amber',
+    featured: true,
+    order: 5,
+    status: 'published'
+  },
+  {
+    _id: 'srv_6',
+    title: { en: 'Videography & Reel Production', ar: 'الإنتاج المرئي وصناعة الريلز والفيديو' },
+    slug: 'videography',
+    shortDescription: { en: 'High-production commercial video and viral short-form reels.', ar: 'إنتاج فيديوهات إعلانية سينمائية وريلز سريعة الانتشار.' },
+    description: { en: 'Storytelling that captures attention and drives action across all digital channels.', ar: 'سرد قصصي بصري جذاب يجذب الانتباه ويحفز العملاء على اتخاذ القرار.' },
+    icon: 'video',
+    iconColor: 'rose',
+    featured: true,
+    order: 6,
+    status: 'published'
+  }
+];
+
 // Get all services
 router.get('/', async (req, res) => {
   try {
@@ -11,32 +86,41 @@ router.get('/', async (req, res) => {
       lang = 'en'
     } = req.query;
 
-    let query = { status };
-
+    let query = {};
+    if (status && status !== 'all') query.status = status;
     if (featured === 'true') query.featured = true;
 
-    const services = await Service.find(query).sort({ order: 1, title: 1 });
-    console.log(`API [GET /services]: Found ${services.length} services`);
+    let services = [];
+    try {
+      services = await Service.find(query).sort({ order: 1, title: 1 });
+    } catch (dbErr) {
+      console.warn('[Services DB Find Warn]:', dbErr.message);
+    }
+
+    if (!services || services.length === 0) {
+      services = DEFAULT_SERVICES;
+      if (featured === 'true') services = services.filter(s => s.featured);
+    }
 
     // Transform services based on language if not raw
     let data = services;
     if (req.query.raw !== 'true') {
       data = services.map(service => ({
         _id: service._id,
-        title: service.title[lang] || service.title.en,
+        title: (service.title && (service.title[lang] || service.title.en)) || service.title || '',
         slug: service.slug,
-        description: service.description[lang] || service.description.en,
-        shortDescription: service.shortDescription[lang] || service.shortDescription.en,
-        icon: service.icon,
-        iconColor: service.iconColor,
-        features: service.features.map(feature => ({
-          title: feature.title[lang] || feature.title.en,
-          description: feature.description ? (feature.description[lang] || feature.description.en) : null
+        description: (service.description && (service.description[lang] || service.description.en)) || service.description || '',
+        shortDescription: (service.shortDescription && (service.shortDescription[lang] || service.shortDescription.en)) || service.shortDescription || '',
+        icon: service.icon || 'settings',
+        iconColor: service.iconColor || 'cyan',
+        features: (service.features || []).map(feature => ({
+          title: (feature.title && (feature.title[lang] || feature.title.en)) || feature.title || '',
+          description: feature.description ? ((feature.description[lang] || feature.description.en) || feature.description) : null
         })),
         featured: service.featured,
-        order: service.order,
+        order: service.order || 1,
         seo: service.seo,
-        status: service.status
+        status: service.status || 'published'
       }));
     }
 
