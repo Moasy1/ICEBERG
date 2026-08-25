@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const CalendarSlot = require('../models/CalendarSlot');
 const Lead = require('../models/Lead');
+const metaCapi = require('../services/metaCapi');
 const fs = require('fs');
 const path = require('path');
 
@@ -193,6 +194,14 @@ router.post('/book', async (req, res) => {
   try {
     const { date, time, name, contact_name, email, phone, company, industry, position, notes, sessionId, utm } = req.body;
 
+    const rawCookies = req.headers.cookie || '';
+    const fbpMatch = rawCookies.match(/_fbp=([^;]+)/);
+    const fbcMatch = rawCookies.match(/_fbc=([^;]+)/);
+    const fbp = req.body.fbp || (fbpMatch ? decodeURIComponent(fbpMatch[1]) : '');
+    const fbc = req.body.fbc || (fbcMatch ? decodeURIComponent(fbcMatch[1]) : '');
+
+    const eventId = req.body.eventId || req.body.event_id || req.body.meta_event_id || metaCapi.generateEventId('sched');
+
     const finalDate = date || new Date().toISOString().split('T')[0];
     const finalTime = formatTo12Hour(time || '10:00 AM');
     const finalCompany = (company || name || 'IDEX Exhibitor').trim();
@@ -222,6 +231,10 @@ router.post('/book', async (req, res) => {
       status: '📅 Consultation Booked',
       owner: 'Executive Desk 1',
       notes: (notes || `Meeting scheduled for ${finalDate} at ${finalTime}`).trim(),
+      meta_event_id: eventId,
+      meta_capi_status: 'pending',
+      fbp,
+      fbc,
       utm: utm || {}
     };
 
@@ -262,10 +275,44 @@ router.post('/book', async (req, res) => {
       console.warn('[Calendar Book DB Warning]:', dbErr.message);
     }
 
+    // Trigger Meta CAPI Schedule Event
+    let capiStatus = 'pending';
+    try {
+      const capiResult = await metaCapi.sendServerEvent({
+        eventName: 'Schedule',
+        eventId: eventId,
+        userData: {
+          email: leadData.email,
+          phone: leadData.phone,
+          name: leadData.name,
+          company: leadData.company,
+          fbp,
+          fbc
+        },
+        customData: {
+          content_name: 'Consultation Appointment Booking',
+          meeting_date: finalDate,
+          meeting_time: finalTime
+        },
+        eventSourceUrl: req.headers.referer || 'https://iceberg.agency/idex',
+        req
+      });
+
+      capiStatus = capiResult.meta_capi_status || (capiResult.success ? 'sent' : 'failed');
+      await Lead.updateOne({ email: leadData.email }, { meta_capi_status: capiStatus }).catch(() => {});
+    } catch (e) {
+      console.error('[Meta CAPI Calendar Schedule Dispatch Error]:', e.message);
+      capiStatus = 'failed';
+      await Lead.updateOne({ email: leadData.email }, { meta_capi_status: 'failed' }).catch(() => {});
+    }
+
     return res.status(201).json({
       success: true,
       message: 'Meeting confirmed successfully!',
       lead_id: leadData.lead_id,
+      eventId,
+      eventName: 'Schedule',
+      meta_capi_status: capiStatus,
       meeting_details: {
         date: finalDate,
         time: finalTime,

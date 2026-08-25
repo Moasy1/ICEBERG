@@ -173,8 +173,17 @@ function setupWizardForForm(form) {
             if (fullPhone) dataObj.phone = fullPhone;
         }
 
-        // Generate matching Meta Event ID for client/server deduplication
-        const metaEventId = `wizard_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        // Include cookies for Meta CAPI
+        if (typeof window.getMetaCookies === 'function') {
+            const cookies = window.getMetaCookies();
+            if (cookies.fbp) dataObj.fbp = cookies.fbp;
+            if (cookies.fbc) dataObj.fbc = cookies.fbc;
+        }
+
+        // Generate matching cryptographically secure Meta Event ID for client/server deduplication
+        const metaEventId = typeof window.generateMetaEventId === 'function' 
+            ? window.generateMetaEventId('wiz') 
+            : `wiz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         dataObj.eventId = metaEventId;
 
         try {
@@ -187,7 +196,9 @@ function setupWizardForForm(form) {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                // Dispatch client Meta Pixel Schedule/Lead event ONLY when backend confirms storage
+                const finalEventId = result.eventId || metaEventId;
+                
+                // Dispatch client Meta Pixel Schedule event with matching event ID (skipServerCapi=true since server already dispatched)
                 if (typeof window.trackMetaEvent === 'function') {
                     window.trackMetaEvent('Schedule', {
                         content_name: 'Consultation Appointment Setup',
@@ -197,8 +208,10 @@ function setupWizardForForm(form) {
                         email: dataObj.email,
                         phone: dataObj.phone,
                         name: dataObj.name,
-                        company: dataObj.company
-                    }, metaEventId);
+                        company: dataObj.company,
+                        fbp: dataObj.fbp,
+                        fbc: dataObj.fbc
+                    }, finalEventId, true);
                 }
 
                 populateConfirmationCard(form, dataObj);

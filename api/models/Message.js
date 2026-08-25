@@ -56,6 +56,23 @@ const MessageSchema = new mongoose.Schema({
         enum: ['new', 'read', 'replied', 'archived'],
         default: 'new'
     },
+    meta_event_id: {
+        type: String,
+        default: ''
+    },
+    meta_capi_status: {
+        type: String,
+        enum: ['pending', 'sent', 'failed', 'none'],
+        default: 'pending'
+    },
+    fbp: {
+        type: String,
+        default: ''
+    },
+    fbc: {
+        type: String,
+        default: ''
+    },
     createdAt: {
         type: Date,
         default: Date.now,
@@ -66,7 +83,10 @@ const MessageSchema = new mongoose.Schema({
 // Indexes for fast querying in Contact Messages panel
 MessageSchema.index({ status: 1 });
 MessageSchema.index({ email: 1 });
+MessageSchema.index({ meta_event_id: 1 });
+MessageSchema.index({ meta_capi_status: 1 });
 MessageSchema.index({ status: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Message', MessageSchema);
+
 

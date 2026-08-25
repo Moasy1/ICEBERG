@@ -341,6 +341,11 @@ function initCalendarBookingFlow(utmParams) {
     confirmBtn.disabled = true;
     confirmBtn.innerHTML = 'Confirming Booking...';
 
+    const cookies = typeof window.getMetaCookies === 'function' ? window.getMetaCookies() : {};
+    const metaEventId = typeof window.generateMetaEventId === 'function'
+      ? window.generateMetaEventId('idex_cal')
+      : `idex_cal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
     const payload = {
       date: selectedDate,
       time: selectedTime,
@@ -351,6 +356,9 @@ function initCalendarBookingFlow(utmParams) {
       industry: document.getElementById('cal-industry').value,
       notes: document.getElementById('cal-notes').value,
       sessionId,
+      eventId: metaEventId,
+      fbp: cookies.fbp,
+      fbc: cookies.fbc,
       utm: utmParams
     };
 
@@ -386,6 +394,22 @@ function initCalendarBookingFlow(utmParams) {
         clearInterval(holdTimerInterval);
         trackEvent('booking_form_submit', { lead_id: data.lead_id || 'lead_local' });
         trackEvent('meeting_confirmed', { date: selectedDate, time: selectedTime });
+
+        if (typeof window.trackMetaEvent === 'function') {
+          window.trackMetaEvent('Schedule', {
+            content_name: 'IDEX Consultation Meeting',
+            appointment_date: payload.date,
+            appointment_time: payload.time
+          }, {
+            email: payload.email,
+            phone: payload.phone,
+            name: payload.name,
+            company: payload.company,
+            fbp: payload.fbp,
+            fbc: payload.fbc
+          }, data.eventId || metaEventId);
+        }
+
         window.location.href = `/idex/thank-you?type=meeting&lead_id=${data.lead_id || 'lead_local'}&date=${selectedDate}&time=${selectedTime}`;
       } else {
         alert(`Booking failed: ${data.error}`);
@@ -459,6 +483,10 @@ function initAuditForm(utmParams) {
     submitBtn.innerHTML = '<span class="animate-pulse">Submitting Audit Request...</span>';
 
     const requirements = Array.from(form.querySelectorAll('input[name="requirements"]:checked')).map(cb => cb.value);
+    const cookies = typeof window.getMetaCookies === 'function' ? window.getMetaCookies() : {};
+    const metaEventId = typeof window.generateMetaEventId === 'function'
+      ? window.generateMetaEventId('idex_audit')
+      : `idex_audit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     const payload = {
       source: 'idex_audit',
@@ -470,6 +498,9 @@ function initAuditForm(utmParams) {
       industry: document.getElementById('audit-industry').value,
       requirements,
       interest_tag: 'audit_only',
+      eventId: metaEventId,
+      fbp: cookies.fbp,
+      fbc: cookies.fbc,
       utm: utmParams
     };
 
@@ -496,6 +527,19 @@ function initAuditForm(utmParams) {
 
       if (data.success) {
         trackEvent('audit_form_submit', { lead_id: data.lead_id });
+        if (typeof window.trackMetaEvent === 'function') {
+          window.trackMetaEvent('Lead', {
+            content_name: 'IDEX Free Audit Request',
+            company: payload.company
+          }, {
+            email: payload.email,
+            phone: payload.phone,
+            name: payload.name,
+            company: payload.company,
+            fbp: payload.fbp,
+            fbc: payload.fbc
+          }, data.eventId || metaEventId, true);
+        }
         window.location.href = `/idex/thank-you?type=audit&lead_id=${data.lead_id}`;
       } else {
         alert(`Audit request failed: ${data.error}`);
@@ -534,6 +578,11 @@ function initLeadForm(utmParams) {
     const otherText = document.getElementById('qual-req-other-text')?.value;
     if (otherText) requirements.push(`Other: ${otherText}`);
 
+    const cookies = typeof window.getMetaCookies === 'function' ? window.getMetaCookies() : {};
+    const metaEventId = typeof window.generateMetaEventId === 'function'
+      ? window.generateMetaEventId('idex_qual')
+      : `idex_qual_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
     const payload = {
       source: 'idex_lead_form',
       name: document.getElementById('qual-name').value,
@@ -545,6 +594,9 @@ function initLeadForm(utmParams) {
       website: document.getElementById('qual-website')?.value || '',
       industry: document.getElementById('qual-industry').value,
       requirements,
+      eventId: metaEventId,
+      fbp: cookies.fbp,
+      fbc: cookies.fbc,
       utm: utmParams
     };
 
@@ -571,6 +623,19 @@ function initLeadForm(utmParams) {
 
       if (data.success) {
         trackEvent('lead_form_submit', { lead_id: data.lead_id });
+        if (typeof window.trackMetaEvent === 'function') {
+          window.trackMetaEvent('Lead', {
+            content_name: 'IDEX Lead Qualification Form',
+            company: payload.company
+          }, {
+            email: payload.email,
+            phone: payload.phone,
+            name: payload.name,
+            company: payload.company,
+            fbp: payload.fbp,
+            fbc: payload.fbc
+          }, data.eventId || metaEventId, true);
+        }
         window.location.href = `/idex/thank-you?type=lead&lead_id=${data.lead_id}`;
       } else {
         alert(`Lead submission failed: ${data.error}`);

@@ -104,6 +104,23 @@ const LeadSchema = new mongoose.Schema({
     medium: String,
     campaign: String,
     content: String
+  },
+  meta_event_id: {
+    type: String,
+    default: ''
+  },
+  meta_capi_status: {
+    type: String,
+    enum: ['pending', 'sent', 'failed', 'none'],
+    default: 'pending'
+  },
+  fbp: {
+    type: String,
+    default: ''
+  },
+  fbc: {
+    type: String,
+    default: ''
   }
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
@@ -114,9 +131,12 @@ LeadSchema.index({ email: 1 });
 LeadSchema.index({ status: 1 });
 LeadSchema.index({ action: 1 });
 LeadSchema.index({ source: 1 });
+LeadSchema.index({ meta_event_id: 1 });
+LeadSchema.index({ meta_capi_status: 1 });
 LeadSchema.index({ created_at: -1 });
 LeadSchema.index({ action: 1, created_at: -1 });
 LeadSchema.index({ status: 1, created_at: -1 });
 
 module.exports = mongoose.models.Lead || mongoose.model('Lead', LeadSchema);
+
 

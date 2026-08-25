@@ -1,6 +1,8 @@
 const crypto = require('crypto');
 const https = require('https');
 const http = require('http');
+const mongoose = require('mongoose');
+const MetaEvent = require('../models/MetaEvent');
 
 const DEFAULT_PIXEL_ID = '2557716128012185';
 const DEFAULT_ACCESS_TOKEN = 'EAANH2w2Ar6ABSFdepnhLqbYOZBL16W4Xy2Gt6XNjUEW6QWXrQOIZAkzSF4VQBYNzl2CrTTIc3pZBdu16UlU0r4dPZBjV7xIaKFVZCq49ZAUP94igPYznzVlcMAjyGHFRxdFhTZA9JwqGYJTKQckMFdjKZC4MGVmJQaYZCBVZB9AmUmPfjOAEZAoHfZCCY3jPQikLTMvSFQZDZD';
@@ -8,16 +10,30 @@ const DEFAULT_TEST_EVENT_CODE = 'TEST42775';
 
 /**
  * Meta Conversions API (CAPI) Service
- * Handles server-side event dispatching to Meta's Graph API with SHA-256 normalization,
- * cookie handling (_fbp/_fbc), and event deduplication.
+ * Implements strict event deduplication with Meta Pixel, cryptographic event ID generation,
+ * MongoDB idempotency verification, state synchronization, and robust error handling.
  */
 class MetaCapiService {
     constructor() {
         this.apiVersion = process.env.META_API_VERSION || 'v18.0';
+        this.processedEventIds = new Set();
     }
 
     /**
-     * SHA-256 Hash helper
+     * Generate cryptographically secure event ID
+     * @param {string} prefix 
+     * @returns {string}
+     */
+    generateEventId(prefix = 'evt') {
+        try {
+            return `${prefix}_${crypto.randomUUID()}`;
+        } catch (e) {
+            return `${prefix}_${Date.now()}_${crypto.randomBytes(8).toString('hex')}`;
+        }
+    }
+
+    /**
+     * SHA-256 Hash helper for user normalization
      * @param {string} value 
      * @returns {string|null} Hashed string or null
      */
@@ -68,7 +84,7 @@ class MetaCapiService {
     getStatus() {
         const pixelId = process.env.META_PIXEL_ID || process.env.FB_PIXEL_ID || DEFAULT_PIXEL_ID;
         const accessToken = process.env.META_ACCESS_TOKEN || process.env.FB_ACCESS_TOKEN || DEFAULT_ACCESS_TOKEN;
-        const testCode = process.env.META_TEST_EVENT_CODE;
+        const testCode = process.env.META_TEST_EVENT_CODE || DEFAULT_TEST_EVENT_CODE;
 
         return {
             configured: Boolean(pixelId && accessToken),
@@ -77,6 +93,7 @@ class MetaCapiService {
             pixelId: pixelId || null,
             accessTokenSet: Boolean(accessToken),
             testEventCodeSet: Boolean(testCode),
+            testEventCode: testCode || null,
             apiVersion: this.apiVersion
         };
     }
@@ -134,7 +151,7 @@ class MetaCapiService {
             if (zp) userData.zp = [zp];
         }
 
-        // Browser & Session identifiers (unhashed)
+        // Browser & Session identifiers (_fbp / _fbc)
         if (rawUserData.fbp) userData.fbp = rawUserData.fbp;
         if (rawUserData.fbc) userData.fbc = rawUserData.fbc;
 
@@ -153,7 +170,9 @@ class MetaCapiService {
     }
 
     /**
-     * Send event to Meta Conversions API
+     * Send event to Meta Conversions API with strict MongoDB Idempotency,
+     * CAPI status management, test event code inclusion, and deduplication verification.
+     * 
      * @param {Object} eventDetails
      * @param {string} eventDetails.eventName - Standard Meta event name (e.g. Lead, Contact, PageView, ViewContent, Schedule)
      * @param {string} [eventDetails.eventId] - Unique ID for event deduplication matching client-side Pixel event
@@ -165,34 +184,119 @@ class MetaCapiService {
     async sendServerEvent(eventDetails = {}) {
         const pixelId = process.env.META_PIXEL_ID || process.env.FB_PIXEL_ID || DEFAULT_PIXEL_ID;
         const accessToken = process.env.META_ACCESS_TOKEN || process.env.FB_ACCESS_TOKEN || DEFAULT_ACCESS_TOKEN;
+        const testCode = process.env.META_TEST_EVENT_CODE || DEFAULT_TEST_EVENT_CODE;
 
-        if (!pixelId || !accessToken) {
-            console.log(`[Meta CAPI] Skipping event "${eventDetails.eventName}": META_PIXEL_ID or META_ACCESS_TOKEN not set.`);
-            return { success: false, reason: 'unconfigured' };
+        const eventName = eventDetails.eventName || 'Lead';
+        const eventId = eventDetails.eventId || this.generateEventId('srv');
+
+        // Extract cookies from request if present
+        const req = eventDetails.req;
+        const cookies = req && req.headers ? (req.headers.cookie || '') : '';
+        const fbpMatch = cookies.match(/_fbp=([^;]+)/);
+        const fbcMatch = cookies.match(/_fbc=([^;]+)/);
+
+        const fbp = eventDetails.userData?.fbp || (fbpMatch ? decodeURIComponent(fbpMatch[1]) : null);
+        const fbc = eventDetails.userData?.fbc || (fbcMatch ? decodeURIComponent(fbcMatch[1]) : null);
+
+        let eventSourceUrl = eventDetails.eventSourceUrl;
+        if (!eventSourceUrl && req) {
+            const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+            const host = req.headers.host || 'localhost';
+            eventSourceUrl = `${protocol}://${host}${req.originalUrl || req.url}`;
+        }
+        if (!eventSourceUrl) {
+            eventSourceUrl = process.env.FRONTEND_URL || 'https://iceberg.agency';
         }
 
-        try {
-            const eventName = eventDetails.eventName || 'CustomEvent';
-            const eventTime = Math.floor(Date.now() / 1000);
-            const eventId = eventDetails.eventId || `meta_server_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        // ─────────────────────────────────────────────────────────────
+        // 1. IDEMPOTENCY CHECK (Anti-Duplication via In-Memory + MongoDB)
+        // ─────────────────────────────────────────────────────────────
+        if (this.processedEventIds.has(eventId)) {
+            console.log(`[Meta CAPI] Blocked duplicate event | ID: ${eventId} | Status: already sent`);
+            return {
+                success: true,
+                duplicate: true,
+                eventId,
+                meta_capi_status: 'sent',
+                message: `Event ${eventId} has already been dispatched to Meta CAPI.`
+            };
+        }
 
-            let eventSourceUrl = eventDetails.eventSourceUrl;
-            if (!eventSourceUrl && eventDetails.req) {
-                const req = eventDetails.req;
-                const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http';
-                const host = req.headers.host || 'localhost';
-                eventSourceUrl = `${protocol}://${host}${req.originalUrl || req.url}`;
+        const isDbConnected = mongoose.connection.readyState === 1;
+        let existingEvent = null;
+
+        if (isDbConnected) {
+            try {
+                existingEvent = await MetaEvent.findOne({ event_id: eventId });
+                if (existingEvent && existingEvent.meta_capi_status === 'sent') {
+                    this.processedEventIds.add(eventId);
+                    console.log(`[Meta CAPI] Blocked duplicate event | ID: ${eventId} | Status: already sent`);
+                    return {
+                        success: true,
+                        duplicate: true,
+                        eventId,
+                        meta_capi_status: 'sent',
+                        message: `Event ${eventId} has already been dispatched to Meta CAPI.`
+                    };
+                }
+            } catch (queryErr) {
+                console.warn(`[Meta CAPI] Idempotency query warning for ${eventId}:`, queryErr.message);
             }
+        }
 
-            // Extract cookies from request if present
-            const req = eventDetails.req;
-            const cookies = req && req.headers ? (req.headers.cookie || '') : '';
-            const fbpMatch = cookies.match(/_fbp=([^;]+)/);
-            const fbcMatch = cookies.match(/_fbc=([^;]+)/);
+        // ─────────────────────────────────────────────────────────────
+        // 2. SAVE TRACKING STATE IN MONGODB (status: 'pending')
+        // ─────────────────────────────────────────────────────────────
+        let mongoSyncSuccess = false;
+        if (isDbConnected) {
+            try {
+                await MetaEvent.findOneAndUpdate(
+                    { event_id: eventId },
+                    {
+                        event_id: eventId,
+                        event_name: eventName,
+                        meta_capi_status: 'pending',
+                        fbp: fbp || null,
+                        fbc: fbc || null,
+                        event_source_url: eventSourceUrl,
+                        user_data: {
+                            email: eventDetails.userData?.email ? '***' : undefined,
+                            phone: eventDetails.userData?.phone ? '***' : undefined,
+                            name: eventDetails.userData?.name || undefined,
+                            fbp,
+                            fbc
+                        },
+                        custom_data: eventDetails.customData || {},
+                        test_event_code: testCode || null,
+                        updated_at: new Date()
+                    },
+                    { upsert: true, new: true }
+                );
+                mongoSyncSuccess = true;
+            } catch (dbSaveErr) {
+                console.warn(`[Meta CAPI] MongoDB pending state save error:`, dbSaveErr.message);
+            }
+        }
 
+        // Output required server log
+        console.log(`[Meta CAPI] Processing ${eventName} | ID: ${eventId} | MongoDB Sync: ${mongoSyncSuccess ? 'success' : 'fail'}`);
+
+        if (!pixelId || !accessToken) {
+            console.warn(`[Meta CAPI] Skipping Graph API dispatch: META_PIXEL_ID or META_ACCESS_TOKEN not configured.`);
+            if (isDbConnected) {
+                await MetaEvent.updateOne({ event_id: eventId }, { meta_capi_status: 'failed', error_message: 'Missing Pixel ID or Access Token' }).catch(() => {});
+            }
+            return { success: false, reason: 'unconfigured', eventId };
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // 3. BUILD NORMALIZED PAYLOAD WITH TEST CODE & USER DATA
+        // ─────────────────────────────────────────────────────────────
+        try {
+            const eventTime = Math.floor(Date.now() / 1000);
             const mergedUserDataInput = {
-                fbp: fbpMatch ? fbpMatch[1] : null,
-                fbc: fbcMatch ? fbcMatch[1] : null,
+                fbp,
+                fbc,
                 ...(eventDetails.userData || {})
             };
 
@@ -203,7 +307,7 @@ class MetaCapiService {
                 event_time: eventTime,
                 event_id: eventId,
                 action_source: 'website',
-                event_source_url: eventSourceUrl || process.env.FRONTEND_URL || 'http://localhost:3000',
+                event_source_url: eventSourceUrl,
                 user_data: userData,
                 custom_data: eventDetails.customData || {}
             };
@@ -212,13 +316,15 @@ class MetaCapiService {
                 data: [eventPayload]
             };
 
-            const testCode = process.env.META_TEST_EVENT_CODE || DEFAULT_TEST_EVENT_CODE;
             if (testCode) {
                 requestBody.test_event_code = testCode;
             }
 
             const postData = JSON.stringify(requestBody);
 
+            // ─────────────────────────────────────────────────────────────
+            // 4. DISPATCH TO META GRAPH API & HANDLE 200 OK / ERRORS
+            // ─────────────────────────────────────────────────────────────
             return new Promise((resolve) => {
                 const url = `https://graph.facebook.com/${this.apiVersion}/${pixelId}/events?access_token=${accessToken}`;
                 const parsedUrl = new URL(url);
@@ -237,26 +343,88 @@ class MetaCapiService {
                 const request = client.request(options, (res) => {
                     let responseString = '';
                     res.on('data', (chunk) => responseString += chunk);
-                    res.on('end', () => {
+                    res.on('end', async () => {
                         try {
                             const parsedResponse = JSON.parse(responseString);
+                            
+                            // Successful response from Meta Graph API
                             if (res.statusCode >= 200 && res.statusCode < 300) {
-                                console.log(`[Meta CAPI Success] Event "${eventName}" sent (eventId: ${eventId})`);
-                                resolve({ success: true, eventId, response: parsedResponse });
+                                this.processedEventIds.add(eventId);
+                                console.log(`[Meta CAPI Success] Event "${eventName}" sent (eventId: ${eventId}) | FB trace_id: ${parsedResponse.fbtrace_id || 'OK'}`);
+                                
+                                if (isDbConnected) {
+                                    try {
+                                        await MetaEvent.updateOne(
+                                            { event_id: eventId },
+                                            {
+                                                meta_capi_status: 'sent',
+                                                meta_response: parsedResponse,
+                                                error_message: null,
+                                                updated_at: new Date()
+                                            }
+                                        );
+                                    } catch (e) {}
+                                }
+
+                                resolve({
+                                    success: true,
+                                    eventId,
+                                    eventName,
+                                    meta_capi_status: 'sent',
+                                    response: parsedResponse
+                                });
                             } else {
-                                console.error(`[Meta CAPI Error] Response (${res.statusCode}):`, parsedResponse);
-                                resolve({ success: false, statusCode: res.statusCode, response: parsedResponse });
+                                // Meta Error response
+                                const exactMetaError = parsedResponse?.error?.message || JSON.stringify(parsedResponse);
+                                console.error(`[Meta CAPI Error] Response (${res.statusCode}):`, exactMetaError);
+
+                                if (isDbConnected) {
+                                    try {
+                                        await MetaEvent.updateOne(
+                                            { event_id: eventId },
+                                            {
+                                                meta_capi_status: 'failed',
+                                                error_message: exactMetaError,
+                                                meta_response: parsedResponse,
+                                                updated_at: new Date()
+                                            }
+                                        );
+                                    } catch (e) {}
+                                }
+
+                                resolve({
+                                    success: false,
+                                    statusCode: res.statusCode,
+                                    meta_capi_status: 'failed',
+                                    error: exactMetaError,
+                                    response: parsedResponse
+                                });
                             }
-                        } catch (e) {
+                        } catch (parseErr) {
                             console.error('[Meta CAPI Parse Error]:', responseString);
-                            resolve({ success: false, error: e.message, raw: responseString });
+                            if (isDbConnected) {
+                                await MetaEvent.updateOne({ event_id: eventId }, { meta_capi_status: 'failed', error_message: parseErr.message }).catch(() => {});
+                            }
+                            resolve({ success: false, error: parseErr.message, raw: responseString });
                         }
                     });
                 });
 
-                request.on('error', (err) => {
-                    console.error('[Meta CAPI Network Error]:', err.message);
-                    resolve({ success: false, error: err.message });
+                request.on('error', async (networkErr) => {
+                    console.error('[Meta CAPI Network Error]:', networkErr.message);
+                    if (isDbConnected) {
+                        try {
+                            await MetaEvent.updateOne(
+                                { event_id: eventId },
+                                {
+                                    meta_capi_status: 'failed',
+                                    error_message: networkErr.message,
+                                    updated_at: new Date()
+                                }
+                            );
+                        } catch (e) {}
+                    }
+                    resolve({ success: false, error: networkErr.message, meta_capi_status: 'failed' });
                 });
 
                 request.write(postData);
@@ -265,8 +433,60 @@ class MetaCapiService {
 
         } catch (error) {
             console.error('[Meta CAPI Exception]:', error);
-            return { success: false, error: error.message };
+            if (isDbConnected) {
+                await MetaEvent.updateOne({ event_id: eventId }, { meta_capi_status: 'failed', error_message: error.message }).catch(() => {});
+            }
+            return { success: false, error: error.message, meta_capi_status: 'failed' };
         }
+    }
+
+    /**
+     * Helper for Lead events
+     */
+    async sendLeadEvent(leadData = {}) {
+        return this.sendServerEvent({
+            eventName: 'Lead',
+            eventId: leadData.eventId || leadData.event_id || leadData.meta_event_id,
+            userData: {
+                email: leadData.email,
+                phone: leadData.phone,
+                name: leadData.name || leadData.contact_name,
+                company: leadData.company,
+                fbp: leadData.fbp,
+                fbc: leadData.fbc
+            },
+            customData: leadData.customData || {
+                content_name: leadData.source || 'Lead Form Submission',
+                company: leadData.company
+            },
+            eventSourceUrl: leadData.eventSourceUrl,
+            req: leadData.req
+        });
+    }
+
+    /**
+     * Helper for Schedule / Appointment events
+     */
+    async sendScheduleEvent(scheduleData = {}) {
+        return this.sendServerEvent({
+            eventName: 'Schedule',
+            eventId: scheduleData.eventId || scheduleData.event_id || scheduleData.meta_event_id,
+            userData: {
+                email: scheduleData.email,
+                phone: scheduleData.phone,
+                name: scheduleData.name || scheduleData.contact_name,
+                company: scheduleData.company,
+                fbp: scheduleData.fbp,
+                fbc: scheduleData.fbc
+            },
+            customData: scheduleData.customData || {
+                content_name: 'Consultation Appointment Booking',
+                meeting_date: scheduleData.meeting_date || scheduleData.appointmentDate,
+                time_slot: scheduleData.time_slot || scheduleData.appointmentTime
+            },
+            eventSourceUrl: scheduleData.eventSourceUrl,
+            req: scheduleData.req
+        });
     }
 }
 

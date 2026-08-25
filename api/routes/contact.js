@@ -89,6 +89,15 @@ router.post('/submit', handleUpload, async (req, res) => {
 
     const finalMessage = (message || (notes ? `Appointment notes: ${notes}` : 'Wizard Setup Consultation Request')).substring(0, 10000);
 
+    const rawCookies = req.headers.cookie || '';
+    const fbpMatch = rawCookies.match(/_fbp=([^;]+)/);
+    const fbcMatch = rawCookies.match(/_fbc=([^;]+)/);
+    const fbp = req.body.fbp || (fbpMatch ? decodeURIComponent(fbpMatch[1]) : '');
+    const fbc = req.body.fbc || (fbcMatch ? decodeURIComponent(fbcMatch[1]) : '');
+
+    const eventId = req.body.eventId || req.body.event_id || req.body.meta_event_id || metaCapi.generateEventId('lead');
+    const eventName = appointmentDate ? 'Schedule' : 'Lead';
+
     // ALWAYS write to disk backup first to guarantee no lead is lost
     backupLeadToDisk({
       name: name.substring(0, 100),
@@ -102,6 +111,10 @@ router.post('/submit', handleUpload, async (req, res) => {
       appointmentTime,
       meetingType,
       notes,
+      meta_event_id: eventId,
+      meta_capi_status: 'pending',
+      fbp,
+      fbc,
       attachment: req.file ? `/uploads/${req.file.filename}` : undefined
     });
 
@@ -120,6 +133,10 @@ router.post('/submit', handleUpload, async (req, res) => {
         appointmentTime,
         meetingType,
         notes,
+        meta_event_id: eventId,
+        meta_capi_status: 'pending',
+        fbp,
+        fbc,
         attachment: req.file ? `/uploads/${req.file.filename}` : undefined
       });
       const saved = await newMessage.save();
@@ -153,6 +170,10 @@ router.post('/submit', handleUpload, async (req, res) => {
         status: appointmentDate ? '📅 Consultation Booked' : '🆕 New Lead',
         owner: 'Executive Desk 1',
         notes: finalMessage,
+        meta_event_id: eventId,
+        meta_capi_status: 'pending',
+        fbp,
+        fbc,
         utm: {
           source: req.body.utm_source || (req.body.utm && req.body.utm.source) || '',
           medium: req.body.utm_medium || (req.body.utm && req.body.utm.medium) || '',
@@ -194,27 +215,42 @@ router.post('/submit', handleUpload, async (req, res) => {
       }
     }
 
-    // Trigger Meta Conversions API (CAPI) Lead/Schedule Event
-    const eventId = req.body.eventId || req.body.event_id || `lead_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    metaCapi.sendServerEvent({
-      eventName: appointmentDate ? 'Schedule' : 'Lead',
-      eventId: eventId,
-      userData: {
-        email,
-        phone,
-        name,
-        company: finalBusinessName,
-        fbp: req.body.fbp,
-        fbc: req.body.fbc
-      },
-      customData: {
-        content_name: appointmentDate ? 'Consultation Appointment' : 'Contact Form Submission',
-        company: finalBusinessName || undefined,
-        business_link: finalBusinessLink || undefined,
-        meeting_type: meetingType || undefined
-      },
-      req
-    }).catch(err => console.error('[Meta CAPI Contact Trigger Error]:', err));
+    // 4. Trigger Meta Conversions API (CAPI) Lead/Schedule Event with exact matching Event ID
+    let capiStatus = 'pending';
+    try {
+      const capiResult = await metaCapi.sendServerEvent({
+        eventName: eventName,
+        eventId: eventId,
+        userData: {
+          email,
+          phone,
+          name,
+          company: finalBusinessName,
+          fbp,
+          fbc
+        },
+        customData: {
+          content_name: appointmentDate ? 'Consultation Appointment' : 'Contact Form Submission',
+          company: finalBusinessName || undefined,
+          business_link: finalBusinessLink || undefined,
+          meeting_type: meetingType || undefined
+        },
+        req
+      });
+
+      capiStatus = capiResult.meta_capi_status || (capiResult.success ? 'sent' : 'failed');
+
+      // Sync status back to Message & Lead records
+      if (savedMessageId && savedMessageId !== `msg_${Date.now()}`) {
+        await Message.findByIdAndUpdate(savedMessageId, { meta_capi_status: capiStatus }).catch(() => {});
+      }
+      await Lead.updateOne({ email: email.trim().toLowerCase() }, { meta_capi_status: capiStatus }).catch(() => {});
+    } catch (capiErr) {
+      console.error('[Meta CAPI Contact Trigger Error]:', capiErr);
+      capiStatus = 'failed';
+      await Lead.updateOne({ email: email.trim().toLowerCase() }, { meta_capi_status: 'failed' }).catch(() => {});
+    }
+
 
     // Create email transporter
     const transporter = nodemailer.createTransport({
@@ -344,13 +380,18 @@ router.post('/submit', handleUpload, async (req, res) => {
     res.json({
       success: true,
       message: 'Your wizard setup and appointment request have been confirmed!',
+      eventId,
+      eventName,
+      meta_capi_status: capiStatus,
       data: {
         id: savedMessageId,
         name,
         email,
         appointmentDate,
         appointmentTime,
-        meetingType
+        meetingType,
+        meta_event_id: eventId,
+        meta_capi_status: capiStatus
       }
     });
 
