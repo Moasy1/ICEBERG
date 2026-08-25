@@ -398,6 +398,8 @@ function initCalendarBookingFlow(utmParams) {
         if (typeof window.trackMetaEvent === 'function') {
           window.trackMetaEvent('Schedule', {
             content_name: 'IDEX Consultation Meeting',
+            value: 100.00,
+            currency: 'USD',
             appointment_date: payload.date,
             appointment_time: payload.time
           }, {
@@ -530,6 +532,8 @@ function initAuditForm(utmParams) {
         if (typeof window.trackMetaEvent === 'function') {
           window.trackMetaEvent('Lead', {
             content_name: 'IDEX Free Audit Request',
+            value: 50.00,
+            currency: 'USD',
             company: payload.company
           }, {
             email: payload.email,
@@ -626,6 +630,8 @@ function initLeadForm(utmParams) {
         if (typeof window.trackMetaEvent === 'function') {
           window.trackMetaEvent('Lead', {
             content_name: 'IDEX Lead Qualification Form',
+            value: 50.00,
+            currency: 'USD',
             company: payload.company
           }, {
             email: payload.email,

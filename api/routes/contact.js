@@ -231,6 +231,8 @@ router.post('/submit', handleUpload, async (req, res) => {
         },
         customData: {
           content_name: appointmentDate ? 'Consultation Appointment' : 'Contact Form Submission',
+          value: appointmentDate ? 100.00 : 50.00,
+          currency: 'USD',
           company: finalBusinessName || undefined,
           business_link: finalBusinessLink || undefined,
           meeting_type: meetingType || undefined

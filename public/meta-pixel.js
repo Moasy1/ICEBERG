@@ -162,7 +162,7 @@
 
     /**
      * Unified Event Dispatcher (Client Pixel + Server CAPI)
-     * Enforces strict cryptographic event_id matching between client and server.
+     * Enforces strict cryptographic event_id matching and valid 3-letter currency code (e.g. "USD") + value for Meta ROAS calculation.
      * 
      * @param {string} eventName - Standard Meta Event (e.g., PageView, Lead, Contact, Schedule, ViewContent)
      * @param {Object} [customData] - Event payload (value, currency, content_name, etc.)
@@ -182,13 +182,37 @@
             ...userData
         };
 
+        // ─────────────────────────────────────────────────────────────
+        // Value & Currency Normalization (Fixes Meta ROAS warning: Currency field is missing)
+        // ─────────────────────────────────────────────────────────────
+        const enrichedCustomData = { ...(customData || {}) };
+
+        // Events that track business intent & ROAS value in Meta Ads Manager
+        const monetizationEvents = ['Lead', 'Schedule', 'Contact', 'SubmitApplication', 'Purchase', 'CompleteRegistration', 'InitiateCheckout'];
+        if (monetizationEvents.includes(eventName)) {
+            // Guarantee valid 3-letter ISO-4217 currency code (default: 'USD')
+            if (!enrichedCustomData.currency || typeof enrichedCustomData.currency !== 'string' || enrichedCustomData.currency.trim() === '') {
+                enrichedCustomData.currency = window.META_DEFAULT_CURRENCY || 'USD';
+            } else {
+                enrichedCustomData.currency = enrichedCustomData.currency.trim().toUpperCase().substring(0, 3);
+            }
+
+            // Guarantee valid numerical value (e.g. Lead = 50.00, Schedule = 100.00, Contact = 25.00)
+            if (enrichedCustomData.value === undefined || enrichedCustomData.value === null || enrichedCustomData.value === '') {
+                enrichedCustomData.value = eventName === 'Lead' ? 50.00 : (eventName === 'Schedule' ? 100.00 : (eventName === 'Contact' ? 25.00 : 0.00));
+            } else if (typeof enrichedCustomData.value === 'string') {
+                const parsedVal = parseFloat(enrichedCustomData.value.replace(/[^0-9.-]/g, ''));
+                enrichedCustomData.value = isNaN(parsedVal) ? 0.00 : parsedVal;
+            }
+        }
+
         // Required Client Log Format
-        console.log(`[Meta Pixel] Firing ${eventName} with ID: ${finalEventId}`);
+        console.log(`[Meta Pixel] Firing ${eventName} with ID: ${finalEventId} | Value: ${enrichedCustomData.value || 'N/A'} ${enrichedCustomData.currency || ''}`);
 
         // 1. Client-side Meta Pixel dispatch
         if (typeof window.fbq === 'function') {
             try {
-                window.fbq('track', eventName, customData || {}, { eventID: finalEventId });
+                window.fbq('track', eventName, enrichedCustomData, { eventID: finalEventId });
             } catch (e) {
                 console.warn('[Meta Pixel Track Error]:', e);
             }
@@ -205,7 +229,7 @@
                         eventId: finalEventId,
                         eventSourceUrl: window.location.href,
                         userData: mergedUserData,
-                        customData: customData || {}
+                        customData: enrichedCustomData
                     })
                 }).then(res => res.json()).then(data => {
                     if (data.duplicate) {
@@ -222,21 +246,24 @@
         return finalEventId;
     };
 
-    // Helper event shortcuts
+    // Helper event shortcuts with valid currency & value defaults
     window.trackMetaPageView = function (eventId = null) {
         return window.trackMetaEvent('PageView', {}, {}, eventId);
     };
 
     window.trackMetaLead = function (leadData = {}, userData = {}, eventId = null, skipServerCapi = false) {
-        return window.trackMetaEvent('Lead', leadData, userData, eventId, skipServerCapi);
+        const defaultLeadData = { value: 50.00, currency: 'USD', ...leadData };
+        return window.trackMetaEvent('Lead', defaultLeadData, userData, eventId, skipServerCapi);
     };
 
     window.trackMetaContact = function (contactData = {}, userData = {}, eventId = null, skipServerCapi = false) {
-        return window.trackMetaEvent('Contact', contactData, userData, eventId, skipServerCapi);
+        const defaultContactData = { value: 25.00, currency: 'USD', ...contactData };
+        return window.trackMetaEvent('Contact', defaultContactData, userData, eventId, skipServerCapi);
     };
 
     window.trackMetaSchedule = function (scheduleData = {}, userData = {}, eventId = null, skipServerCapi = false) {
-        return window.trackMetaEvent('Schedule', scheduleData, userData, eventId, skipServerCapi);
+        const defaultScheduleData = { value: 100.00, currency: 'USD', ...scheduleData };
+        return window.trackMetaEvent('Schedule', defaultScheduleData, userData, eventId, skipServerCapi);
     };
 
     window.trackMetaViewContent = function (contentData = {}, eventId = null) {

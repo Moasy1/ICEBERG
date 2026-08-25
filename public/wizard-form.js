@@ -202,6 +202,8 @@ function setupWizardForForm(form) {
                 if (typeof window.trackMetaEvent === 'function') {
                     window.trackMetaEvent('Schedule', {
                         content_name: 'Consultation Appointment Setup',
+                        value: 100.00,
+                        currency: 'USD',
                         appointment_date: dataObj.appointmentDate,
                         appointment_time: dataObj.appointmentTime
                     }, {

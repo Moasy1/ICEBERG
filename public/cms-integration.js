@@ -386,7 +386,9 @@ class CMSManager {
 
             if (typeof window.trackMetaEvent === 'function') {
                 window.trackMetaEvent('Contact', {
-                    content_name: 'General Contact Form'
+                    content_name: 'General Contact Form',
+                    value: 25.00,
+                    currency: 'USD'
                 }, {
                     email: formData.email,
                     phone: formData.phone,

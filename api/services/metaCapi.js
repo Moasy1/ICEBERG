@@ -302,6 +302,22 @@ class MetaCapiService {
 
             const userData = this.buildUserData(mergedUserDataInput, req);
 
+            const customData = { ...(eventDetails.customData || {}) };
+            const monetizationEvents = ['Lead', 'Schedule', 'Contact', 'SubmitApplication', 'Purchase', 'CompleteRegistration', 'InitiateCheckout'];
+            if (monetizationEvents.includes(eventName)) {
+                if (!customData.currency || typeof customData.currency !== 'string' || customData.currency.trim() === '') {
+                    customData.currency = process.env.DEFAULT_CURRENCY || 'USD';
+                } else {
+                    customData.currency = customData.currency.trim().toUpperCase().substring(0, 3);
+                }
+                if (customData.value === undefined || customData.value === null || customData.value === '') {
+                    customData.value = eventName === 'Lead' ? 50.00 : (eventName === 'Schedule' ? 100.00 : (eventName === 'Contact' ? 25.00 : 0.00));
+                } else if (typeof customData.value === 'string') {
+                    const parsedVal = parseFloat(customData.value.replace(/[^0-9.-]/g, ''));
+                    customData.value = isNaN(parsedVal) ? 0.00 : parsedVal;
+                }
+            }
+
             const eventPayload = {
                 event_name: eventName,
                 event_time: eventTime,
@@ -309,7 +325,7 @@ class MetaCapiService {
                 action_source: 'website',
                 event_source_url: eventSourceUrl,
                 user_data: userData,
-                custom_data: eventDetails.customData || {}
+                custom_data: customData
             };
 
             const requestBody = {

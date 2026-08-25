@@ -185,6 +185,8 @@ router.post('/', async (req, res) => {
         },
         customData: {
           content_name: finalMeetingDate ? 'IDEX Meeting Consultation' : (finalAction || 'Lead Submission'),
+          value: finalMeetingDate ? 100.00 : 50.00,
+          currency: 'USD',
           company: leadData.company,
           source: leadData.source
         },

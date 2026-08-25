@@ -291,6 +291,8 @@ router.post('/book', async (req, res) => {
         },
         customData: {
           content_name: 'Consultation Appointment Booking',
+          value: 100.00,
+          currency: 'USD',
           meeting_date: finalDate,
           meeting_time: finalTime
         },
