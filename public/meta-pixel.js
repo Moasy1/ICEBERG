@@ -92,6 +92,37 @@
     };
 
     // ─────────────────────────────────────────────────────────────
+    // Official Meta Parameter Builder Client Feature Library
+    // ─────────────────────────────────────────────────────────────
+    window.MetaParameterBuilder = {
+        getFbp: function () {
+            return getCookie('_fbp');
+        },
+        getFbc: function () {
+            return getCookie('_fbc');
+        },
+        getEventId: function (prefix) {
+            return generateSecureEventId(prefix);
+        },
+        processAndCollectAllParams: function (customData = {}, userData = {}, prefix = 'evt') {
+            const eventId = generateSecureEventId(prefix);
+            const fbp = getCookie('_fbp');
+            const fbc = getCookie('_fbc');
+            return {
+                event_id: eventId,
+                eventId: eventId,
+                event_source_url: window.location.href,
+                user_data: {
+                    fbp,
+                    fbc,
+                    ...userData
+                },
+                custom_data: normalizeMetaCustomData('', customData)
+            };
+        }
+    };
+
+    // ─────────────────────────────────────────────────────────────
     // 3. Global Value & Currency Normalization Engine
     // (Fixes Meta ROAS warning: "Currency field is missing. E.g. '' isn't allowed" across ALL events)
     // ─────────────────────────────────────────────────────────────

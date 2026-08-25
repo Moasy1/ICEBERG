@@ -1,10 +1,34 @@
 const metaCapi = require('../api/services/metaCapi');
+const metaParameterBuilder = require('../api/services/metaParameterBuilder');
 const MetaEvent = require('../api/models/MetaEvent');
 const Lead = require('../api/models/Lead');
 const Message = require('../api/models/Message');
 
 async function testMetaCapi() {
-    console.log('--- Testing Meta CAPI Service & Idempotency ---');
+    console.log('--- Testing Meta CAPI Service & Parameter Builder ---');
+
+    // 1. Test Parameter Builder
+    const samplePayload = metaParameterBuilder.buildEventPayload({
+        eventName: 'Lead',
+        eventId: 'test_lead_builder_123',
+        eventSourceUrl: 'https://icebergma.com/idex?fbclid=IwAR123456789',
+        userData: {
+            email: 'John.Doe@Example.com ',
+            phone: '+1 (555) 019-2834',
+            name: 'John Doe',
+            fbp: 'fb.1.1710000000.1234567890'
+        },
+        customData: {
+            value: '500.00',
+            currency: 'usd'
+        }
+    });
+
+    console.log('Parameter Builder Output:', JSON.stringify(samplePayload, null, 2));
+
+    if (!samplePayload.user_data.em || !samplePayload.user_data.ph || samplePayload.custom_data.currency !== 'USD') {
+        throw new Error('Parameter builder failed validation or normalization!');
+    }
 
     // 1. Test Event ID generator
     const evtId1 = metaCapi.generateEventId('test_lead');

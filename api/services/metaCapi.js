@@ -3,6 +3,7 @@ const https = require('https');
 const http = require('http');
 const mongoose = require('mongoose');
 const MetaEvent = require('../models/MetaEvent');
+const metaParameterBuilder = require('./metaParameterBuilder');
 
 const DEFAULT_PIXEL_ID = '2557716128012185';
 const DEFAULT_ACCESS_TOKEN = 'EAANH2w2Ar6ABSFdepnhLqbYOZBL16W4Xy2Gt6XNjUEW6QWXrQOIZAkzSF4VQBYNzl2CrTTIc3pZBdu16UlU0r4dPZBjV7xIaKFVZCq49ZAUP94igPYznzVlcMAjyGHFRxdFhTZA9JwqGYJTKQckMFdjKZC4MGVmJQaYZCBVZB9AmUmPfjOAEZAoHfZCCY3jPQikLTMvSFQZDZD';
@@ -290,43 +291,21 @@ class MetaCapiService {
         }
 
         // ─────────────────────────────────────────────────────────────
-        // 3. BUILD NORMALIZED PAYLOAD WITH TEST CODE & USER DATA
+        // 3. BUILD PARAMETER BUILDER PAYLOAD WITH USER DATA & TEST CODE
         // ─────────────────────────────────────────────────────────────
         try {
-            const eventTime = Math.floor(Date.now() / 1000);
-            const mergedUserDataInput = {
-                fbp,
-                fbc,
-                ...(eventDetails.userData || {})
-            };
-
-            const userData = this.buildUserData(mergedUserDataInput, req);
-
-            const customData = { ...(eventDetails.customData || {}) };
-            const monetizationEvents = ['Lead', 'Schedule', 'Contact', 'SubmitApplication', 'Purchase', 'CompleteRegistration', 'InitiateCheckout'];
-            if (monetizationEvents.includes(eventName)) {
-                if (!customData.currency || typeof customData.currency !== 'string' || customData.currency.trim() === '') {
-                    customData.currency = process.env.DEFAULT_CURRENCY || 'USD';
-                } else {
-                    customData.currency = customData.currency.trim().toUpperCase().substring(0, 3);
-                }
-                if (customData.value === undefined || customData.value === null || customData.value === '') {
-                    customData.value = eventName === 'Lead' ? 50.00 : (eventName === 'Schedule' ? 100.00 : (eventName === 'Contact' ? 25.00 : 0.00));
-                } else if (typeof customData.value === 'string') {
-                    const parsedVal = parseFloat(customData.value.replace(/[^0-9.-]/g, ''));
-                    customData.value = isNaN(parsedVal) ? 0.00 : parsedVal;
-                }
-            }
-
-            const eventPayload = {
-                event_name: eventName,
-                event_time: eventTime,
-                event_id: eventId,
-                action_source: 'website',
-                event_source_url: eventSourceUrl,
-                user_data: userData,
-                custom_data: customData
-            };
+            const eventPayload = metaParameterBuilder.buildEventPayload({
+                eventName,
+                eventId,
+                eventSourceUrl,
+                userData: {
+                    fbp,
+                    fbc,
+                    ...(eventDetails.userData || {})
+                },
+                customData: eventDetails.customData || {},
+                req
+            });
 
             const requestBody = {
                 data: [eventPayload]
