@@ -112,6 +112,7 @@ const generateProjectsPage = () => {
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <link rel="stylesheet" href="/parallax/style.css">
+    <script src="/meta-pixel.js" defer></script>
     <!-- Meta Pixel Code -->
     <script>
     !function(f,b,e,v,n,t,s)

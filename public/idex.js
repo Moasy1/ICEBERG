@@ -68,12 +68,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Helper for Analytics Tracking (GA4 dataLayer + Meta Pixel)
 function trackEvent(eventName, params = {}) {
-  console.log(`[Event Tracked]: ${eventName}`, params);
+  const sanitizedParams = {
+    currency: 'USD',
+    value: typeof params.value === 'number' ? params.value : 0.00,
+    ...params
+  };
+  console.log(`[Event Tracked]: ${eventName}`, sanitizedParams);
   if (window.dataLayer) {
-    window.dataLayer.push({ event: eventName, ...params });
+    window.dataLayer.push({ event: eventName, ...sanitizedParams });
   }
   if (window.fbq) {
-    window.fbq('trackCustom', eventName, params);
+    window.fbq('trackCustom', eventName, sanitizedParams);
   }
 }
 
