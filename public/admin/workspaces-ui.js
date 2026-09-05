@@ -126,7 +126,13 @@ function renderProjectsSidebar() {
 
   const projects = window.WorkspacesState.projects;
   if (projects.length === 0) {
-    container.innerHTML = `<div class="text-xs text-slate-500 py-3 text-center">No project lists created yet.</div>`;
+    container.innerHTML = `
+      <div class="text-xs text-slate-500 py-4 text-center px-2">
+        <p class="mb-2">No project lists created yet.</p>
+        <button type="button" onclick="openCreateProjectModal()" class="w-full py-2 px-3 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs rounded-xl border border-cyan-500/30 font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm">
+          <span>+</span> Create First Project
+        </button>
+      </div>`;
     return;
   }
 
@@ -854,6 +860,175 @@ async function reactToChatMessage(msgId, emoji) {
   }
 }
 
+// ==========================================
+// CREATE PROJECT MODAL & ENGINE
+// ==========================================
+
+// Open Create Project Modal
+async function openCreateProjectModal() {
+  const modal = document.getElementById('upbase-create-project-modal');
+  const overlay = document.getElementById('modal-overlay');
+  if (!modal) return;
+
+  // Reset inputs
+  const nameInput = document.getElementById('upbase-new-proj-name');
+  if (nameInput) nameInput.value = '';
+
+  const descInput = document.getElementById('upbase-new-proj-desc');
+  if (descInput) descInput.value = '';
+
+  // Reset color radio to cyan
+  const defaultColor = document.querySelector('input[name="proj_color"][value="#06b6d4"]');
+  if (defaultColor) defaultColor.checked = true;
+
+  // Reset icon
+  const iconSelect = document.getElementById('upbase-new-proj-icon');
+  if (iconSelect) iconSelect.value = 'briefcase';
+
+  // Check all tools by default
+  ['tool-opt-kanban', 'tool-opt-tasks', 'tool-opt-messages', 'tool-opt-docs', 'tool-opt-bookmarks', 'tool-opt-chat'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.checked = true;
+  });
+
+  // Try populating client options from database
+  await populateClientOptions();
+
+  if (overlay) overlay.classList.remove('hidden');
+  modal.classList.remove('hidden');
+  if (window.lucide) window.lucide.createIcons();
+
+  if (nameInput) setTimeout(() => nameInput.focus(), 60);
+}
+
+// Populate Client options dynamically
+async function populateClientOptions() {
+  const select = document.getElementById('upbase-new-proj-client');
+  if (!select) return;
+
+  try {
+    const token = sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '';
+    const res = await fetch('/api/iams/clients?limit=100', {
+      headers: {
+        'x-demo-admin': 'true',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const result = await res.json();
+    if (result.success && Array.isArray(result.clients) && result.clients.length > 0) {
+      const existingValues = new Set(Array.from(select.options).map(o => o.value));
+      result.clients.forEach(c => {
+        const clientName = c.name || c.company_name;
+        if (clientName && !existingValues.has(clientName)) {
+          const opt = document.createElement('option');
+          opt.value = clientName;
+          opt.textContent = clientName;
+          select.appendChild(opt);
+          existingValues.add(clientName);
+        }
+      });
+    }
+  } catch (err) {
+    // Non-critical: defaults in HTML will be used
+  }
+}
+
+// Handle Create Project Form Submission
+async function handleCreateProjectSubmit(e) {
+  if (e) e.preventDefault();
+
+  const nameInput = document.getElementById('upbase-new-proj-name');
+  const descInput = document.getElementById('upbase-new-proj-desc');
+  const clientSelect = document.getElementById('upbase-new-proj-client');
+  const iconSelect = document.getElementById('upbase-new-proj-icon');
+  const colorRadio = document.querySelector('input[name="proj_color"]:checked');
+  const submitBtn = document.getElementById('upbase-create-proj-submit-btn');
+
+  const name = nameInput ? nameInput.value.trim() : '';
+  if (!name) {
+    if (typeof showNotification === 'function') showNotification('Please enter a project space name', 'error');
+    else alert('Please enter a project space name');
+    return;
+  }
+
+  const wsId = window.WorkspacesState.currentWorkspaceId;
+  if (!wsId) {
+    if (typeof showNotification === 'function') showNotification('No active workspace selected. Please select a workspace first.', 'error');
+    return;
+  }
+
+  const enabledTools = {
+    kanban: !!document.getElementById('tool-opt-kanban')?.checked,
+    tasks: !!document.getElementById('tool-opt-tasks')?.checked,
+    messages: !!document.getElementById('tool-opt-messages')?.checked,
+    docs: !!document.getElementById('tool-opt-docs')?.checked,
+    bookmarks: !!document.getElementById('tool-opt-bookmarks')?.checked,
+    chat: !!document.getElementById('tool-opt-chat')?.checked,
+    calendar: true,
+    files: true
+  };
+
+  const payload = {
+    name,
+    description: descInput ? descInput.value.trim() : '',
+    color: colorRadio ? colorRadio.value : '#06b6d4',
+    icon: iconSelect ? iconSelect.value : 'folder',
+    client_id: clientSelect && clientSelect.value ? clientSelect.value : null,
+    enabled_tools: enabledTools
+  };
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<span class="inline-block animate-spin mr-1.5">&#9696;</span> Creating...`;
+  }
+
+  try {
+    const token = sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '';
+    const res = await fetch(`/api/iams/workspaces/${wsId}/projects`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-demo-admin': 'true',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await res.json();
+    if (result.success && result.data) {
+      if (typeof closeAllModals === 'function') {
+        closeAllModals();
+      } else {
+        document.getElementById('upbase-create-project-modal')?.classList.add('hidden');
+        document.getElementById('modal-overlay')?.classList.add('hidden');
+      }
+
+      if (typeof showNotification === 'function') {
+        showNotification(`Project "${result.data.name}" created successfully!`, 'success');
+      }
+
+      // Reload project list and select newly created project
+      await loadWorkspaceProjects();
+      if (result.data.project_id) {
+        await selectProject(result.data.project_id);
+      }
+    } else {
+      const errMsg = result.error || 'Failed to create project space';
+      if (typeof showNotification === 'function') showNotification(errMsg, 'error');
+      else alert(errMsg);
+    }
+  } catch (err) {
+    console.error('Error creating project:', err);
+    if (typeof showNotification === 'function') showNotification('Failed to create project: ' + err.message, 'error');
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `<i data-lucide="plus" class="w-4 h-4"></i> Create Project Space`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
+}
+
 // Helper escape
 function escapeHtml(str) {
   if (!str) return '';
@@ -876,3 +1051,5 @@ window.restoreDocVersion = restoreDocVersion;
 window.addProjectBookmark = addProjectBookmark;
 window.sendChatMessage = sendChatMessage;
 window.reactToChatMessage = reactToChatMessage;
+window.openCreateProjectModal = openCreateProjectModal;
+window.handleCreateProjectSubmit = handleCreateProjectSubmit;
