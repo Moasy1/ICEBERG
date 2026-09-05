@@ -877,6 +877,15 @@ async function openCreateProjectModal() {
   const descInput = document.getElementById('upbase-new-proj-desc');
   if (descInput) descInput.value = '';
 
+  const cmsLinkSelect = document.getElementById('upbase-new-proj-link-cms');
+  if (cmsLinkSelect) cmsLinkSelect.value = '';
+
+  const categorySelect = document.getElementById('upbase-new-proj-category');
+  if (categorySelect) categorySelect.value = 'branding';
+
+  const syncCmsCheck = document.getElementById('upbase-new-proj-sync-cms');
+  if (syncCmsCheck) syncCmsCheck.checked = false;
+
   // Reset color radio to cyan
   const defaultColor = document.querySelector('input[name="proj_color"][value="#06b6d4"]');
   if (defaultColor) defaultColor.checked = true;
@@ -891,7 +900,8 @@ async function openCreateProjectModal() {
     if (el) el.checked = true;
   });
 
-  // Try populating client options from database
+  // Populate existing agency portfolio projects & clients
+  await populateCMSProjectsOptions();
   await populateClientOptions();
 
   if (overlay) overlay.classList.remove('hidden');
@@ -899,6 +909,104 @@ async function openCreateProjectModal() {
   if (window.lucide) window.lucide.createIcons();
 
   if (nameInput) setTimeout(() => nameInput.focus(), 60);
+}
+
+// Populate CMS Projects dropdown so user can link or align their workspace project
+async function populateCMSProjectsOptions() {
+  const select = document.getElementById('upbase-new-proj-link-cms');
+  if (!select) return;
+
+  try {
+    const token = sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '';
+    const res = await fetch('/api/projects?status=all&limit=100', {
+      headers: {
+        'x-demo-admin': 'true',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const result = await res.json();
+    if (result.success && Array.isArray(result.data)) {
+      window.WorkspacesState.cmsProjects = result.data;
+      
+      select.innerHTML = '<option value="">-- Create Custom Project or Pick Existing Portfolio --</option>' +
+        result.data.map(p => {
+          const title = typeof p.title === 'object' ? (p.title.en || p.title.ar || 'Project') : (p.title || 'Project');
+          const client = p.client ? ` [${p.client}]` : '';
+          const category = p.category ? ` (${p.category})` : '';
+          return `<option value="${p._id}">${escapeHtml(title + client + category)}</option>`;
+        }).join('');
+    }
+  } catch (err) {
+    console.warn('Could not prefetch CMS projects for modal:', err);
+  }
+}
+
+// When user selects an existing CMS portfolio project, auto-fill fields
+function onSelectExistingCMSProject(cmsId) {
+  if (!cmsId || !window.WorkspacesState.cmsProjects) return;
+  const project = window.WorkspacesState.cmsProjects.find(p => String(p._id) === String(cmsId));
+  if (!project) return;
+
+  const title = typeof project.title === 'object' ? (project.title.en || project.title.ar || '') : (project.title || '');
+  const desc = typeof project.description === 'object' ? (project.description.en || project.description.ar || '') : (project.description || '');
+
+  const nameInput = document.getElementById('upbase-new-proj-name');
+  if (nameInput && title) nameInput.value = title;
+
+  const descInput = document.getElementById('upbase-new-proj-desc');
+  if (descInput && desc) descInput.value = desc;
+
+  // Match or add client option
+  const clientSelect = document.getElementById('upbase-new-proj-client');
+  if (clientSelect && project.client) {
+    let found = false;
+    for (let opt of clientSelect.options) {
+      if (opt.value.toLowerCase() === project.client.toLowerCase() || opt.text.toLowerCase().includes(project.client.toLowerCase())) {
+        clientSelect.value = opt.value;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      const opt = document.createElement('option');
+      opt.value = project.client;
+      opt.textContent = project.client;
+      clientSelect.appendChild(opt);
+      clientSelect.value = project.client;
+    }
+  }
+
+  // Category
+  const categorySelect = document.getElementById('upbase-new-proj-category');
+  if (categorySelect && project.category) {
+    categorySelect.value = project.category;
+  }
+
+  // Select harmonious theme color & icon based on category
+  const categoryColors = {
+    'branding': '#8b5cf6', // purple
+    'web-development': '#06b6d4', // cyan
+    'social-media': '#ec4899', // pink
+    'seo': '#10b981', // emerald
+    'video-photography': '#f59e0b', // amber
+    'omnichannel': '#06b6d4'
+  };
+
+  const targetColor = categoryColors[project.category] || '#06b6d4';
+  const colorRadio = document.querySelector(`input[name="proj_color"][value="${targetColor}"]`);
+  if (colorRadio) colorRadio.checked = true;
+
+  const iconSelect = document.getElementById('upbase-new-proj-icon');
+  if (iconSelect) {
+    if (project.category === 'branding') iconSelect.value = 'sparkles';
+    else if (project.category === 'web-development') iconSelect.value = 'rocket';
+    else if (project.category === 'video-photography') iconSelect.value = 'disc';
+    else iconSelect.value = 'briefcase';
+  }
+
+  // Auto-check sync checkbox since it is tied to an existing project
+  const syncCheck = document.getElementById('upbase-new-proj-sync-cms');
+  if (syncCheck) syncCheck.checked = true;
 }
 
 // Populate Client options dynamically
@@ -915,16 +1023,31 @@ async function populateClientOptions() {
       }
     });
     const result = await res.json();
-    if (result.success && Array.isArray(result.clients) && result.clients.length > 0) {
-      const existingValues = new Set(Array.from(select.options).map(o => o.value));
+    const existingValues = new Set(Array.from(select.options).map(o => o.value.toLowerCase()));
+
+    // Add clients from IAMS Clients table
+    if (result.success && Array.isArray(result.clients)) {
       result.clients.forEach(c => {
         const clientName = c.name || c.company_name;
-        if (clientName && !existingValues.has(clientName)) {
+        if (clientName && !existingValues.has(clientName.toLowerCase())) {
           const opt = document.createElement('option');
           opt.value = clientName;
           opt.textContent = clientName;
           select.appendChild(opt);
-          existingValues.add(clientName);
+          existingValues.add(clientName.toLowerCase());
+        }
+      });
+    }
+
+    // Add clients from CMS Projects list
+    if (window.WorkspacesState.cmsProjects) {
+      window.WorkspacesState.cmsProjects.forEach(p => {
+        if (p.client && !existingValues.has(p.client.toLowerCase())) {
+          const opt = document.createElement('option');
+          opt.value = p.client;
+          opt.textContent = p.client;
+          select.appendChild(opt);
+          existingValues.add(p.client.toLowerCase());
         }
       });
     }
@@ -940,6 +1063,9 @@ async function handleCreateProjectSubmit(e) {
   const nameInput = document.getElementById('upbase-new-proj-name');
   const descInput = document.getElementById('upbase-new-proj-desc');
   const clientSelect = document.getElementById('upbase-new-proj-client');
+  const categorySelect = document.getElementById('upbase-new-proj-category');
+  const cmsLinkSelect = document.getElementById('upbase-new-proj-link-cms');
+  const syncCmsCheck = document.getElementById('upbase-new-proj-sync-cms');
   const iconSelect = document.getElementById('upbase-new-proj-icon');
   const colorRadio = document.querySelector('input[name="proj_color"]:checked');
   const submitBtn = document.getElementById('upbase-create-proj-submit-btn');
@@ -968,22 +1094,57 @@ async function handleCreateProjectSubmit(e) {
     files: true
   };
 
-  const payload = {
-    name,
-    description: descInput ? descInput.value.trim() : '',
-    color: colorRadio ? colorRadio.value : '#06b6d4',
-    icon: iconSelect ? iconSelect.value : 'folder',
-    client_id: clientSelect && clientSelect.value ? clientSelect.value : null,
-    enabled_tools: enabledTools
-  };
+  const clientVal = clientSelect && clientSelect.value ? clientSelect.value : null;
+  const categoryVal = categorySelect ? categorySelect.value : 'branding';
+  let cmsProjectId = cmsLinkSelect && cmsLinkSelect.value ? cmsLinkSelect.value : null;
 
   if (submitBtn) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = `<span class="inline-block animate-spin mr-1.5">&#9696;</span> Creating...`;
   }
 
+  const token = sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '';
+
+  // Optional: Also sync/publish as public CMS portfolio project if requested and not linked yet
+  if (syncCmsCheck && syncCmsCheck.checked && !cmsProjectId) {
+    try {
+      const cmsRes = await fetch('/api/projects', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          title: { en: name, ar: name },
+          slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString(36),
+          description: { en: descInput ? descInput.value.trim() : name, ar: descInput ? descInput.value.trim() : name },
+          category: categoryVal,
+          client: clientVal || 'Iceberg Agency',
+          status: 'published'
+        })
+      });
+      const cmsResult = await cmsRes.json();
+      if (cmsResult.success && cmsResult.data) {
+        cmsProjectId = cmsResult.data._id;
+        if (typeof loadProjects === 'function') loadProjects();
+      }
+    } catch (err) {
+      console.warn('CMS Portfolio project auto-sync notice:', err);
+    }
+  }
+
+  const payload = {
+    name,
+    description: descInput ? descInput.value.trim() : '',
+    color: colorRadio ? colorRadio.value : '#06b6d4',
+    icon: iconSelect ? iconSelect.value : 'folder',
+    client_id: clientVal,
+    category: categoryVal,
+    cms_project_id: cmsProjectId,
+    enabled_tools: enabledTools
+  };
+
   try {
-    const token = sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '';
     const res = await fetch(`/api/iams/workspaces/${wsId}/projects`, {
       method: 'POST',
       headers: {
@@ -1004,7 +1165,7 @@ async function handleCreateProjectSubmit(e) {
       }
 
       if (typeof showNotification === 'function') {
-        showNotification(`Project "${result.data.name}" created successfully!`, 'success');
+        showNotification(`Project "${result.data.name}" created and aligned with agency portfolio!`, 'success');
       }
 
       // Reload project list and select newly created project
@@ -1052,4 +1213,6 @@ window.addProjectBookmark = addProjectBookmark;
 window.sendChatMessage = sendChatMessage;
 window.reactToChatMessage = reactToChatMessage;
 window.openCreateProjectModal = openCreateProjectModal;
+window.onSelectExistingCMSProject = onSelectExistingCMSProject;
 window.handleCreateProjectSubmit = handleCreateProjectSubmit;
+
