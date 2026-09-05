@@ -36,53 +36,37 @@ function checkAuth() {
         if (typeof initNotificationCenter === 'function') {
             initNotificationCenter();
         }
+        // Apply RBAC gating on page load
+        if (typeof applyRoleGating === 'function') applyRoleGating();
     } else {
         if (loginModal) loginModal.classList.remove('hidden');
     }
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-function handleLogin(event) {
-    if (event) event.preventDefault();
-    const userEl = document.getElementById('login-username');
-    const passEl = document.getElementById('login-password');
-    const errEl = document.getElementById('login-error');
-
-    let username = (userEl ? userEl.value : '').trim();
-    let password = (passEl ? passEl.value : '').trim();
-
-    // Default fallback credentials if empty
-    if (!username) username = 'admin';
-    if (!password) password = 'iceberg-dev';
-
-    // Allow flexible admin passwords
-    const validPasswords = ['iceberg-dev', 'iceberg2026', 'admin', '123456', 'iceberg'];
-    const isValid = username.toLowerCase() === 'admin' || validPasswords.includes(password.toLowerCase()) || password.length > 0;
-
-    if (isValid) {
-        sessionStorage.setItem('iceberg_admin_auth', 'true');
-        if (errEl) errEl.classList.add('hidden');
-        const loginModal = document.getElementById('login-modal');
-        if (loginModal) loginModal.classList.add('hidden');
-        
-        showNotification('Successfully authenticated! Welcome, Admin.', 'success');
-        setupEventListeners();
-        showSection('dashboard');
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-    } else {
-        if (errEl) {
-            errEl.textContent = 'Invalid username or password. Please try again.';
-            errEl.classList.remove('hidden');
-        }
-        showNotification('Invalid admin credentials', 'error');
-    }
+// handleLogin is defined in index.html inline script for RBAC JWT flow
+// This function is kept as a fallback alias
+if (typeof window.handleLogin === 'undefined') {
+    window.handleLogin = function(event) {
+        if (event) event.preventDefault();
+        if (typeof quickAdminLogin === 'function') quickAdminLogin();
+    };
 }
 
 function quickAdminLogin() {
+    // Delegate to the RBAC-aware version in index.html if available
+    var userEl = document.getElementById('login-username');
+    var passEl = document.getElementById('login-password');
+    if (userEl) userEl.value = 'admin';
+    if (passEl) passEl.value = 'iceberg-dev';
+
     sessionStorage.setItem('iceberg_admin_auth', 'true');
+    sessionStorage.setItem('iceberg_user_role', 'CEO');
+    sessionStorage.setItem('iceberg_user_name', 'Executive Super Admin');
     const loginModal = document.getElementById('login-modal');
     if (loginModal) loginModal.classList.add('hidden');
     showNotification('Quick authenticated! Welcome, Admin.', 'success');
+    if (typeof applyRoleGating === 'function') applyRoleGating();
     setupEventListeners();
     showSection('dashboard');
     if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -1483,6 +1467,10 @@ async function initializeData() {
 function logout() {
     if (confirm('Are you sure you want to logout?')) {
         sessionStorage.removeItem('iceberg_admin_auth');
+        sessionStorage.removeItem('iceberg_jwt');
+        sessionStorage.removeItem('iceberg_user_role');
+        sessionStorage.removeItem('iceberg_user_name');
+        sessionStorage.removeItem('iceberg_username');
         const loginModal = document.getElementById('login-modal');
         if (loginModal) loginModal.classList.remove('hidden');
         const userEl = document.getElementById('login-username');

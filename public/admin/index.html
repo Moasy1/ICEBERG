@@ -77,17 +77,101 @@
     </style>
 
     <script>
-      function quickAdminLogin() {
-        sessionStorage.setItem('iceberg_admin_auth', 'true');
-        var modal = document.getElementById('login-modal');
-        if (modal) modal.classList.add('hidden');
-        var dash = document.getElementById('dashboard');
-        if (dash) dash.classList.remove('hidden');
-        if (window.showSection) window.showSection('dashboard');
-      }
-      function handleLogin(e) {
+      // ── RBAC-Aware JWT Login ─────────────────────────────────────────────
+      async function handleLogin(e) {
         if (e) e.preventDefault();
-        quickAdminLogin();
+        var userEl = document.getElementById('login-username');
+        var passEl = document.getElementById('login-password');
+        var errEl  = document.getElementById('login-error');
+        var username = (userEl ? userEl.value : '').trim() || 'admin';
+        var password = (passEl ? passEl.value : '').trim() || 'iceberg-dev';
+
+        try {
+          var res = await fetch('/api/iams/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: username, password: password })
+          });
+          var data = await res.json();
+
+          if (data.success && data.token) {
+            sessionStorage.setItem('iceberg_admin_auth', 'true');
+            sessionStorage.setItem('iceberg_jwt', data.token);
+            sessionStorage.setItem('iceberg_user_role', data.user.role || 'CEO');
+            sessionStorage.setItem('iceberg_user_name', data.user.full_name || data.user.username || 'Admin');
+            sessionStorage.setItem('iceberg_username', data.user.username || username);
+            if (errEl) errEl.classList.add('hidden');
+            var modal = document.getElementById('login-modal');
+            if (modal) modal.classList.add('hidden');
+            applyRoleGating();
+            if (window.showSection) window.showSection('dashboard');
+            return;
+          }
+          // Auth failed
+          if (errEl) { errEl.textContent = data.error || 'Invalid credentials.'; errEl.classList.remove('hidden'); }
+        } catch (err) {
+          // API unreachable — fall back to legacy offline bypass
+          console.warn('Auth API unreachable, using offline bypass:', err.message);
+          sessionStorage.setItem('iceberg_admin_auth', 'true');
+          sessionStorage.setItem('iceberg_user_role', 'CEO');
+          sessionStorage.setItem('iceberg_user_name', 'Admin (Offline)');
+          sessionStorage.setItem('iceberg_username', username);
+          var modal = document.getElementById('login-modal');
+          if (modal) modal.classList.add('hidden');
+          applyRoleGating();
+          if (window.showSection) window.showSection('dashboard');
+        }
+      }
+
+      function quickAdminLogin() {
+        var userEl = document.getElementById('login-username');
+        var passEl = document.getElementById('login-password');
+        if (userEl) userEl.value = 'admin';
+        if (passEl) passEl.value = 'iceberg-dev';
+        handleLogin(null);
+      }
+
+      // ── Role-Based UI Gating ─────────────────────────────────────────────
+      function applyRoleGating() {
+        var role = sessionStorage.getItem('iceberg_user_role') || 'CEO';
+        var name = sessionStorage.getItem('iceberg_user_name') || 'Admin';
+
+        // Update role badge in header
+        var badgeEl = document.getElementById('role-badge');
+        if (badgeEl) {
+          var roleColors = {
+            'CEO': 'from-amber-500 to-orange-600',
+            'CreativeDirector': 'from-violet-500 to-purple-600',
+            'MarketingManager': 'from-cyan-500 to-blue-600',
+            'SUPER_ADMIN': 'from-amber-500 to-orange-600'
+          };
+          var gradClass = roleColors[role] || 'from-slate-500 to-slate-600';
+          badgeEl.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold text-white bg-gradient-to-r ' + gradClass + ' shadow-md';
+          badgeEl.textContent = role;
+        }
+
+        var nameEl = document.getElementById('user-display-name');
+        if (nameEl) nameEl.textContent = name;
+
+        // Hide billing section for non-CEO
+        var billingNavs = document.querySelectorAll('[data-rbac-feature="viewBilling"]');
+        billingNavs.forEach(function(el) {
+          if (role !== 'CEO' && role !== 'SUPER_ADMIN') {
+            el.style.display = 'none';
+          } else {
+            el.style.display = '';
+          }
+        });
+
+        // Hide member management for non-CEO
+        var memberNavs = document.querySelectorAll('[data-rbac-feature="manageMembers"]');
+        memberNavs.forEach(function(el) {
+          if (role !== 'CEO' && role !== 'SUPER_ADMIN') {
+            el.style.display = 'none';
+          } else {
+            el.style.display = '';
+          }
+        });
       }
     </script>
 
@@ -155,6 +239,8 @@
                         <i data-lucide="layers" class="w-5 h-5 text-white"></i>
                     </div>
                     <h1 class="text-lg md:text-xl font-bold text-white tracking-tight">Iceberg Admin</h1>
+                    <span id="role-badge" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-white bg-gradient-to-r from-amber-500 to-orange-600 shadow-md">CEO</span>
+                    <span id="user-display-name" class="hidden sm:inline text-xs text-gray-400 ml-1">Admin</span>
                 </div>
 
                 <div class="flex items-center gap-2 md:gap-4">
@@ -354,7 +440,7 @@
                             Sprint Kanban Board
                         </a>
                     </li>
-                    <li>
+                    <li data-rbac-feature="viewBilling">
                         <a href="#" onclick="showSection('iams-billing')"
                             class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
                             <i data-lucide="receipt" class="w-4 h-4 text-cyan-400"></i>
