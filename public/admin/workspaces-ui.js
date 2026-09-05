@@ -124,47 +124,407 @@ const DEFAULT_FALLBACK_PROJECTS = [
 
 const DEFAULT_FALLBACK_TASKS = {
   prj_dentaquik: [
-    { task_id: 'task_dq_1', project_id: 'prj_dentaquik', title: 'Audit Shopify checkout funnel drop-off points', status: 'TODO', priority: 'HIGH', due_date: '2026-09-08', duration_minutes: 60, position: '0|hzzzzz:', subtasks: [{ title: 'Review Hotjar recordings', completed: true }, { title: 'Map abandoned checkout steps', completed: false }] },
-    { task_id: 'task_dq_2', project_id: 'prj_dentaquik', title: 'Design high-converting mobile product page layout', status: 'IN_PROGRESS', priority: 'URGENT', due_date: '2026-09-07', duration_minutes: 90, position: '0|i00000:', subtasks: [{ title: 'Figma wireframes', completed: true }, { title: 'Client review', completed: false }] },
-    { task_id: 'task_dq_3', project_id: 'prj_dentaquik', title: 'Set up Meta & TikTok Ads retargeting catalog', status: 'REVIEW', priority: 'MEDIUM', due_date: '2026-09-09', duration_minutes: 45, position: '0|i00008:', subtasks: [] },
-    { task_id: 'task_dq_4', project_id: 'prj_dentaquik', title: 'Connect Klaviyo B2B wholesale onboarding flow', status: 'DONE', priority: 'LOW', due_date: '2026-09-05', duration_minutes: 30, position: '0|i00010:', subtasks: [{ title: 'Welcome series live', completed: true }] }
+    {
+      task_id: 'task_dq_1',
+      project_id: 'prj_dentaquik',
+      title: 'Audit Shopify checkout funnel drop-off points',
+      description: 'Review Heatmaps & session recordings on Hotjar. Isolate drop-off between cart view and shipping selection.\n\n### Objectives:\n- Measure 3-step checkout abandonment\n- Optimize mobile express checkout button (Apple Pay & Google Pay)\n- Coordinate with client dental procurement team',
+      status: 'TODO',
+      priority: 'HIGH',
+      due_date: '2026-09-08',
+      duration_minutes: 60,
+      logged_minutes: 45,
+      position: '0|hzzzzz:',
+      tags: ['Funnel', 'CRO', 'Shopify'],
+      created_by: 'Sarah Osama',
+      created_at: '2026-09-02T10:30:00Z',
+      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      subtasks: [
+        { subtask_id: 'st_1', title: 'Review Hotjar recordings for EU users', completed: true },
+        { subtask_id: 'st_2', title: 'Map abandoned checkout steps in GA4 funnel', completed: false },
+        { subtask_id: 'st_3', title: 'Draft recommended 1-page checkout UX wireframe', completed: false }
+      ],
+      attachments: [
+        { name: 'DentaQuik_Funnel_Dropoff_Q3.pdf', size: '2.4 MB', url: '#' },
+        { name: 'Checkout_Figma_Audit.png', size: '840 KB', url: '#' }
+      ],
+      comments: [
+        { comment_id: 'c1', author_name: 'Mohamed Asy', author_initials: 'MA', text: 'Checked the numbers: 34% drop occurs right at shipping estimation. We should offer automatic rate lookups.', created_at: '2026-09-04T12:00:00Z' },
+        { comment_id: 'c2', author_name: 'Sarah Osama', author_initials: 'SO', text: 'Agreed! Wireframing the updated shipping preview component now.', created_at: '2026-09-05T09:15:00Z' }
+      ]
+    },
+    {
+      task_id: 'task_dq_2',
+      project_id: 'prj_dentaquik',
+      title: 'Design high-converting mobile product page layout',
+      description: 'Full-bleed dental equipment photo carousel, sticky Add-To-Cart bar, and accordion specs section.\n\nClient requested fast loading time under 1.2s on 4G networks.',
+      status: 'IN_PROGRESS',
+      priority: 'URGENT',
+      due_date: '2026-09-07',
+      duration_minutes: 90,
+      logged_minutes: 60,
+      position: '0|i00000:',
+      tags: ['Design', 'Mobile', 'UI/UX'],
+      created_by: 'Mohamed Asy',
+      created_at: '2026-09-01T14:20:00Z',
+      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      subtasks: [
+        { subtask_id: 'st_4', title: 'Figma high-fidelity mobile wireframes', completed: true },
+        { subtask_id: 'st_5', title: 'Internal design review with art director', completed: true },
+        { subtask_id: 'st_6', title: 'Present prototype to DentaQuik leadership', completed: false }
+      ],
+      attachments: [
+        { name: 'Mobile_PDP_Flow_v3.fig', size: '14.8 MB', url: '#' }
+      ],
+      comments: [
+        { comment_id: 'c3', author_name: 'Mohamed Asy', author_initials: 'MA', text: 'Mobile prototype uploaded to Figma link in bookmarks. Feedback welcomed!', created_at: '2026-09-05T16:40:00Z' }
+      ]
+    },
+    {
+      task_id: 'task_dq_3',
+      project_id: 'prj_dentaquik',
+      title: 'Set up Meta & TikTok Ads retargeting catalog',
+      description: 'Configure dynamic product ads (DPA) targeting dentists and clinic managers who viewed high-ticket autoclaves and whitening kits in the last 14 days.',
+      status: 'REVIEW',
+      priority: 'MEDIUM',
+      due_date: '2026-09-09',
+      duration_minutes: 45,
+      logged_minutes: 30,
+      position: '0|i00008:',
+      tags: ['Media', 'Meta', 'TikTok'],
+      created_by: 'Tarek Dev',
+      created_at: '2026-09-03T11:00:00Z',
+      assignees: [{ user_id: 'usr_tarek', full_name: 'Tarek Dev', avatar_url: '' }],
+      subtasks: [
+        { subtask_id: 'st_7', title: 'Pixel health & catalog sync verification', completed: true },
+        { subtask_id: 'st_8', title: 'Ad copy in Arabic and English approved by compliance', completed: true }
+      ],
+      attachments: [],
+      comments: []
+    },
+    {
+      task_id: 'task_dq_4',
+      project_id: 'prj_dentaquik',
+      title: 'Connect Klaviyo B2B wholesale onboarding flow',
+      description: 'Automated 5-email sequence triggered when a dental clinic signs up for tax-exempt B2B purchasing.',
+      status: 'DONE',
+      priority: 'LOW',
+      due_date: '2026-09-05',
+      duration_minutes: 30,
+      logged_minutes: 30,
+      position: '0|i00010:',
+      tags: ['Automation', 'Email', 'Klaviyo'],
+      created_by: 'Sarah Osama',
+      created_at: '2026-08-28T09:00:00Z',
+      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      subtasks: [
+        { subtask_id: 'st_9', title: 'Welcome series live and tested', completed: true }
+      ],
+      attachments: [],
+      comments: [
+        { comment_id: 'c4', author_name: 'Sarah Osama', author_initials: 'SO', text: 'Live! Open rates are currently at 52%.', created_at: '2026-09-05T14:10:00Z' }
+      ]
+    }
   ],
   prj_musical_bag: [
-    { task_id: 'task_mb_1', project_id: 'prj_musical_bag', title: 'Refine packaging typography & metallic foil spec', status: 'IN_PROGRESS', priority: 'HIGH', due_date: '2026-09-08', duration_minutes: 60, position: '0|hzzzzz:', subtasks: [] },
-    { task_id: 'task_mb_2', project_id: 'prj_musical_bag', title: 'Render 3D product turntable video in Blender', status: 'TODO', priority: 'MEDIUM', due_date: '2026-09-10', duration_minutes: 120, position: '0|i00000:', subtasks: [] },
-    { task_id: 'task_mb_3', project_id: 'prj_musical_bag', title: 'Brand guidelines book print approval', status: 'DONE', priority: 'URGENT', due_date: '2026-09-04', duration_minutes: 45, position: '0|i00008:', subtasks: [] }
+    {
+      task_id: 'task_mb_1',
+      project_id: 'prj_musical_bag',
+      title: 'Refine packaging typography & metallic foil spec',
+      description: 'Specifying gold-leaf stamping thickness and matte velvet unboxing box.',
+      status: 'IN_PROGRESS',
+      priority: 'HIGH',
+      due_date: '2026-09-08',
+      duration_minutes: 60,
+      logged_minutes: 40,
+      position: '0|hzzzzz:',
+      tags: ['Branding', 'Print'],
+      created_by: 'Sarah Osama',
+      created_at: '2026-09-02T10:00:00Z',
+      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      subtasks: [{ subtask_id: 'st_mb_1', title: 'CMYK color-correct print test', completed: true }],
+      attachments: [{ name: 'Foil_Spec_Final.ai', size: '8.2 MB', url: '#' }],
+      comments: []
+    },
+    {
+      task_id: 'task_mb_2',
+      project_id: 'prj_musical_bag',
+      title: 'Render 3D product turntable video in Blender',
+      description: '360 degree product showcase video for Shopify landing hero section.',
+      status: 'TODO',
+      priority: 'MEDIUM',
+      due_date: '2026-09-10',
+      duration_minutes: 120,
+      logged_minutes: 0,
+      position: '0|i00000:',
+      tags: ['3D', 'Blender', 'Motion'],
+      created_by: 'Mohamed Asy',
+      created_at: '2026-09-03T14:00:00Z',
+      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: []
+    },
+    {
+      task_id: 'task_mb_3',
+      project_id: 'prj_musical_bag',
+      title: 'Brand guidelines book print approval',
+      description: 'Printed copy signed off by client CEO.',
+      status: 'DONE',
+      priority: 'URGENT',
+      due_date: '2026-09-04',
+      duration_minutes: 45,
+      logged_minutes: 45,
+      position: '0|i00008:',
+      tags: ['Branding'],
+      created_by: 'Sarah Osama',
+      created_at: '2026-08-30T10:00:00Z',
+      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: []
+    }
   ],
   prj_call_worship: [
-    { task_id: 'task_cw_1', project_id: 'prj_call_worship', title: 'Soundtrack mastering for episode 04 documentary', status: 'TODO', priority: 'HIGH', due_date: '2026-09-09', duration_minutes: 90, position: '0|hzzzzz:', subtasks: [] },
-    { task_id: 'task_cw_2', project_id: 'prj_call_worship', title: 'Color grading on 4K multi-cam concert footage', status: 'IN_PROGRESS', priority: 'URGENT', due_date: '2026-09-07', duration_minutes: 180, position: '0|i00000:', subtasks: [] },
-    { task_id: 'task_cw_3', project_id: 'prj_call_worship', title: 'YouTube premiere campaign & community countdown', status: 'DONE', priority: 'MEDIUM', due_date: '2026-09-03', duration_minutes: 30, position: '0|i00008:', subtasks: [] }
+    {
+      task_id: 'task_cw_1',
+      project_id: 'prj_call_worship',
+      title: 'Soundtrack mastering for episode 04 documentary',
+      description: 'High-dynamic range audio master for theatrical and streaming releases.',
+      status: 'TODO',
+      priority: 'HIGH',
+      due_date: '2026-09-09',
+      duration_minutes: 90,
+      logged_minutes: 0,
+      position: '0|hzzzzz:',
+      tags: ['Audio', 'Media'],
+      created_by: 'Tarek Dev',
+      created_at: '2026-09-02T10:00:00Z',
+      assignees: [{ user_id: 'usr_tarek', full_name: 'Tarek Dev', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: []
+    },
+    {
+      task_id: 'task_cw_2',
+      project_id: 'prj_call_worship',
+      title: 'Color grading on 4K multi-cam concert footage',
+      description: 'DaVinci Resolve color timing with cinematic teal-orange highlights.',
+      status: 'IN_PROGRESS',
+      priority: 'URGENT',
+      due_date: '2026-09-07',
+      duration_minutes: 180,
+      logged_minutes: 120,
+      position: '0|i00000:',
+      tags: ['Video', 'Production'],
+      created_by: 'Mohamed Asy',
+      created_at: '2026-09-01T15:00:00Z',
+      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: []
+    }
   ],
   prj_drum_shop: [
-    { task_id: 'task_ds_1', project_id: 'prj_drum_shop', title: 'Weekly TikTok / Reels batch shoot scheduling', status: 'TODO', priority: 'MEDIUM', due_date: '2026-09-08', duration_minutes: 60, position: '0|hzzzzz:', subtasks: [] },
-    { task_id: 'task_ds_2', project_id: 'prj_drum_shop', title: 'Cymbal demo video edit & motion graphics title', status: 'IN_PROGRESS', priority: 'HIGH', due_date: '2026-09-07', duration_minutes: 75, position: '0|i00000:', subtasks: [] }
+    {
+      task_id: 'task_ds_1',
+      project_id: 'prj_drum_shop',
+      title: 'Weekly TikTok / Reels batch shoot scheduling',
+      description: 'Coordinate with drum artists and camera crew.',
+      status: 'TODO',
+      priority: 'MEDIUM',
+      due_date: '2026-09-08',
+      duration_minutes: 60,
+      logged_minutes: 0,
+      position: '0|hzzzzz:',
+      tags: ['Social', 'Shooting'],
+      created_by: 'Sarah Osama',
+      created_at: '2026-09-02T10:00:00Z',
+      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: []
+    },
+    {
+      task_id: 'task_ds_2',
+      project_id: 'prj_drum_shop',
+      title: 'Cymbal demo video edit & motion graphics title',
+      description: 'Showcase low-volume cymbals for practice studios.',
+      status: 'IN_PROGRESS',
+      priority: 'HIGH',
+      due_date: '2026-09-07',
+      duration_minutes: 75,
+      logged_minutes: 45,
+      position: '0|i00000:',
+      tags: ['Video', 'Reels'],
+      created_by: 'Mohamed Asy',
+      created_at: '2026-09-03T11:00:00Z',
+      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: []
+    }
   ],
   prj_ghost_note: [
-    { task_id: 'task_gn_1', project_id: 'prj_ghost_note', title: 'Vinyl cover design typography proofing', status: 'TODO', priority: 'HIGH', due_date: '2026-09-08', duration_minutes: 60, position: '0|hzzzzz:', subtasks: [] },
-    { task_id: 'task_gn_2', project_id: 'prj_ghost_note', title: 'Release announcement teaser animation in After Effects', status: 'IN_PROGRESS', priority: 'URGENT', due_date: '2026-09-07', duration_minutes: 90, position: '0|i00000:', subtasks: [] }
+    {
+      task_id: 'task_gn_1',
+      project_id: 'prj_ghost_note',
+      title: 'Vinyl cover design typography proofing',
+      status: 'TODO',
+      priority: 'HIGH',
+      due_date: '2026-09-08',
+      duration_minutes: 60,
+      logged_minutes: 0,
+      position: '0|hzzzzz:',
+      tags: ['Vinyl', 'Art'],
+      created_by: 'Sarah Osama',
+      created_at: '2026-09-02T10:00:00Z',
+      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: []
+    },
+    {
+      task_id: 'task_gn_2',
+      project_id: 'prj_ghost_note',
+      title: 'Release announcement teaser animation in After Effects',
+      status: 'IN_PROGRESS',
+      priority: 'URGENT',
+      due_date: '2026-09-07',
+      duration_minutes: 90,
+      logged_minutes: 60,
+      position: '0|i00000:',
+      tags: ['Animation'],
+      created_by: 'Mohamed Asy',
+      created_at: '2026-09-03T12:00:00Z',
+      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: []
+    }
   ],
   prj_golden_perfume: [
-    { task_id: 'task_gp_1', project_id: 'prj_golden_perfume', title: '3D luxury bottle render with amber liquid refractions', status: 'IN_PROGRESS', priority: 'HIGH', due_date: '2026-09-08', duration_minutes: 120, position: '0|hzzzzz:', subtasks: [] },
-    { task_id: 'task_gp_2', project_id: 'prj_golden_perfume', title: 'Bilingual luxury press kit copy in English & Arabic', status: 'REVIEW', priority: 'MEDIUM', due_date: '2026-09-09', duration_minutes: 45, position: '0|i00000:', subtasks: [] }
+    {
+      task_id: 'task_gp_1',
+      project_id: 'prj_golden_perfume',
+      title: '3D luxury bottle render with amber liquid refractions',
+      status: 'IN_PROGRESS',
+      priority: 'HIGH',
+      due_date: '2026-09-08',
+      duration_minutes: 120,
+      logged_minutes: 80,
+      position: '0|hzzzzz:',
+      tags: ['Luxury', '3D'],
+      created_by: 'Mohamed Asy',
+      created_at: '2026-09-02T10:00:00Z',
+      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: []
+    },
+    {
+      task_id: 'task_gp_2',
+      project_id: 'prj_golden_perfume',
+      title: 'Bilingual luxury press kit copy in English & Arabic',
+      status: 'REVIEW',
+      priority: 'MEDIUM',
+      due_date: '2026-09-09',
+      duration_minutes: 45,
+      logged_minutes: 30,
+      position: '0|i00000:',
+      tags: ['Copywriting', 'PR'],
+      created_by: 'Sarah Osama',
+      created_at: '2026-09-03T15:00:00Z',
+      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: []
+    }
   ],
   prj_acrostone: [
-    { task_id: 'task_ac_1', project_id: 'prj_acrostone', title: 'Sync B2B distributor catalog pricing with ERP', status: 'TODO', priority: 'HIGH', due_date: '2026-09-09', duration_minutes: 60, position: '0|hzzzzz:', subtasks: [] },
-    { task_id: 'task_ac_2', project_id: 'prj_acrostone', title: 'Distributor portal multi-tier login & permissions test', status: 'DONE', priority: 'MEDIUM', due_date: '2026-09-04', duration_minutes: 30, position: '0|i00008:', subtasks: [] }
+    {
+      task_id: 'task_ac_1',
+      project_id: 'prj_acrostone',
+      title: 'Sync B2B distributor catalog pricing with ERP',
+      status: 'TODO',
+      priority: 'HIGH',
+      due_date: '2026-09-09',
+      duration_minutes: 60,
+      logged_minutes: 0,
+      position: '0|hzzzzz:',
+      tags: ['B2B', 'ERP'],
+      created_by: 'Tarek Dev',
+      created_at: '2026-09-02T10:00:00Z',
+      assignees: [{ user_id: 'usr_tarek', full_name: 'Tarek Dev', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: []
+    }
   ],
   prj_sprint_14: [
-    { task_id: 'task_sp_1', project_id: 'prj_sprint_14', title: 'Finalize Q4 cross-brand influencer briefs', status: 'TODO', priority: 'URGENT', due_date: '2026-09-08', duration_minutes: 60, position: '0|hzzzzz:', subtasks: [] },
-    { task_id: 'task_sp_2', project_id: 'prj_sprint_14', title: 'Ad creative matrix review with creative director', status: 'IN_PROGRESS', priority: 'HIGH', due_date: '2026-09-07', duration_minutes: 45, position: '0|i00000:', subtasks: [] },
-    { task_id: 'task_sp_3', project_id: 'prj_sprint_14', title: 'Performance tracking dashboard QA & UTM parameters', status: 'REVIEW', priority: 'MEDIUM', due_date: '2026-09-09', duration_minutes: 30, position: '0|i00008:', subtasks: [] },
-    { task_id: 'task_sp_4', project_id: 'prj_sprint_14', title: 'Omni-channel kickoff deck alignment with leadership', status: 'DONE', priority: 'HIGH', due_date: '2026-09-02', duration_minutes: 60, position: '0|i00010:', subtasks: [] }
+    {
+      task_id: 'task_sp_1',
+      project_id: 'prj_sprint_14',
+      title: 'Finalize Q4 cross-brand influencer briefs',
+      status: 'TODO',
+      priority: 'URGENT',
+      due_date: '2026-09-08',
+      duration_minutes: 60,
+      logged_minutes: 0,
+      position: '0|hzzzzz:',
+      tags: ['Influencers', 'Q4'],
+      created_by: 'Sarah Osama',
+      created_at: '2026-09-02T10:00:00Z',
+      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: []
+    },
+    {
+      task_id: 'task_sp_2',
+      project_id: 'prj_sprint_14',
+      title: 'Ad creative matrix review with creative director',
+      status: 'IN_PROGRESS',
+      priority: 'HIGH',
+      due_date: '2026-09-07',
+      duration_minutes: 45,
+      logged_minutes: 30,
+      position: '0|i00000:',
+      tags: ['Ads', 'Creative'],
+      created_by: 'Mohamed Asy',
+      created_at: '2026-09-03T11:00:00Z',
+      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: []
+    }
   ],
   prj_iceberg_internal: [
-    { task_id: 'task_ib_1', project_id: 'prj_iceberg_internal', title: 'Upgrade Upbase offline resilience & client syncing', status: 'IN_PROGRESS', priority: 'URGENT', due_date: '2026-09-06', duration_minutes: 60, position: '0|hzzzzz:', subtasks: [{ title: 'Sync project lists', completed: true }, { title: 'Add offline fallback', completed: true }] },
-    { task_id: 'task_ib_2', project_id: 'prj_iceberg_internal', title: 'Verify bilingual Arabic/English translations on admin', status: 'REVIEW', priority: 'MEDIUM', due_date: '2026-09-08', duration_minutes: 40, position: '0|i00000:', subtasks: [] },
-    { task_id: 'task_ib_3', project_id: 'prj_iceberg_internal', title: 'Deploy CMS projects two-way link to production', status: 'DONE', priority: 'HIGH', due_date: '2026-09-05', duration_minutes: 30, position: '0|i00008:', subtasks: [] }
+    {
+      task_id: 'task_ib_1',
+      project_id: 'prj_iceberg_internal',
+      title: 'Upgrade Upbase offline resilience & client syncing',
+      description: 'Implement full Upbase features: sliding task drawer, comments, checklists, and time tracking.',
+      status: 'IN_PROGRESS',
+      priority: 'URGENT',
+      due_date: '2026-09-06',
+      duration_minutes: 60,
+      logged_minutes: 50,
+      position: '0|hzzzzz:',
+      tags: ['Upbase', 'Core Dev'],
+      created_by: 'Mohamed Asy',
+      created_at: '2026-09-05T10:00:00Z',
+      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      subtasks: [
+        { subtask_id: 'st_ib_1', title: 'Build sliding drawer UI', completed: true },
+        { subtask_id: 'st_ib_2', title: 'Connect comments and subtasks', completed: true },
+        { subtask_id: 'st_ib_3', title: 'Verify offline fallback', completed: true }
+      ],
+      attachments: [],
+      comments: [
+        { comment_id: 'c_ib_1', author_name: 'Mohamed Asy', author_initials: 'MA', text: 'All Upbase modules aligned with production specifications.', created_at: '2026-09-06T00:10:00Z' }
+      ]
+    }
   ]
 };
 
@@ -540,83 +900,926 @@ function renderKanbanColumns() {
   ];
 
   columns.forEach(col => {
-    const container = document.getElementById(`kanban-col-${col.id.toLowerCase()}`);
-    const countBadge = document.getElementById(`kanban-count-${col.id.toLowerCase()}`);
+    const colKey = col.id.toLowerCase();
+    const container = document.getElementById(`kanban-col-${colKey}`) || document.getElementById(`kanban-col-${colKey.replace('_', '-')}`);
+    const countBadge = document.getElementById(`kanban-count-${colKey}`) || document.getElementById(`kanban-count-${colKey.replace('_', '-')}`);
     if (!container) return;
 
-    const colTasks = window.WorkspacesState.tasks.filter(t => t.status === col.id);
+    const colTasks = (window.WorkspacesState.tasks || []).filter(t => t.status === col.id);
     if (countBadge) countBadge.innerText = colTasks.length;
 
-    container.innerHTML = colTasks.map(t => `
-      <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 cursor-grab transition-all shadow-md group relative"
-           draggable="true"
-           ondragstart="handleKanbanDragStart(event, '${t.task_id}')"
-           onclick="openTaskDetailsModal('${t.task_id}')">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded-md ${t.priority === 'HIGH' || t.priority === 'URGENT' ? 'bg-rose-950/60 text-rose-400 border border-rose-800/40' : 'bg-slate-800 text-slate-400'}">${t.priority}</span>
-          ${t.due_date ? `<span class="text-[10px] text-slate-400 font-mono">📅 ${t.due_date}</span>` : ''}
-        </div>
-        <h4 class="text-xs font-bold text-slate-100 group-hover:text-cyan-400 transition-colors mb-2">${escapeHtml(t.title)}</h4>
-        
-        ${t.subtasks && t.subtasks.length > 0 ? `
-          <div class="flex items-center gap-1.5 text-[10px] text-slate-400 mb-2">
-            <i data-lucide="check-square" class="w-3 h-3 text-cyan-400"></i>
-            <span>${t.subtasks.filter(st => st.completed).length}/${t.subtasks.length} subtasks</span>
-          </div>
-        ` : ''}
+    const cardsHtml = colTasks.map(t => {
+      const isDone = t.status === 'DONE';
+      const completedSubtasks = (t.subtasks || []).filter(st => st.completed).length;
+      const totalSubtasks = (t.subtasks || []).length;
+      const attachmentsCount = (t.attachments || []).length;
+      const commentsCount = (t.comments || []).length;
 
-        <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[10px] text-slate-500">
-          <span>Pos: <code class="text-cyan-400 font-mono">${(t.position || '').substring(0, 8)}</code></span>
-          <span class="text-slate-400 font-mono">${t.duration_minutes || 30}m</span>
+      // Assignee avatar stack
+      const assigneesHtml = (t.assignees && t.assignees.length > 0) ? t.assignees.map((a, i) => {
+        const initials = a.full_name ? a.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'MA';
+        return `<span class="w-5 h-5 rounded-full bg-cyan-600 text-white font-bold text-[9px] flex items-center justify-center border border-slate-900 shadow-sm ${i > 0 ? '-ml-1.5' : ''}" title="${escapeHtml(a.full_name)}">${initials}</span>`;
+      }).join('') : `<span class="w-5 h-5 rounded-full bg-slate-800 text-slate-400 font-bold text-[9px] flex items-center justify-center border border-slate-700" title="Unassigned"><i data-lucide="user" class="w-2.5 h-2.5"></i></span>`;
+
+      // Upbase Tag Badges
+      const tagsHtml = (t.tags && t.tags.length > 0) ? `
+        <div class="flex flex-wrap items-center gap-1 mb-2">
+          ${t.tags.map(tag => `<span class="px-2 py-0.5 rounded-md bg-cyan-950/70 text-cyan-300 border border-cyan-800/40 text-[10px] font-semibold">${escapeHtml(tag)}</span>`).join('')}
         </div>
+      ` : '';
+
+      return `
+        <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all shadow-md group relative ${isDone ? 'opacity-60 bg-slate-950/70' : ''}"
+             draggable="true"
+             ondragstart="handleKanbanDragStart(event, '${t.task_id}')"
+             onclick="openTaskDetailsModal('${t.task_id}')">
+          
+          <!-- Top Row: Checkbox Circle + Title -->
+          <div class="flex items-start gap-2.5 mb-2">
+            <button type="button" 
+                    onclick="toggleTaskComplete('${t.task_id}', event)" 
+                    title="${isDone ? 'Mark as Incomplete' : 'Mark as Complete'}"
+                    class="mt-0.5 w-4 h-4 rounded-full border ${isDone ? 'bg-emerald-500 border-emerald-400 text-slate-950' : 'border-slate-500 hover:border-emerald-400 text-transparent hover:text-emerald-400'} flex items-center justify-center shrink-0 transition-all">
+              <i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i>
+            </button>
+            <div class="flex-1 min-w-0">
+              <h4 class="text-xs font-bold leading-snug transition-colors ${isDone ? 'line-through text-slate-500' : 'text-slate-100 group-hover:text-cyan-400'}">
+                ${escapeHtml(t.title)}
+              </h4>
+            </div>
+          </div>
+
+          ${tagsHtml}
+
+          <!-- Bottom Meta Row (Image 2 style) -->
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[10px] text-slate-400">
+            <div class="flex items-center gap-2.5">
+              ${attachmentsCount > 0 ? `
+                <span class="flex items-center gap-1 text-slate-400" title="${attachmentsCount} attachments">
+                  <i data-lucide="paperclip" class="w-3 h-3 text-amber-400"></i> ${attachmentsCount}
+                </span>
+              ` : ''}
+              ${totalSubtasks > 0 ? `
+                <span class="flex items-center gap-1 ${completedSubtasks === totalSubtasks ? 'text-emerald-400' : 'text-slate-400'}" title="${completedSubtasks}/${totalSubtasks} subtasks">
+                  <i data-lucide="check-square" class="w-3 h-3 text-cyan-400"></i> ${completedSubtasks}/${totalSubtasks}
+                </span>
+              ` : ''}
+              ${commentsCount > 0 ? `
+                <span class="flex items-center gap-1 text-slate-400" title="${commentsCount} comments">
+                  <i data-lucide="message-square" class="w-3 h-3 text-blue-400"></i> ${commentsCount}
+                </span>
+              ` : ''}
+              ${t.due_date ? `
+                <span class="flex items-center gap-1 text-slate-400 font-mono" title="Due date">
+                  <i data-lucide="calendar" class="w-3 h-3 text-slate-500"></i> ${t.due_date.replace(/^\d{4}-/, '')}
+                </span>
+              ` : ''}
+            </div>
+
+            <div class="flex items-center shrink-0">
+              ${assigneesHtml}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Add + add task footer button
+    container.innerHTML = cardsHtml + `
+      <div class="pt-1">
+        <button type="button" onclick="promptQuickAddTaskToColumn('${col.id}')" class="w-full py-1.5 px-2 text-center text-xs text-slate-500 hover:text-slate-300 hover:bg-slate-900/60 rounded-xl transition-all flex items-center justify-center gap-1 border border-dashed border-slate-800/80 hover:border-slate-700">
+          <i data-lucide="plus" class="w-3 h-3"></i>
+          <span>add task</span>
+        </button>
       </div>
-    `).join('');
+    `;
   });
 
   if (window.lucide) window.lucide.createIcons();
 }
 
-function handleKanbanDragStart(event, taskId) {
-  window.WorkspacesState.draggedTaskId = taskId;
-  event.dataTransfer.setData('text/plain', taskId);
-}
+// Render List View (Tab 2)
+function renderTaskListView() {
+  const container = document.getElementById('upbase-tasks-table');
+  if (!container) return;
 
-function handleKanbanDragOver(event) {
-  event.preventDefault();
-}
-
-async function handleKanbanDrop(event, targetStatus) {
-  event.preventDefault();
-  const taskId = window.WorkspacesState.draggedTaskId || event.dataTransfer.getData('text/plain');
-  if (!taskId) return;
-
-  const targetTask = window.WorkspacesState.tasks.find(t => t.task_id === taskId);
-  if (targetTask) {
-    targetTask.status = targetStatus;
-    targetTask.position = '0|' + Date.now().toString(36);
+  const tasks = window.WorkspacesState.tasks || [];
+  if (tasks.length === 0) {
+    container.innerHTML = `<div class="text-xs text-slate-500 py-6 text-center">No tasks in this project yet. Use the input above or switch to Kanban!</div>`;
+    return;
   }
-  renderKanbanColumns();
+
+  container.innerHTML = `
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs text-slate-300">
+        <thead class="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400">
+          <tr>
+            <th class="py-2.5 px-3">Status</th>
+            <th class="py-2.5 px-3">Task Title</th>
+            <th class="py-2.5 px-3">Assignee</th>
+            <th class="py-2.5 px-3">Due Date</th>
+            <th class="py-2.5 px-3">Priority</th>
+            <th class="py-2.5 px-3">Tags</th>
+            <th class="py-2.5 px-3 text-right">Subtasks</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800/70">
+          ${tasks.map(t => {
+            const isDone = t.status === 'DONE';
+            const completedSubtasks = (t.subtasks || []).filter(st => st.completed).length;
+            const totalSubtasks = (t.subtasks || []).length;
+            const mainAssignee = (t.assignees && t.assignees[0]) ? t.assignees[0].full_name : 'Unassigned';
+
+            return `
+              <tr onclick="openTaskDetailsModal('${t.task_id}')" class="hover:bg-slate-800/50 cursor-pointer transition-colors group">
+                <td class="py-3 px-3" onclick="event.stopPropagation()">
+                  <button type="button" onclick="toggleTaskComplete('${t.task_id}', event)" class="w-4 h-4 rounded-full border ${isDone ? 'bg-emerald-500 border-emerald-400 text-slate-950' : 'border-slate-500 hover:border-emerald-400 text-transparent hover:text-emerald-400'} flex items-center justify-center transition-all">
+                    <i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i>
+                  </button>
+                </td>
+                <td class="py-3 px-3">
+                  <div class="font-semibold ${isDone ? 'line-through text-slate-500' : 'text-white group-hover:text-cyan-400'}">
+                    ${escapeHtml(t.title)}
+                  </div>
+                </td>
+                <td class="py-3 px-3 text-slate-400">${escapeHtml(mainAssignee)}</td>
+                <td class="py-3 px-3 font-mono text-slate-400">${t.due_date || '—'}</td>
+                <td class="py-3 px-3">
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded-md ${t.priority === 'URGENT' ? 'bg-rose-950/60 text-rose-400 border border-rose-800/40' : t.priority === 'HIGH' ? 'bg-amber-950/60 text-amber-400 border border-amber-800/40' : 'bg-slate-800 text-slate-400'}">
+                    ${t.priority || 'NORMAL'}
+                  </span>
+                </td>
+                <td class="py-3 px-3">
+                  <div class="flex flex-wrap gap-1">
+                    ${(t.tags || []).map(tg => `<span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">${escapeHtml(tg)}</span>`).join('')}
+                  </div>
+                </td>
+                <td class="py-3 px-3 text-right font-mono text-slate-400">
+                  ${totalSubtasks > 0 ? `${completedSubtasks}/${totalSubtasks}` : '—'}
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+// ==========================================
+// UPBASE SLIDING TASK DETAILS DRAWER ENGINE
+// (Matches Image 2 reference pixel-perfect)
+// ==========================================
+
+function openTaskDetailsModal(taskId) {
+  if (!taskId) return;
+  window.WorkspacesState.activeTaskId = taskId;
+
+  // Search active project tasks or fallback tasks
+  let task = (window.WorkspacesState.tasks || []).find(t => t.task_id === taskId);
+  if (!task) {
+    for (const prjKey in DEFAULT_FALLBACK_TASKS) {
+      const match = DEFAULT_FALLBACK_TASKS[prjKey].find(t => t.task_id === taskId);
+      if (match) {
+        task = match;
+        break;
+      }
+    }
+  }
+
+  if (!task) {
+    console.warn('Task not found for drawer:', taskId);
+    return;
+  }
+
+  // Find project info for breadcrumbs
+  const project = (window.WorkspacesState.projects || []).find(p => p.project_id === task.project_id) || {
+    name: 'General',
+    color: '#06b6d4'
+  };
+
+  // 1. Breadcrumbs
+  const prjColorEl = document.getElementById('task-drawer-prj-color');
+  const prjNameEl = document.getElementById('task-drawer-prj-name');
+  if (prjColorEl) prjColorEl.style.backgroundColor = project.color || '#06b6d4';
+  if (prjNameEl) prjNameEl.textContent = project.name || 'General';
+
+  // Status Select
+  const statusSelect = document.getElementById('task-drawer-status-select');
+  if (statusSelect) statusSelect.value = task.status || 'TODO';
+
+  // Completion Button
+  syncDrawerCompleteButton(task.status === 'DONE');
+
+  // Title
+  const titleInput = document.getElementById('task-drawer-title-input');
+  if (titleInput) {
+    titleInput.value = task.title || '';
+    if (task.status === 'DONE') {
+      titleInput.classList.add('line-through', 'text-slate-500');
+    } else {
+      titleInput.classList.remove('line-through', 'text-slate-500');
+    }
+    autoResizeDrawerTitle(titleInput);
+  }
+
+  // Creator & Created Date
+  const creatorEl = document.getElementById('task-drawer-creator');
+  const createdAtEl = document.getElementById('task-drawer-created-at');
+  if (creatorEl) creatorEl.textContent = task.created_by || 'Mohamed Asy';
+  if (createdAtEl) {
+    createdAtEl.textContent = task.created_at ? new Date(task.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Today';
+  }
+
+  // Due Date
+  const dueInput = document.getElementById('task-drawer-due-input');
+  if (dueInput) dueInput.value = task.due_date || '';
+
+  // Assignee Select
+  const assigneeSelect = document.getElementById('task-drawer-assignee-select');
+  if (assigneeSelect) {
+    const mainAssigneeId = task.assignees && task.assignees[0] ? task.assignees[0].user_id : '';
+    assigneeSelect.value = mainAssigneeId;
+  }
+
+  // Priority Select
+  const prioritySelect = document.getElementById('task-drawer-priority-select');
+  if (prioritySelect) prioritySelect.value = task.priority || 'NONE';
+
+  // Tags
+  renderDrawerTags(task);
+
+  // Time Tracking
+  renderDrawerTime(task);
+
+  // Description
+  const descInput = document.getElementById('task-drawer-description');
+  if (descInput) descInput.value = task.description || '';
+
+  // Subtasks
+  renderDrawerSubtasks(task);
+
+  // Attachments
+  renderDrawerAttachments(task);
+
+  // Comments
+  renderDrawerComments(task);
+
+  // Animate Slide In from Right
+  const overlay = document.getElementById('upbase-task-drawer-overlay');
+  const drawer = document.getElementById('upbase-task-drawer');
+  if (overlay && drawer) {
+    overlay.classList.remove('hidden');
+    drawer.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      overlay.classList.remove('opacity-0');
+      overlay.classList.add('opacity-100');
+      drawer.classList.remove('translate-x-full');
+      drawer.classList.add('translate-x-0');
+    });
+  }
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function closeTaskDetailsModal() {
+  const overlay = document.getElementById('upbase-task-drawer-overlay');
+  const drawer = document.getElementById('upbase-task-drawer');
+  if (!drawer) return;
+
+  drawer.classList.remove('translate-x-0');
+  drawer.classList.add('translate-x-full');
+
+  if (overlay) {
+    overlay.classList.remove('opacity-100');
+    overlay.classList.add('opacity-0');
+  }
+
+  setTimeout(() => {
+    drawer.classList.add('hidden');
+    if (overlay) overlay.classList.add('hidden');
+  }, 300);
+
+  window.WorkspacesState.activeTaskId = null;
+}
+
+function getActiveDrawerTask() {
+  const taskId = window.WorkspacesState.activeTaskId;
+  if (!taskId) return null;
+  return (window.WorkspacesState.tasks || []).find(t => t.task_id === taskId);
+}
+
+function syncDrawerCompleteButton(isDone) {
+  const btn = document.getElementById('task-drawer-complete-btn');
+  if (!btn) return;
+  if (isDone) {
+    btn.className = 'mt-1 w-6 h-6 rounded-full bg-emerald-500 border-2 border-emerald-400 flex items-center justify-center transition-all shrink-0 text-slate-950 shadow-md';
+    btn.innerHTML = `<i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>`;
+  } else {
+    btn.className = 'mt-1 w-6 h-6 rounded-full border-2 border-slate-600 hover:border-emerald-500 flex items-center justify-center transition-all group shrink-0 text-transparent hover:text-emerald-400';
+    btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity"></i>`;
+  }
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function toggleTaskComplete(taskId, event) {
+  if (event) event.stopPropagation();
+  const task = (window.WorkspacesState.tasks || []).find(t => t.task_id === taskId);
+  if (!task) return;
+
+  const isDone = task.status === 'DONE';
+  task.status = isDone ? 'TODO' : 'DONE';
+
+  // If drawer is currently showing this task, sync it
+  if (window.WorkspacesState.activeTaskId === taskId) {
+    syncDrawerCompleteButton(!isDone);
+    const statusSelect = document.getElementById('task-drawer-status-select');
+    if (statusSelect) statusSelect.value = task.status;
+    const titleInput = document.getElementById('task-drawer-title-input');
+    if (titleInput) {
+      if (!isDone) titleInput.classList.add('line-through', 'text-slate-500');
+      else titleInput.classList.remove('line-through', 'text-slate-500');
+    }
+  }
+
+  // Refresh Board & List
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+
+  syncTaskUpdateToServer(task);
+}
+
+function toggleTaskCompleteFromDrawer() {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  toggleTaskComplete(task.task_id);
+}
+
+function autoResizeDrawerTitle(textarea) {
+  if (!textarea) return;
+  textarea.style.height = 'auto';
+  textarea.style.height = textarea.scrollHeight + 'px';
+}
+
+function saveDrawerTitleChange(newTitle) {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  const trimmed = newTitle.trim();
+  if (!trimmed || trimmed === task.title) return;
+  task.title = trimmed;
+
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+
+  syncTaskUpdateToServer(task);
+}
+
+function onDrawerStatusChange(newStatus) {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  task.status = newStatus;
+  const isDone = newStatus === 'DONE';
+  syncDrawerCompleteButton(isDone);
+
+  const titleInput = document.getElementById('task-drawer-title-input');
+  if (titleInput) {
+    if (isDone) titleInput.classList.add('line-through', 'text-slate-500');
+    else titleInput.classList.remove('line-through', 'text-slate-500');
+  }
+
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+
+  syncTaskUpdateToServer(task);
+}
+
+function onDrawerPriorityChange(newPriority) {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  task.priority = newPriority;
+
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+
+  syncTaskUpdateToServer(task);
+}
+
+function onDrawerDueDateChange(newDate) {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  task.due_date = newDate;
+
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+
+  syncTaskUpdateToServer(task);
+}
+
+function quickSetDrawerDue(when) {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+
+  const dueInput = document.getElementById('task-drawer-due-input');
+  if (when === 'today') {
+    const todayStr = new Date().toISOString().split('T')[0];
+    task.due_date = todayStr;
+    if (dueInput) dueInput.value = todayStr;
+  } else if (when === 'tomorrow') {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    const tomStr = d.toISOString().split('T')[0];
+    task.due_date = tomStr;
+    if (dueInput) dueInput.value = tomStr;
+  } else {
+    task.due_date = '';
+    if (dueInput) dueInput.value = '';
+  }
+
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+
+  syncTaskUpdateToServer(task);
+}
+
+function onDrawerAssigneeChange(userId) {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+
+  const nameMap = {
+    'usr_asy': 'Mohamed Asy',
+    'usr_sarah': 'Sarah Osama',
+    'usr_tarek': 'Tarek Dev',
+    'usr_nour': 'Nour Designer'
+  };
+
+  if (!userId) {
+    task.assignees = [];
+  } else {
+    task.assignees = [{ user_id: userId, full_name: nameMap[userId] || 'Team Member' }];
+  }
+
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+
+  syncTaskUpdateToServer(task);
+}
+
+function renderDrawerTags(task) {
+  const container = document.getElementById('task-drawer-tags-container');
+  if (!container) return;
+
+  const tags = task.tags || [];
+  container.innerHTML = `
+    ${tags.map(t => `
+      <span class="px-2.5 py-1 rounded-lg bg-cyan-950/70 text-cyan-300 border border-cyan-800/50 text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+        ${escapeHtml(t)}
+        <button type="button" onclick="removeDrawerTag('${escapeHtml(t)}')" class="hover:text-rose-400 font-bold ml-0.5">&times;</button>
+      </span>
+    `).join('')}
+    <button type="button" onclick="promptAddDrawerTag()" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition-colors">
+      + Add Tag
+    </button>
+  `;
+}
+
+function promptAddDrawerTag() {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  const tag = prompt('Enter new tag:');
+  if (!tag || !tag.trim()) return;
+  if (!task.tags) task.tags = [];
+  if (!task.tags.includes(tag.trim())) {
+    task.tags.push(tag.trim());
+    renderDrawerTags(task);
+    if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+    else renderTaskListView();
+    syncTaskUpdateToServer(task);
+  }
+}
+
+function removeDrawerTag(tag) {
+  const task = getActiveDrawerTask();
+  if (!task || !task.tags) return;
+  task.tags = task.tags.filter(t => t !== tag);
+  renderDrawerTags(task);
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+  syncTaskUpdateToServer(task);
+}
+
+function renderDrawerTime(task) {
+  const display = document.getElementById('task-drawer-time-display');
+  if (!display) return;
+  const estM = task.duration_minutes || 60;
+  const actM = task.logged_minutes || 0;
+  display.innerText = `Estimated: ${Math.floor(estM/60)}h ${estM%60}m • Actual: ${Math.floor(actM/60)}h ${actM%60}m`;
+}
+
+function promptLogDrawerTime() {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  const min = prompt('Enter minutes to log (e.g. 30):', '30');
+  if (!min || isNaN(parseInt(min, 10))) return;
+  task.logged_minutes = (task.logged_minutes || 0) + parseInt(min, 10);
+  renderDrawerTime(task);
+  if (typeof showNotification === 'function') showNotification(`Logged ${min}m to task!`, 'success');
+  syncTaskUpdateToServer(task);
+}
+
+function promptAddCustomField() {
+  const fieldName = prompt('Enter custom field label (e.g., Client Cost, Release Target):');
+  if (!fieldName) return;
+  const fieldValue = prompt(`Enter value for "${fieldName}":`);
+  if (!fieldValue) return;
+
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  if (!task.custom_fields) task.custom_fields = [];
+  task.custom_fields.push({ label: fieldName, value: fieldValue });
+  if (typeof showNotification === 'function') showNotification(`Added custom field "${fieldName}"`, 'success');
+}
+
+function saveDrawerDescription(desc) {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  task.description = desc;
+  syncTaskUpdateToServer(task);
+}
+
+function insertDrawerFormat(syntax) {
+  const textarea = document.getElementById('task-drawer-description');
+  if (!textarea) return;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const val = textarea.value;
+  textarea.value = val.substring(0, start) + syntax + val.substring(start, end) + syntax + val.substring(end);
+  textarea.focus();
+  saveDrawerDescription(textarea.value);
+}
+
+// Subtasks
+function renderDrawerSubtasks(task) {
+  const countEl = document.getElementById('task-drawer-subtasks-count');
+  const barEl = document.getElementById('task-drawer-subtasks-bar');
+  const listEl = document.getElementById('task-drawer-subtasks-list');
+  if (!listEl) return;
+
+  const subtasks = task.subtasks || [];
+  const completed = subtasks.filter(st => st.completed).length;
+  const total = subtasks.length;
+  const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  if (countEl) countEl.innerText = `${completed}/${total}`;
+  if (barEl) barEl.style.width = `${pct}%`;
+
+  if (total === 0) {
+    listEl.innerHTML = `<div class="text-xs text-slate-500 py-1 italic">No subtasks added yet. Add one below!</div>`;
+    return;
+  }
+
+  listEl.innerHTML = subtasks.map(st => `
+    <div class="flex items-center justify-between p-2 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 transition-colors group">
+      <label class="flex items-center gap-2.5 text-xs text-slate-200 cursor-pointer flex-1">
+        <input type="checkbox" ${st.completed ? 'checked' : ''} onchange="toggleDrawerSubtask('${st.subtask_id}')" class="rounded bg-slate-800 border-slate-700 text-cyan-500 focus:ring-0 w-3.5 h-3.5">
+        <span class="${st.completed ? 'line-through text-slate-500' : 'text-slate-200'}">${escapeHtml(st.title)}</span>
+      </label>
+      <button type="button" onclick="deleteDrawerSubtask('${st.subtask_id}')" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 p-1 transition-opacity">
+        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+      </button>
+    </div>
+  `).join('');
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function handleDrawerAddSubtask(e) {
+  if (e) e.preventDefault();
+  const input = document.getElementById('task-drawer-new-subtask');
+  if (!input || !input.value.trim()) return;
+
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  if (!task.subtasks) task.subtasks = [];
+
+  const newSubtask = {
+    subtask_id: 'st_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
+    title: input.value.trim(),
+    completed: false
+  };
+
+  task.subtasks.push(newSubtask);
+  input.value = '';
+  renderDrawerSubtasks(task);
+
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+
+  syncTaskUpdateToServer(task);
+}
+
+function toggleDrawerSubtask(subtaskId) {
+  const task = getActiveDrawerTask();
+  if (!task || !task.subtasks) return;
+  const st = task.subtasks.find(s => s.subtask_id === subtaskId);
+  if (!st) return;
+  st.completed = !st.completed;
+  renderDrawerSubtasks(task);
+
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+
+  syncTaskUpdateToServer(task);
+}
+
+function deleteDrawerSubtask(subtaskId) {
+  const task = getActiveDrawerTask();
+  if (!task || !task.subtasks) return;
+  task.subtasks = task.subtasks.filter(s => s.subtask_id !== subtaskId);
+  renderDrawerSubtasks(task);
+
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+
+  syncTaskUpdateToServer(task);
+}
+
+// Attachments
+function renderDrawerAttachments(task) {
+  const listEl = document.getElementById('task-drawer-attachments-list');
+  if (!listEl) return;
+  const attachments = task.attachments || [];
+
+  if (attachments.length === 0) {
+    listEl.innerHTML = `<div class="text-xs text-slate-500 py-1 italic">No files attached to this task.</div>`;
+    return;
+  }
+
+  listEl.innerHTML = attachments.map((att, idx) => `
+    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-cyan-500/40 transition-colors">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <i data-lucide="file-text" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+        <div class="min-w-0">
+          <p class="text-xs font-semibold text-slate-200 truncate">${escapeHtml(att.name)}</p>
+          <span class="text-[10px] text-slate-500 font-mono">${att.size || '1.2 MB'}</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5 shrink-0">
+        <a href="${att.url || '#'}" target="_blank" class="p-1 hover:bg-slate-800 text-slate-400 hover:text-cyan-400 rounded transition-colors" title="Download">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+        </a>
+        <button type="button" onclick="removeDrawerAttachment(${idx})" class="p-1 hover:bg-slate-800 text-slate-500 hover:text-rose-400 rounded transition-colors" title="Remove">
+          <i data-lucide="x" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function promptAddDrawerAttachment() {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  const name = prompt('Enter attachment file name (e.g. Creative_Brief_v2.pdf):');
+  if (!name || !name.trim()) return;
+
+  if (!task.attachments) task.attachments = [];
+  task.attachments.push({
+    name: name.trim(),
+    size: '1.5 MB',
+    url: '#'
+  });
+
+  renderDrawerAttachments(task);
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+  syncTaskUpdateToServer(task);
+}
+
+function removeDrawerAttachment(idx) {
+  const task = getActiveDrawerTask();
+  if (!task || !task.attachments) return;
+  task.attachments.splice(idx, 1);
+  renderDrawerAttachments(task);
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+  syncTaskUpdateToServer(task);
+}
+
+function focusTaskAttachment() {
+  promptAddDrawerAttachment();
+}
+
+// Activity & Comments
+function renderDrawerComments(task) {
+  const streamEl = document.getElementById('task-drawer-comments-stream');
+  if (!streamEl) return;
+  const comments = task.comments || [];
+
+  if (comments.length === 0) {
+    streamEl.innerHTML = `<div class="text-xs text-slate-500 py-2 italic text-center">No comments posted yet. Be the first to comment below!</div>`;
+    return;
+  }
+
+  streamEl.innerHTML = comments.map(c => `
+    <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800/80">
+      <div class="w-7 h-7 rounded-full bg-cyan-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0 shadow-sm">
+        ${escapeHtml(c.author_initials || 'MA')}
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-xs font-bold text-slate-200">${escapeHtml(c.author_name || 'Mohamed Asy')}</span>
+          <span class="text-[10px] text-slate-500 font-mono">${c.created_at ? new Date(c.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now'}</span>
+        </div>
+        <p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(c.text)}</p>
+      </div>
+      <button type="button" onclick="deleteDrawerComment('${c.comment_id}')" class="text-slate-600 hover:text-rose-400 p-1 transition-colors" title="Delete comment">
+        <i data-lucide="trash" class="w-3 h-3"></i>
+      </button>
+    </div>
+  `).join('');
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function handleDrawerAddComment(e) {
+  if (e) e.preventDefault();
+  const input = document.getElementById('task-drawer-comment-input');
+  if (!input || !input.value.trim()) return;
+
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  if (!task.comments) task.comments = [];
+
+  const newComment = {
+    comment_id: 'c_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
+    author_name: 'Mohamed Asy',
+    author_initials: 'MA',
+    text: input.value.trim(),
+    created_at: new Date().toISOString()
+  };
+
+  task.comments.push(newComment);
+  input.value = '';
+  renderDrawerComments(task);
+
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+
+  syncTaskUpdateToServer(task);
+}
+
+function handleCommentKeyDown(e) {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey || !e.shiftKey)) {
+    e.preventDefault();
+    handleDrawerAddComment(e);
+  }
+}
+
+function deleteDrawerComment(commentId) {
+  const task = getActiveDrawerTask();
+  if (!task || !task.comments) return;
+  task.comments = task.comments.filter(c => c.comment_id !== commentId);
+  renderDrawerComments(task);
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+  syncTaskUpdateToServer(task);
+}
+
+function insertCommentEmoji(emoji) {
+  const input = document.getElementById('task-drawer-comment-input');
+  if (!input) return;
+  input.value += (input.value ? ' ' : '') + emoji;
+  input.focus();
+}
+
+// Watchers, Favorites, Deep Link & Menus
+function toggleTaskWatcher() {
+  const countEl = document.getElementById('task-drawer-watchers');
+  if (!countEl) return;
+  let cnt = parseInt(countEl.innerText, 10) || 1;
+  cnt = cnt === 2 ? 3 : 2;
+  countEl.innerText = cnt;
+  if (typeof showNotification === 'function') showNotification(`Watchers updated (${cnt})`, 'info');
+}
+
+function toggleTaskFavorite() {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  task.is_favorite = !task.is_favorite;
+  if (typeof showNotification === 'function') {
+    showNotification(task.is_favorite ? 'Task starred!' : 'Task removed from favorites', 'info');
+  }
+}
+
+function copyTaskDeepLink() {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  const url = `${window.location.origin}${window.location.pathname}?task=${task.task_id}`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url);
+    if (typeof showNotification === 'function') showNotification('Task deep link copied to clipboard!', 'success');
+    else alert('Link copied!');
+  }
+}
+
+function toggleTaskMenuDropdown(event) {
+  if (event) event.stopPropagation();
+  const options = ['Duplicate Task', 'Archive Task', 'Delete Task'];
+  const choice = prompt('Task options:\n1. Duplicate Task\n2. Archive Task\n3. Delete Task\nEnter 1, 2, or 3:');
+  if (choice === '1') {
+    duplicateActiveTask();
+  } else if (choice === '2') {
+    archiveActiveTask();
+  } else if (choice === '3') {
+    deleteActiveTask();
+  }
+}
+
+function duplicateActiveTask() {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  const clone = JSON.parse(JSON.stringify(task));
+  clone.task_id = 'task_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
+  clone.title += ' (Copy)';
+  window.WorkspacesState.tasks.push(clone);
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+  if (typeof showNotification === 'function') showNotification('Task duplicated!', 'success');
+}
+
+function archiveActiveTask() {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  window.WorkspacesState.tasks = window.WorkspacesState.tasks.filter(t => t.task_id !== task.task_id);
+  closeTaskDetailsModal();
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+  if (typeof showNotification === 'function') showNotification('Task archived!', 'info');
+}
+
+function deleteActiveTask() {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  if (!confirm(`Delete task "${task.title}"?`)) return;
+  window.WorkspacesState.tasks = window.WorkspacesState.tasks.filter(t => t.task_id !== task.task_id);
+  closeTaskDetailsModal();
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+  if (typeof showNotification === 'function') showNotification('Task deleted!', 'info');
+}
+
+function promptQuickAddTaskToColumn(status) {
+  const title = prompt(`Add a new task to ${status.replace('_', ' ')}:`);
+  if (!title || !title.trim()) return;
 
   const wsId = window.WorkspacesState.currentWorkspaceId || 'ws_iceberg_master';
-  const colTasks = window.WorkspacesState.tasks.filter(t => t.status === targetStatus);
-  const lastTask = colTasks[colTasks.length - 1];
+  const prjId = window.WorkspacesState.currentProjectId || 'prj_dentaquik';
 
+  const newTask = {
+    task_id: 'task_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
+    project_id: prjId,
+    workspace_id: wsId,
+    title: title.trim(),
+    priority: 'MEDIUM',
+    status: status || 'TODO',
+    duration_minutes: 45,
+    logged_minutes: 0,
+    due_date: new Date().toISOString().split('T')[0],
+    position: '0|' + Date.now().toString(36),
+    tags: ['General'],
+    assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy' }],
+    subtasks: [],
+    attachments: [],
+    comments: []
+  };
+
+  window.WorkspacesState.tasks.push(newTask);
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+
+  syncTaskUpdateToServer(newTask);
+}
+
+// Asynchronously sync task state to API (offline-resilient)
+async function syncTaskUpdateToServer(task) {
+  if (!task) return;
+  const wsId = window.WorkspacesState.currentWorkspaceId || 'ws_iceberg_master';
   try {
-    await fetch(`/api/iams/workspaces/${wsId}/tasks/${taskId}/reorder`, {
+    const token = sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '';
+    await fetch(`/api/iams/workspaces/${wsId}/tasks/${task.task_id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
+        'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({
-        prev_position: lastTask ? lastTask.position : null,
-        next_position: null,
-        target_status: targetStatus
-      })
+      body: JSON.stringify(task)
     });
   } catch (err) {
-    console.warn('Reorder server notice (local update retained):', err);
+    // Graceful offline fallback
   }
 }
 
@@ -1559,15 +2762,70 @@ window.reactToChatMessage = reactToChatMessage;
 window.openCreateProjectModal = openCreateProjectModal;
 window.onSelectExistingCMSProject = onSelectExistingCMSProject;
 window.handleCreateProjectSubmit = handleCreateProjectSubmit;
+window.renderKanbanColumns = renderKanbanColumns;
+window.renderTaskListView = renderTaskListView;
+
+// Upbase Sliding Task Details Drawer Exports
+window.openTaskDetailsModal = openTaskDetailsModal;
+window.closeTaskDetailsModal = closeTaskDetailsModal;
+window.toggleTaskComplete = toggleTaskComplete;
+window.toggleTaskCompleteFromDrawer = toggleTaskCompleteFromDrawer;
+window.autoResizeDrawerTitle = autoResizeDrawerTitle;
+window.saveDrawerTitleChange = saveDrawerTitleChange;
+window.onDrawerStatusChange = onDrawerStatusChange;
+window.onDrawerPriorityChange = onDrawerPriorityChange;
+window.onDrawerDueDateChange = onDrawerDueDateChange;
+window.quickSetDrawerDue = quickSetDrawerDue;
+window.onDrawerAssigneeChange = onDrawerAssigneeChange;
+window.promptAddDrawerTag = promptAddDrawerTag;
+window.removeDrawerTag = removeDrawerTag;
+window.promptLogDrawerTime = promptLogDrawerTime;
+window.promptAddCustomField = promptAddCustomField;
+window.saveDrawerDescription = saveDrawerDescription;
+window.insertDrawerFormat = insertDrawerFormat;
+window.handleDrawerAddSubtask = handleDrawerAddSubtask;
+window.toggleDrawerSubtask = toggleDrawerSubtask;
+window.deleteDrawerSubtask = deleteDrawerSubtask;
+window.promptAddDrawerAttachment = promptAddDrawerAttachment;
+window.removeDrawerAttachment = removeDrawerAttachment;
+window.focusTaskAttachment = focusTaskAttachment;
+window.handleDrawerAddComment = handleDrawerAddComment;
+window.handleCommentKeyDown = handleCommentKeyDown;
+window.deleteDrawerComment = deleteDrawerComment;
+window.insertCommentEmoji = insertCommentEmoji;
+window.toggleTaskWatcher = toggleTaskWatcher;
+window.toggleTaskFavorite = toggleTaskFavorite;
+window.copyTaskDeepLink = copyTaskDeepLink;
+window.toggleTaskMenuDropdown = toggleTaskMenuDropdown;
+window.deleteActiveTask = deleteActiveTask;
+window.promptQuickAddTaskToColumn = promptQuickAddTaskToColumn;
+
+// Keyboard shortcuts (Esc to close drawer)
+if (typeof document !== 'undefined') {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeTaskDetailsModal();
+    }
+  });
+}
 
 // Auto-initialize immediately on script load so UI is instant and never hangs on "Loading..."
 if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      initUpbaseWorkspaces();
+  const initApp = () => {
+    initUpbaseWorkspaces().then(() => {
+      // Check for deep-linked task in URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const taskId = urlParams.get('task');
+      if (taskId) {
+        setTimeout(() => openTaskDetailsModal(taskId), 300);
+      }
     });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
   } else {
-    initUpbaseWorkspaces();
+    initApp();
   }
 }
 

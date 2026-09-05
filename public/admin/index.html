@@ -3146,6 +3146,240 @@
         </div>
     </div>
 
+    <!-- ========================================================= -->
+    <!-- UPBASE MODAL 04: TASK DETAILS SLIDING DRAWER (IMAGE 2)     -->
+    <!-- ========================================================= -->
+    <div id="upbase-task-drawer-overlay" onclick="closeTaskDetailsModal()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden transition-opacity opacity-0"></div>
+
+    <aside id="upbase-task-drawer" class="fixed top-0 right-0 bottom-0 w-full sm:w-[580px] lg:w-[680px] xl:w-[740px] bg-[#12141a] border-l border-slate-800/90 shadow-2xl z-50 flex flex-col transform translate-x-full transition-transform duration-300 ease-out hidden">
+        <!-- Drawer Header (Breadcrumbs + Actions from Image 2) -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800/80 bg-slate-900/40">
+            <!-- Left: Colored Project Box + List + Status Pill -->
+            <div class="flex items-center gap-2 text-xs font-semibold">
+                <span id="task-drawer-prj-color" class="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block"></span>
+                <span id="task-drawer-prj-name" class="text-slate-300">General</span>
+                <span class="text-slate-600">/</span>
+                <div class="relative inline-block">
+                    <select id="task-drawer-status-select" onchange="onDrawerStatusChange(this.value)" class="bg-slate-900/90 text-xs font-bold text-slate-200 border border-slate-700/80 rounded-lg px-2.5 py-1 focus:outline-none focus:border-cyan-500 cursor-pointer">
+                        <option value="TODO">To Do</option>
+                        <option value="IN_PROGRESS">In Progress</option>
+                        <option value="REVIEW">In Review</option>
+                        <option value="DONE">Done</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Right: Icons (Watchers, Link, Clip, Menu, Star, Close) -->
+            <div class="flex items-center gap-1.5 text-slate-400">
+                <button type="button" onclick="toggleTaskWatcher()" title="Watchers" class="flex items-center gap-1 px-2 py-1 hover:bg-slate-800 text-xs rounded-lg transition-colors">
+                    <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                    <span id="task-drawer-watchers" class="text-[11px] font-mono">2</span>
+                </button>
+                <button type="button" onclick="toggleTaskCompleteFromDrawer()" title="Mark Complete" class="p-1.5 hover:bg-emerald-500/20 hover:text-emerald-400 rounded-lg transition-colors">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                </button>
+                <button type="button" onclick="focusTaskAttachment()" title="Add Attachment" class="p-1.5 hover:bg-slate-800 hover:text-white rounded-lg transition-colors">
+                    <i data-lucide="paperclip" class="w-4 h-4"></i>
+                </button>
+                <button type="button" onclick="copyTaskDeepLink()" title="Copy Link" class="p-1.5 hover:bg-slate-800 hover:text-white rounded-lg transition-colors">
+                    <i data-lucide="link" class="w-4 h-4"></i>
+                </button>
+                <button type="button" onclick="toggleTaskMenuDropdown(event)" title="Options" class="p-1.5 hover:bg-slate-800 hover:text-white rounded-lg transition-colors">
+                    <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                </button>
+                <button type="button" onclick="toggleTaskFavorite()" title="Favorite" class="p-1.5 hover:bg-amber-500/20 hover:text-amber-400 rounded-lg transition-colors">
+                    <i data-lucide="star" class="w-4 h-4"></i>
+                </button>
+                <button type="button" onclick="closeTaskDetailsModal()" title="Close (Esc)" class="p-1.5 ml-1 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Drawer Body (Scrollable) -->
+        <div class="flex-1 overflow-y-auto px-7 py-6 space-y-7 custom-scrollbar" id="task-drawer-scroll-body">
+            <!-- 1. Task Title with Completion Circle -->
+            <div class="flex items-start gap-3.5">
+                <button type="button" id="task-drawer-complete-btn" onclick="toggleTaskCompleteFromDrawer()" class="mt-1 w-6 h-6 rounded-full border-2 border-slate-600 hover:border-emerald-500 flex items-center justify-center transition-all group shrink-0">
+                    <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </button>
+                <div class="flex-1 min-w-0">
+                    <textarea id="task-drawer-title-input" rows="1" oninput="autoResizeDrawerTitle(this)" onblur="saveDrawerTitleChange(this.value)" placeholder="Task title..." class="w-full text-xl md:text-2xl font-bold text-white bg-transparent border-none focus:outline-none focus:ring-0 resize-none p-0 leading-tight placeholder-slate-600"></textarea>
+                    <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                        Created by <span id="task-drawer-creator" class="text-slate-400 font-medium">Mohamed Asy</span> • <span id="task-drawer-created-at" class="text-slate-500 font-mono">Today</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 2. Properties Key-Value Table (Exact replica of Image 2) -->
+            <div class="space-y-3.5 text-xs">
+                <!-- Due Date Row -->
+                <div class="grid grid-cols-12 items-center gap-2">
+                    <div class="col-span-4 flex items-center gap-2 text-slate-400 font-medium">
+                        <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>
+                        <span>Due date</span>
+                    </div>
+                    <div class="col-span-8 flex items-center gap-2">
+                        <input type="date" id="task-drawer-due-input" onchange="onDrawerDueDateChange(this.value)" class="bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-lg px-2.5 py-1 focus:outline-none focus:border-cyan-500 font-mono">
+                        <button type="button" onclick="quickSetDrawerDue('today')" class="px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-[11px] text-slate-400">Today</button>
+                        <button type="button" onclick="quickSetDrawerDue('tomorrow')" class="px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-[11px] text-slate-400">Tomorrow</button>
+                        <button type="button" onclick="quickSetDrawerDue(null)" class="text-[11px] text-slate-500 hover:text-rose-400 ml-1">Clear</button>
+                    </div>
+                </div>
+
+                <!-- Assignee Row -->
+                <div class="grid grid-cols-12 items-center gap-2">
+                    <div class="col-span-4 flex items-center gap-2 text-slate-400 font-medium">
+                        <i data-lucide="user" class="w-4 h-4 text-slate-500"></i>
+                        <span>Assignee</span>
+                    </div>
+                    <div class="col-span-8">
+                        <div class="flex items-center gap-2">
+                            <select id="task-drawer-assignee-select" onchange="onDrawerAssigneeChange(this.value)" class="bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-lg px-2.5 py-1 focus:outline-none focus:border-cyan-500">
+                                <option value="">No Assignee</option>
+                                <option value="usr_asy" selected>MA Mohamed Asy</option>
+                                <option value="usr_sarah">SO Sarah Osama</option>
+                                <option value="usr_tarek">TD Tarek Dev</option>
+                                <option value="usr_nour">ND Nour Designer</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Priority Row -->
+                <div class="grid grid-cols-12 items-center gap-2">
+                    <div class="col-span-4 flex items-center gap-2 text-slate-400 font-medium">
+                        <i data-lucide="alert-circle" class="w-4 h-4 text-slate-500"></i>
+                        <span>Priority</span>
+                    </div>
+                    <div class="col-span-8">
+                        <select id="task-drawer-priority-select" onchange="onDrawerPriorityChange(this.value)" class="bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-lg px-2.5 py-1 focus:outline-none focus:border-cyan-500 font-medium">
+                            <option value="NONE">No priority</option>
+                            <option value="LOW">Low (Blue)</option>
+                            <option value="MEDIUM">Medium (Yellow)</option>
+                            <option value="HIGH">High (Orange)</option>
+                            <option value="URGENT">Urgent (Red)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tags Row -->
+                <div class="grid grid-cols-12 items-center gap-2">
+                    <div class="col-span-4 flex items-center gap-2 text-slate-400 font-medium">
+                        <i data-lucide="tag" class="w-4 h-4 text-slate-500"></i>
+                        <span>Tags</span>
+                    </div>
+                    <div class="col-span-8 flex flex-wrap items-center gap-1.5" id="task-drawer-tags-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Time Row -->
+                <div class="grid grid-cols-12 items-center gap-2">
+                    <div class="col-span-4 flex items-center gap-2 text-slate-400 font-medium">
+                        <i data-lucide="clock" class="w-4 h-4 text-slate-500"></i>
+                        <span>Time</span>
+                    </div>
+                    <div class="col-span-8 flex items-center gap-3">
+                        <span class="text-slate-300 font-mono" id="task-drawer-time-display">Estimated: 1h 30m • Actual: 45m</span>
+                        <button type="button" onclick="promptLogDrawerTime()" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-bold underline">+ Log Time</button>
+                    </div>
+                </div>
+
+                <!-- Add Custom Field Row -->
+                <div class="pt-1">
+                    <button type="button" onclick="promptAddCustomField()" class="text-xs text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-1.5 font-medium">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        <span>Add custom field</span>
+                    </button>
+                </div>
+            </div>
+
+            <hr class="border-slate-800/80">
+
+            <!-- 3. Description Section -->
+            <div class="space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="align-left" class="w-4 h-4"></i> Description
+                    </h4>
+                    <div class="flex items-center gap-1 text-slate-500 text-xs">
+                        <button type="button" onclick="insertDrawerFormat('**')" title="Bold" class="p-1 hover:bg-slate-800 rounded"><b>B</b></button>
+                        <button type="button" onclick="insertDrawerFormat('*')" title="Italic" class="p-1 hover:bg-slate-800 rounded"><i>I</i></button>
+                        <button type="button" onclick="insertDrawerFormat('- ')" title="List" class="p-1 hover:bg-slate-800 rounded">• List</button>
+                        <button type="button" onclick="insertDrawerFormat('`')" title="Code" class="p-1 hover:bg-slate-800 rounded">&lt;/&gt;</button>
+                    </div>
+                </div>
+                <textarea id="task-drawer-description" rows="4" onblur="saveDrawerDescription(this.value)" placeholder="Add description or type '/' to insert..." class="w-full p-3.5 rounded-xl bg-slate-900/70 border border-slate-800 text-slate-200 text-xs leading-relaxed focus:outline-none focus:border-cyan-500/50 resize-y placeholder-slate-600"></textarea>
+            </div>
+
+            <!-- 4. Subtasks Checklist -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="check-square" class="w-4 h-4 text-cyan-400"></i> Subtasks (<span id="task-drawer-subtasks-count">0/0</span>)
+                    </h4>
+                </div>
+                <!-- Progress bar -->
+                <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+                    <div id="task-drawer-subtasks-bar" class="bg-cyan-500 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+                </div>
+                <!-- Subtasks list items -->
+                <div id="task-drawer-subtasks-list" class="space-y-1.5"></div>
+                <!-- Add subtask input -->
+                <form onsubmit="handleDrawerAddSubtask(event)" class="flex gap-2">
+                    <input type="text" id="task-drawer-new-subtask" placeholder="+ Add a subtask (press Enter)..." class="flex-1 px-3 py-1.5 bg-slate-900/90 border border-slate-800 rounded-lg text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500">
+                    <button type="submit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-lg font-medium">Add</button>
+                </form>
+            </div>
+
+            <!-- 5. Attachments Section -->
+            <div class="space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="paperclip" class="w-4 h-4 text-amber-400"></i> Attachments
+                    </h4>
+                    <button type="button" onclick="promptAddDrawerAttachment()" class="text-xs text-cyan-400 hover:underline font-medium">+ Add File / Link</button>
+                </div>
+                <div id="task-drawer-attachments-list" class="space-y-1.5">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- 6. Activity Timeline & Comments -->
+            <div class="space-y-4 pt-2">
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <i data-lucide="message-square" class="w-4 h-4 text-blue-400"></i> Activity & Comments
+                </h4>
+                <div id="task-drawer-comments-stream" class="space-y-3">
+                    <!-- Comments Stream Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Fixed Bottom Comment Box (Exact replica of Image 2) -->
+        <div class="p-4 border-t border-slate-800/90 bg-[#141720]">
+            <form onsubmit="handleDrawerAddComment(event)" class="flex items-end gap-3">
+                <div class="w-8 h-8 rounded-full bg-cyan-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
+                    MA
+                </div>
+                <div class="flex-1 bg-slate-900 border border-slate-800 rounded-xl p-2 focus-within:border-cyan-500/50 transition-colors">
+                    <textarea id="task-drawer-comment-input" rows="1" placeholder="Write a comment..." onkeydown="handleCommentKeyDown(event)" class="w-full bg-transparent text-xs text-slate-100 placeholder-slate-500 focus:outline-none resize-none p-1"></textarea>
+                    <div class="flex items-center justify-between pt-1 text-slate-400 text-xs border-t border-slate-800/60 mt-1">
+                        <div class="flex items-center gap-2">
+                            <button type="button" title="Mention team member" class="hover:text-cyan-400 p-1">@</button>
+                            <button type="button" title="Attach file" onclick="promptAddDrawerAttachment()" class="hover:text-cyan-400 p-1"><i data-lucide="paperclip" class="w-3.5 h-3.5"></i></button>
+                            <button type="button" title="Add emoji" onclick="insertCommentEmoji('🚀')" class="hover:text-cyan-400 p-1">😀</button>
+                        </div>
+                        <button type="submit" class="px-3 py-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-lg transition-all shadow-sm">
+                            Comment
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </aside>
+
     <script src="/admin/iams.js"></script>
     <script src="/admin/workspaces-ui.js"></script>
     <script src="/admin/daily-planner.js"></script>
