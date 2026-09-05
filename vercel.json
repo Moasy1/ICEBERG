@@ -11,7 +11,6 @@
     { "source": "/idex/thank-you", "destination": "/idex-thank-you.html" },
     { "source": "/idex", "destination": "/idex.html" },
     { "source": "/idex/audit", "destination": "/idex.html" },
-    { "source": "/idex/book", "destination": "/idex.html" },
-    { "source": "/((?!api/).*)", "destination": "/$1.html" }
+    { "source": "/idex/book", "destination": "/idex.html" }
   ]
 }
