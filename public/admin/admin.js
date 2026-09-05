@@ -1204,7 +1204,8 @@ async function viewContactDetails(id) {
                 
                 // Open modal
                 document.getElementById('contact-modal').classList.remove('hidden');
-                document.getElementById('modal-overlay').classList.remove('hidden');
+                const overlay = document.getElementById('modal-overlay');
+                if (overlay) overlay.classList.remove('hidden');
                 lucide.createIcons();
                 
                 // Mark as read automatically when viewed
@@ -1425,7 +1426,8 @@ function closeAllModals() {
     document.querySelectorAll('[id$="-modal"]').forEach(modal => {
         modal.classList.add('hidden');
     });
-    document.getElementById('modal-overlay').classList.add('hidden');
+    const overlay = document.getElementById('modal-overlay');
+    if (overlay) overlay.classList.add('hidden');
     currentEditId = null;
     currentEditType = null;
 }

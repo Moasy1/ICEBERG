@@ -891,6 +891,79 @@ async function loadWorkspaceTasks() {
   }
 }
 
+// ==========================================
+// KANBAN DRAG & DROP ENGINE (60FPS GPU OPTIMIZED)
+// ==========================================
+let draggedTaskId = null;
+
+function handleKanbanDragStart(e, taskId) {
+  draggedTaskId = taskId;
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', taskId);
+  }
+  const card = e.currentTarget;
+  if (card) {
+    card.classList.add('opacity-40', 'scale-95');
+  }
+}
+
+function handleKanbanDragEnd(e) {
+  const card = e.currentTarget;
+  if (card) {
+    card.classList.remove('opacity-40', 'scale-95');
+  }
+  document.querySelectorAll('.kanban-col-drop-active').forEach(el => {
+    el.classList.remove('kanban-col-drop-active');
+  });
+  draggedTaskId = null;
+}
+
+function handleKanbanDragOver(e) {
+  e.preventDefault();
+  if (e.dataTransfer) {
+    e.dataTransfer.dropEffect = 'move';
+  }
+  const col = e.currentTarget;
+  if (col && !col.classList.contains('kanban-col-drop-active')) {
+    col.classList.add('kanban-col-drop-active');
+  }
+}
+
+function handleKanbanDragLeave(e) {
+  const col = e.currentTarget;
+  if (col && !col.contains(e.relatedTarget)) {
+    col.classList.remove('kanban-col-drop-active');
+  }
+}
+
+async function handleKanbanDrop(e, targetStatus) {
+  e.preventDefault();
+  const col = e.currentTarget;
+  if (col) col.classList.remove('kanban-col-drop-active');
+
+  const taskId = (e.dataTransfer && e.dataTransfer.getData('text/plain')) || draggedTaskId;
+  if (!taskId) return;
+
+  const task = (window.WorkspacesState.tasks || []).find(t => t.task_id === taskId);
+  if (!task || task.status === targetStatus) return;
+
+  // Instant 60fps optimistic update
+  task.status = targetStatus;
+  renderKanbanColumns();
+
+  try {
+    const wsId = window.WorkspacesState.currentWorkspaceId || 'ws_iceberg_master';
+    await fetch(`/api/workspace-tasks?action=update_task&task_id=${encodeURIComponent(taskId)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: targetStatus, workspace_id: wsId })
+    });
+  } catch (err) {
+    console.warn('Kanban drop status persist (offline-first):', err);
+  }
+}
+
 function renderKanbanColumns() {
   const columns = [
     { id: 'TODO', title: 'To Do', color: '#64748b' },
@@ -929,9 +1002,10 @@ function renderKanbanColumns() {
       ` : '';
 
       return `
-        <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all shadow-md group relative ${isDone ? 'opacity-60 bg-slate-950/70' : ''}"
+        <div class="kanban-card p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 cursor-pointer shadow-md group relative ${isDone ? 'opacity-60 bg-slate-950/70' : ''}"
              draggable="true"
              ondragstart="handleKanbanDragStart(event, '${t.task_id}')"
+             ondragend="handleKanbanDragEnd(event)"
              onclick="openTaskDetailsModal('${t.task_id}')">
           
           <!-- Top Row: Checkbox Circle + Title -->
@@ -1167,19 +1241,11 @@ function openTaskDetailsModal(taskId) {
   // Comments
   renderDrawerComments(task);
 
-  // Animate Slide In from Right
+  // Animate Slide In from Right with pure GPU accelerated class
   const overlay = document.getElementById('upbase-task-drawer-overlay');
   const drawer = document.getElementById('upbase-task-drawer');
-  if (overlay && drawer) {
-    overlay.classList.remove('hidden');
-    drawer.classList.remove('hidden');
-    requestAnimationFrame(() => {
-      overlay.classList.remove('opacity-0');
-      overlay.classList.add('opacity-100');
-      drawer.classList.remove('translate-x-full');
-      drawer.classList.add('translate-x-0');
-    });
-  }
+  if (overlay) overlay.classList.add('drawer-open');
+  if (drawer) drawer.classList.add('drawer-open');
 
   if (window.lucide) window.lucide.createIcons();
 }
@@ -1187,20 +1253,8 @@ function openTaskDetailsModal(taskId) {
 function closeTaskDetailsModal() {
   const overlay = document.getElementById('upbase-task-drawer-overlay');
   const drawer = document.getElementById('upbase-task-drawer');
-  if (!drawer) return;
-
-  drawer.classList.remove('translate-x-0');
-  drawer.classList.add('translate-x-full');
-
-  if (overlay) {
-    overlay.classList.remove('opacity-100');
-    overlay.classList.add('opacity-0');
-  }
-
-  setTimeout(() => {
-    drawer.classList.add('hidden');
-    if (overlay) overlay.classList.add('hidden');
-  }, 300);
+  if (overlay) overlay.classList.remove('drawer-open');
+  if (drawer) drawer.classList.remove('drawer-open');
 
   window.WorkspacesState.activeTaskId = null;
 }
@@ -3190,7 +3244,9 @@ window.switchWorkspace = switchWorkspace;
 window.selectProject = selectProject;
 window.switchProjectTool = switchProjectTool;
 window.handleKanbanDragStart = handleKanbanDragStart;
+window.handleKanbanDragEnd = handleKanbanDragEnd;
 window.handleKanbanDragOver = handleKanbanDragOver;
+window.handleKanbanDragLeave = handleKanbanDragLeave;
 window.handleKanbanDrop = handleKanbanDrop;
 window.createQuickTask = createQuickTask;
 window.postNewTopic = postNewTopic;
@@ -3269,7 +3325,7 @@ if (typeof document !== 'undefined') {
   const initApp = () => {
     initUpbaseWorkspaces().then(() => {
       // Check for deep-linked task in URL
-      const urlParams = new URLSearchParams(window.location.search);
+      const urlParams = (typeof window !== 'undefined' && window.location && window.location.search) ? new URLSearchParams(window.location.search) : new URLSearchParams();
       const taskId = urlParams.get('task');
       if (taskId) {
         setTimeout(() => openTaskDetailsModal(taskId), 300);
