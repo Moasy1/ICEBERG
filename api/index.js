@@ -105,7 +105,7 @@ const leadsRoutes = require('../lib/routes/leads');
 const calendarRoutes = require('../lib/routes/calendar');
 const notificationRoutes = require('../lib/routes/notifications');
 const analyticsRoutes = require('../lib/routes/analytics');
-const iamsRoutes = require('../lib/routes/iams');
+const iamsRoutes = require('../lib/routes/iams.js');
 
 // API Routes
 app.use('/api/content', contentRoutes);
