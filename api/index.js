@@ -92,13 +92,14 @@ const connectToDatabase = async () => {
   }
 };
 
-// Middleware to ensure DB connection for API routes
-app.use('/api', async (req, res, next) => {
-  if (req.path === '/health' || req.path === '/iams/health' || req.path === '/meta/status' || req.path === '/meta/event' || req.path === '/idex/data') return next();
+// Middleware to ensure DB connection for all API routes (with /api or without /api)
+app.use(async (req, res, next) => {
+  const isApi = req.path.startsWith('/api') || req.path.startsWith('/iams') || req.path.startsWith('/leads') || req.path.startsWith('/projects') || req.path.startsWith('/content') || req.path.startsWith('/services') || req.path.startsWith('/calendar') || req.path.startsWith('/contact') || req.path.startsWith('/notifications') || req.path.startsWith('/analytics') || req.path.startsWith('/meta');
+  if (!isApi) return next();
+  if (req.path.includes('/health') || req.path.includes('/status') || req.path.includes('/idex/data')) return next();
   try {
     await connectToDatabase();
   } catch (err) {
-    // Operate gracefully in fallback mode if MongoDB is offline or disconnected
     console.warn('[DB Middleware Warn]: DB offline, fallback mode active for path:', req.path);
   }
   next();
@@ -140,25 +141,27 @@ mountRoute('/calendar', calendarRoutes);
 mountRoute('/notifications', notificationRoutes);
 mountRoute('/analytics', analyticsRoutes);
 
-// IAMS Unified Router
-const iamsRouter = express.Router();
-iamsRouter.use('/auth', iamsAuthRoutes);
-iamsRouter.use('/clients', iamsClientsRoutes);
-iamsRouter.use('/projects', iamsProjectsRoutes);
-iamsRouter.use('/tasks', iamsTasksRoutes);
-iamsRouter.use('/invoices', iamsInvoicesRoutes);
-iamsRouter.use('/analytics', iamsAnalyticsRoutes);
-iamsRouter.get(['/', '/health'], (req, res) => {
+// IAMS Modular Routes
+mountRoute('/iams/auth', iamsAuthRoutes);
+mountRoute('/iams/clients', iamsClientsRoutes);
+mountRoute('/iams/projects', iamsProjectsRoutes);
+mountRoute('/iams/tasks', iamsTasksRoutes);
+mountRoute('/iams/invoices', iamsInvoicesRoutes);
+mountRoute('/iams/analytics', iamsAnalyticsRoutes);
+
+// IAMS Health Check Handlers
+const iamsHealthHandler = (req, res) => {
   res.json({
     status: 'OK',
     service: 'ICEBERG Internal Accounts Management System (IAMS)',
     version: '1.0.0',
     timestamp: new Date().toISOString()
   });
-});
-
-// Mount IAMS on both /api/iams and /iams
-mountRoute('/iams', iamsRouter);
+};
+app.get('/api/iams/health', iamsHealthHandler);
+app.get('/iams/health', iamsHealthHandler);
+app.get('/api/iams', iamsHealthHandler);
+app.get('/iams', iamsHealthHandler);
 
 // ---------- Analytics Legacy Compat Shims ----------
 // The new analytics logic lives in lib/routes/analytics.js (MongoDB-backed).
@@ -166,7 +169,7 @@ mountRoute('/iams', iamsRouter);
 // so any cached script versions keep working without changes.
 
 // POST /api/analytics/pageview  (legacy) → delegates to /api/analytics/track
-app.post('/api/analytics/pageview', (req, res) => {
+app.post(['/api/analytics/pageview', '/analytics/pageview'], (req, res) => {
   const page  = (req.body && req.body.page)     ? String(req.body.page).substring(0, 200)     : '/unknown';
   const label = (req.body && req.body.resource) ? String(req.body.resource).substring(0, 150) : page;
   // Forward to the new route handler internals by re-calling the router
@@ -176,7 +179,7 @@ app.post('/api/analytics/pageview', (req, res) => {
 });
 
 // GET /api/analytics/pageviews  (legacy) → returns summary in old format
-app.get('/api/analytics/pageviews', async (req, res) => {
+app.get(['/api/analytics/pageviews', '/analytics/pageviews'], async (req, res) => {
   try {
     const mongoose = require('mongoose');
     const PageView = require('../lib/models/PageView');
@@ -195,7 +198,7 @@ app.get('/api/analytics/pageviews', async (req, res) => {
 });
 // -------------------------------------------------------
 
-app.get('/api/idex/data', (req, res) => {
+app.get(['/api/idex/data', '/idex/data'], (req, res) => {
   res.sendFile(path.join(__dirname, '../public/IDEX Event/data.json'));
 });
 
@@ -220,7 +223,7 @@ app.get('/idex/case-study/:slug', (req, res) => {
 });
 
 // Health check endpoint
-app.get(['/api/health', '/health'], async (req, res) => {
+const healthHandler = async (req, res) => {
   let connectionError = null;
   try {
     await connectToDatabase();
@@ -236,14 +239,16 @@ app.get(['/api/health', '/health'], async (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
     mongo: {
-      connection_type: process.env.MONGODB_URI ? 'remote' : 'local',
+      connection_type: process.env.MONGODB_URI ? 'remote' : 'fallback-atlas',
       state: mongoose.connection.readyState,
       state_desc: ['disconnected', 'connected', 'connecting', 'disconnecting'][mongoose.connection.readyState] || 'unknown',
       uri_preview: maskedUri,
       error: connectionError
     }
   });
-});
+};
+app.get('/api/health', healthHandler);
+app.get('/health', healthHandler);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -254,9 +259,12 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404 handler for API routes
-app.use('/api/*', (req, res) => {
-  res.status(404).json({ error: 'API route not found' });
+// 404 handler for API routes (both /api/* and root api endpoints)
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/iams') || req.path.startsWith('/leads') || req.path.startsWith('/projects') || req.path.startsWith('/content') || req.path.startsWith('/services') || req.path.startsWith('/calendar') || req.path.startsWith('/contact') || req.path.startsWith('/notifications') || req.path.startsWith('/analytics') || req.path.startsWith('/meta')) {
+    return res.status(404).json({ error: 'API route not found', path: req.path });
+  }
+  next();
 });
 
 // Fallback for page routes (SPA / fallback to index.html)
