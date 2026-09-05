@@ -105,6 +105,7 @@ const leadsRoutes = require('./routes/leads');
 const calendarRoutes = require('./routes/calendar');
 const notificationRoutes = require('./routes/notifications');
 const analyticsRoutes = require('./routes/analytics');
+const iamsRoutes = require('./routes/iams');
 
 // API Routes
 app.use('/api/content', contentRoutes);
@@ -116,6 +117,7 @@ app.use('/api/leads', leadsRoutes);
 app.use('/api/calendar', calendarRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/iams', iamsRoutes);
 
 // ---------- Analytics Legacy Compat Shims ----------
 // The new analytics logic lives in api/routes/analytics.js (MongoDB-backed).

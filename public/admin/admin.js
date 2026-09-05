@@ -179,6 +179,15 @@ function showSection(sectionId) {
         case 'analytics':
             loadAnalytics();
             break;
+        case 'iams-overview':
+            if (window.IAMS) window.IAMS.loadOverview();
+            break;
+        case 'iams-kanban':
+            if (window.IAMS) window.IAMS.loadKanban();
+            break;
+        case 'iams-billing':
+            if (window.IAMS) window.IAMS.loadInvoices();
+            break;
     }
     lucide.createIcons();
 }
