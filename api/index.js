@@ -58,6 +58,7 @@ app.use(express.static(path.join(__dirname, '../public'), {
 mongoose.set('bufferCommands', false);
 
 // MongoDB connection helper
+const MONGO_URI = process.env.MONGODB_URI || 'mongodb+srv://hmanmahmed_db_user:V4lKIpvmjTI7nn3K@iceberg.4dboitw.mongodb.net/iceberg_cms?retryWrites=true&w=majority';
 let cachedConnection = null;
 
 const connectToDatabase = async () => {
@@ -65,15 +66,10 @@ const connectToDatabase = async () => {
     return cachedConnection;
   }
 
-  if (!process.env.MONGODB_URI) {
-    console.warn('[MongoDB Warn]: No MONGODB_URI configured, operating in resilient memory/disk fallback mode.');
-    return null;
-  }
-
   try {
-    cachedConnection = await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 3000,
-      connectTimeoutMS: 3000
+    cachedConnection = await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000
     });
     console.log('Connected to MongoDB');
     return cachedConnection;
@@ -133,7 +129,16 @@ app.use('/api/iams/tasks', iamsTasksRoutes);
 app.use('/api/iams/invoices', iamsInvoicesRoutes);
 app.use('/api/iams/analytics', iamsAnalyticsRoutes);
 
-app.get(['/api/iams', '/api/iams/health'], (req, res) => {
+app.get('/api/iams/health', (req, res) => {
+  res.json({
+    status: 'OK',
+    service: 'ICEBERG Internal Accounts Management System (IAMS)',
+    version: '1.0.0',
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get('/api/iams', (req, res) => {
   res.json({
     status: 'OK',
     service: 'ICEBERG Internal Accounts Management System (IAMS)',
