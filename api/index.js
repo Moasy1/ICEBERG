@@ -127,15 +127,15 @@ mountRoute('/calendar', calendarRoutes);
 mountRoute('/notifications', notificationRoutes);
 mountRoute('/analytics', analyticsRoutes);
 
-// IAMS Modular Routes
-mountRoute('/iams/auth', iamsAuthRoutes);
-mountRoute('/iams/clients', iamsClientsRoutes);
-mountRoute('/iams/projects', iamsProjectsRoutes);
-mountRoute('/iams/tasks', iamsTasksRoutes);
-mountRoute('/iams/invoices', iamsInvoicesRoutes);
-mountRoute('/iams/analytics', iamsAnalyticsRoutes);
-
-app.get(['/api/iams/health', '/iams/health', '/api/iams', '/iams'], (req, res) => {
+// IAMS Unified Router
+const iamsRouter = express.Router();
+iamsRouter.use('/auth', iamsAuthRoutes);
+iamsRouter.use('/clients', iamsClientsRoutes);
+iamsRouter.use('/projects', iamsProjectsRoutes);
+iamsRouter.use('/tasks', iamsTasksRoutes);
+iamsRouter.use('/invoices', iamsInvoicesRoutes);
+iamsRouter.use('/analytics', iamsAnalyticsRoutes);
+iamsRouter.get(['/', '/health'], (req, res) => {
   res.json({
     status: 'OK',
     service: 'ICEBERG Internal Accounts Management System (IAMS)',
@@ -143,6 +143,9 @@ app.get(['/api/iams/health', '/iams/health', '/api/iams', '/iams'], (req, res) =
     timestamp: new Date().toISOString()
   });
 });
+
+// Mount IAMS on both /api/iams and /iams
+mountRoute('/iams', iamsRouter);
 
 // ---------- Analytics Legacy Compat Shims ----------
 // The new analytics logic lives in lib/routes/analytics.js (MongoDB-backed).
@@ -212,7 +215,7 @@ app.get(['/api/health', '/health'], async (req, res) => {
     connectionError = err.message;
   }
 
-  const uri = process.env.MONGODB_URI || '';
+  const uri = process.env.MONGODB_URI || MONGO_URI || '';
   const maskedUri = uri ? uri.replace(/\/\/.*@/, '//****:****@').substring(0, 30) + '...' : 'not set';
 
   res.json({
