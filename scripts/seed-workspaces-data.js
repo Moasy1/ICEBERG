@@ -39,39 +39,55 @@ async function seedUpbaseData() {
     console.log('✅ Master Workspace created.');
   }
 
-  // 2. Seed Projects
-  const prjId1 = 'prj_sprint_14';
-  let prj1 = await WorkspaceProject.findOne({ project_id: prjId1 });
-  if (!prj1) {
-    prj1 = new WorkspaceProject({
-      project_id: prjId1,
-      workspace_id: wsId,
-      name: 'Sprint 14: Dentaquick MENA Launch',
-      slug: 'sprint-14-dentaquick',
-      description: 'Q3 Brand redesign, omnichannel lead funnels, and CRM workflow integration',
-      color: '#06b6d4',
-      icon: 'briefcase',
-      enabled_tools: {
-        tasks: true,
-        kanban: true,
-        calendar: true,
-        messages: true,
-        docs: true,
-        files: true,
-        bookmarks: true,
-        chat: true
-      },
-      sections: [
-        { section_id: 'sec_todo', name: 'To Do', position: '0|h00000:', color: '#64748b' },
-        { section_id: 'sec_progress', name: 'In Progress', position: '0|h00001:', color: '#06b6d4' },
-        { section_id: 'sec_review', name: 'Client Review', position: '0|h00002:', color: '#f59e0b' },
-        { section_id: 'sec_done', name: 'Completed', position: '0|h00003:', color: '#10b981' }
-      ],
-      created_by: ownerId
-    });
-    await prj1.save();
-    console.log('✅ Project 1 (Dentaquick Launch) created.');
+  // 2. Seed Projects (All 8 Client Scopes from Spec)
+  const CLIENT_PROJECTS = [
+    { id: 'prj_dentaquik', name: 'DentaQuik (Growth & Funnel)', slug: 'dentaquik', color: '#06b6d4', icon: 'briefcase' },
+    { id: 'prj_musical_bag', name: 'Musical Bag (E-Commerce & Brand)', slug: 'musical-bag', color: '#8b5cf6', icon: 'music' },
+    { id: 'prj_call_worship', name: 'The Call For Whorship (Media Campaign)', slug: 'the-call-for-whorship', color: '#f59e0b', icon: 'radio' },
+    { id: 'prj_drum_shop', name: 'Drum Shop (Omnichannel Retainer)', slug: 'drum-shop', color: '#ef4444', icon: 'disc' },
+    { id: 'prj_ghost_note', name: 'Ghost Note (Creative & Social)', slug: 'ghost-note', color: '#ec4899', icon: 'sparkles' },
+    { id: 'prj_golden_perfume', name: 'Golden Perfume (Luxury Brand Launch)', slug: 'golden-perfume', color: '#eab308', icon: 'gem' },
+    { id: 'prj_acrostone', name: 'Acrostone & Waterpik (B2B Distribution)', slug: 'acrostone-waterpik', color: '#10b981', icon: 'building' },
+    { id: 'prj_iceberg_internal', name: 'Iceberg (Internal Operations & Dev)', slug: 'iceberg-internal', color: '#3b82f6', icon: 'shield' }
+  ];
+
+  const defaultSections = [
+    { section_id: 'sec_todo', name: 'To Do', position: '0|h00000:', color: '#64748b' },
+    { section_id: 'sec_progress', name: 'In Progress', position: '0|h00001:', color: '#06b6d4' },
+    { section_id: 'sec_review', name: 'Client Review', position: '0|h00002:', color: '#f59e0b' },
+    { section_id: 'sec_done', name: 'Completed', position: '0|h00003:', color: '#10b981' }
+  ];
+
+  for (const cp of CLIENT_PROJECTS) {
+    let prj = await WorkspaceProject.findOne({ project_id: cp.id });
+    if (!prj) {
+      prj = new WorkspaceProject({
+        project_id: cp.id,
+        workspace_id: wsId,
+        name: cp.name,
+        slug: cp.slug,
+        description: `Dedicated workspace project space for ${cp.name}`,
+        color: cp.color,
+        icon: cp.icon,
+        enabled_tools: {
+          tasks: true,
+          kanban: true,
+          calendar: true,
+          messages: true,
+          docs: true,
+          files: true,
+          bookmarks: true,
+          chat: true
+        },
+        sections: defaultSections,
+        created_by: ownerId
+      });
+      await prj.save();
+      console.log(`✅ Project created: ${cp.name}`);
+    }
   }
+
+  const prjId1 = 'prj_dentaquik';
 
   // 3. Seed Tasks with LexoRank Positions
   const tasksCount = await WorkspaceTask.countDocuments({ workspace_id: wsId });

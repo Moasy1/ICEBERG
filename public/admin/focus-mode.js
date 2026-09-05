@@ -131,7 +131,7 @@ async function completePomodoroInterval() {
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       },
       body: JSON.stringify({
         mode: window.FocusModeState.mode,
@@ -305,7 +305,7 @@ async function loadFocusAnalytics() {
     const res = await fetch('/api/iams/focus/stats', {
       headers: {
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
     const result = await res.json();

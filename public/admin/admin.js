@@ -806,41 +806,53 @@ async function deleteContent(key) {
 
 // Projects Functions
 async function loadProjects() {
+    const tbody = document.getElementById('projects-table-body');
+    if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-6 text-center text-gray-400"><div class="inline-block animate-spin w-5 h-5 border-2 border-cyan-400 border-t-transparent rounded-full mr-2"></div> Loading projects...</td></tr>';
+    }
+
     try {
-        const response = await fetch(`${API_BASE}/projects`);
+        const response = await fetch(`${API_BASE}/projects?status=all&limit=100`);
         const result = await response.json();
 
-        const tbody = document.getElementById('projects-table-body');
+        if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+            tbody.innerHTML = result.data.map(project => {
+                const titleStr = typeof project.title === 'object'
+                    ? (project.title?.en || project.title?.ar || 'Untitled Project')
+                    : (project.title || 'Untitled Project');
+                const catStr = project.category || 'general';
+                const clientStr = project.client || 'N/A';
+                const isPublished = project.status === 'published';
 
-        if (result.success && result.data) {
-            tbody.innerHTML = result.data.map(project => `
+                return `
                 <tr class="table-row">
-                    <td class="px-6 py-4 text-sm text-gray-300">${project.title}</td>
-                    <td class="px-6 py-4 text-sm text-gray-300">${project.category}</td>
-                    <td class="px-6 py-4 text-sm text-gray-300">${project.client || 'N/A'}</td>
+                    <td class="px-6 py-4 text-sm font-medium text-white">${titleStr}</td>
+                    <td class="px-6 py-4 text-sm text-gray-300 capitalize">${catStr}</td>
+                    <td class="px-6 py-4 text-sm text-gray-300">${clientStr}</td>
                     <td class="px-6 py-4 text-sm">
-                        <span class="px-2 py-1 text-xs rounded-full ${project.status === 'published' ? 'status-published' : 'status-draft'}">
-                            ${project.status}
+                        <span class="px-2.5 py-1 text-xs font-semibold rounded-full ${isPublished ? 'status-published' : 'status-draft'}">
+                            ${project.status || 'draft'}
                         </span>
                     </td>
                     <td class="px-6 py-4 text-sm text-right">
-                        <button onclick="editProject('${project._id}')" class="text-blue-400 hover:text-blue-300 mr-3">
+                        <button onclick="editProject('${project._id}')" class="text-cyan-400 hover:text-cyan-300 mr-3 transition-colors" title="Edit">
                             <i data-lucide="edit-2" class="w-4 h-4"></i>
                         </button>
-                        <button onclick="deleteProject('${project._id}')" class="text-red-400 hover:text-red-300">
+                        <button onclick="deleteProject('${project._id}')" class="text-rose-400 hover:text-rose-300 transition-colors" title="Delete">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </td>
                 </tr>
-            `).join('');
+            `;
+            }).join('');
         } else {
-            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-400">No projects found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-400">No projects found. Click "+ Add Project" above to create one.</td></tr>';
         }
 
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
     } catch (error) {
         console.error('Error loading projects:', error);
-        document.getElementById('projects-table-body').innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-red-400">Error loading projects</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-red-400">Error loading projects. Please retry.</td></tr>';
     }
 }
 
@@ -2549,6 +2561,8 @@ function setPreviewDevice(device) {
     const mBtn = document.getElementById('dev-mobile-btn');
     if (!frame) return;
 
+    frame.style.maxWidth = '100%';
+
     [dBtn, tBtn, mBtn].forEach(b => {
         if (b) {
             b.className = 'px-3 py-1 text-gray-400 hover:text-white rounded text-xs font-bold transition-all';
@@ -2557,12 +2571,15 @@ function setPreviewDevice(device) {
 
     if (device === 'mobile') {
         frame.style.width = '375px';
+        frame.style.height = '620px';
         if (mBtn) mBtn.className = 'px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded text-xs font-bold transition-all';
     } else if (device === 'tablet') {
         frame.style.width = '768px';
+        frame.style.height = '720px';
         if (tBtn) tBtn.className = 'px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded text-xs font-bold transition-all';
     } else {
         frame.style.width = '100%';
+        frame.style.height = '780px';
         if (dBtn) dBtn.className = 'px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded text-xs font-bold transition-all';
     }
 }

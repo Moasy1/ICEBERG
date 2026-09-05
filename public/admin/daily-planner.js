@@ -31,7 +31,7 @@ async function loadDailyPlannerData(dateStr) {
     const res = await fetch(`/api/iams/planner/today?date=${dateStr}`, {
       headers: {
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
     const result = await res.json();
@@ -123,7 +123,7 @@ async function toggleHabit(habitId) {
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       },
       body: JSON.stringify({
         date: window.DailyPlannerState.currentDate,
@@ -153,7 +153,7 @@ async function addNewHabit(e) {
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       },
       body: JSON.stringify({
         date: window.DailyPlannerState.currentDate,
@@ -188,7 +188,7 @@ function handleScratchpadInput(val) {
         headers: {
           'Content-Type': 'application/json',
           'x-demo-admin': 'true',
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+          'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
         },
         body: JSON.stringify({
           date: window.DailyPlannerState.currentDate,
@@ -288,7 +288,7 @@ async function scheduleTimeBlock(blockData) {
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       },
       body: JSON.stringify({
         date: window.DailyPlannerState.currentDate,
@@ -312,7 +312,7 @@ async function removeTimeBlock(blockId) {
       method: 'DELETE',
       headers: {
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
     const result = await res.json();
@@ -362,7 +362,7 @@ async function saveDailyReflection() {
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       },
       body: JSON.stringify({
         date: window.DailyPlannerState.currentDate,

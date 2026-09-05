@@ -30,7 +30,7 @@ async function loadWorkspacesList() {
     const res = await fetch('/api/iams/workspaces', {
       headers: {
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
     const result = await res.json();
@@ -57,7 +57,7 @@ async function createInitialDefaultWorkspace() {
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       },
       body: JSON.stringify({
         name: 'ICEBERG Master Workspace',
@@ -102,7 +102,7 @@ async function loadWorkspaceProjects() {
     const res = await fetch(`/api/iams/workspaces/${wsId}/projects`, {
       headers: {
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
     const result = await res.json();
@@ -229,7 +229,7 @@ async function loadWorkspaceTasks() {
     const res = await fetch(`/api/iams/workspaces/${wsId}/tasks?project_id=${prjId}`, {
       headers: {
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
     const result = await res.json();
@@ -315,7 +315,7 @@ async function handleKanbanDrop(event, targetStatus) {
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       },
       body: JSON.stringify({
         prev_position: lastTask ? lastTask.position : null,
@@ -347,7 +347,7 @@ async function createQuickTask(e) {
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       },
       body: JSON.stringify({
         project_id: prjId,
@@ -378,7 +378,7 @@ async function loadProjectMessages() {
     const res = await fetch(`/api/iams/messages?project_id=${prjId}`, {
       headers: {
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
     const result = await res.json();
@@ -443,7 +443,7 @@ async function postNewTopic(e) {
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       },
       body: JSON.stringify({
         project_id: prjId,
@@ -476,7 +476,7 @@ async function loadProjectDocs() {
     const res = await fetch(`/api/iams/docs?project_id=${prjId}`, {
       headers: {
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
     const result = await res.json();
@@ -535,7 +535,7 @@ async function createNewDoc() {
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       },
       body: JSON.stringify({
         project_id: prjId,
@@ -559,7 +559,7 @@ async function openDocEditorModal(docId) {
     const res = await fetch(`/api/iams/docs/${docId}`, {
       headers: {
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
     const result = await res.json();
@@ -606,7 +606,7 @@ async function saveDocChanges() {
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       },
       body: JSON.stringify({
         title,
@@ -632,7 +632,7 @@ async function restoreDocVersion(docId, versionNumber) {
       method: 'POST',
       headers: {
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
     const result = await res.json();
@@ -658,7 +658,7 @@ async function loadProjectBookmarks() {
     const res = await fetch(`/api/iams/bookmarks?project_id=${prjId}`, {
       headers: {
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
     const result = await res.json();
@@ -716,7 +716,7 @@ async function addProjectBookmark(e) {
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       },
       body: JSON.stringify({
         project_id: prjId,
@@ -747,7 +747,7 @@ async function loadProjectChat() {
     const res = await fetch(`/api/iams/chat/messages?project_id=${prjId}`, {
       headers: {
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
     const result = await res.json();
@@ -815,7 +815,7 @@ async function sendChatMessage(e) {
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       },
       body: JSON.stringify({
         project_id: prjId,
@@ -841,7 +841,7 @@ async function reactToChatMessage(msgId, emoji) {
       headers: {
         'Content-Type': 'application/json',
         'x-demo-admin': 'true',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       },
       body: JSON.stringify({ emoji })
     });
