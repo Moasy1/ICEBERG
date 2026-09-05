@@ -30,9 +30,11 @@ async function seedUpbaseData() {
       owner_id: ownerId,
       owner_user_id: ownerId,
       members: [
-        { user_id: ownerId, email: 'admin@icebergma.com', full_name: 'Agency Principal', role: 'ADMIN', assigned_projects: [] },
-        { user_id: 'usr_sarah', email: 'sarah@icebergma.com', full_name: 'Sarah Jenkins (Account Lead)', role: 'MEMBER', assigned_projects: [] },
-        { user_id: 'usr_tarek', email: 'tarek@dentaquick.com', full_name: 'Dr. Tarek (Dentaquick Client)', role: 'GUEST', assigned_projects: ['prj_sprint_14'] }
+        { user_id: 'usr_fady', email: 'fady@icebergma.com', full_name: 'Fady', role: 'SUPER_ADMIN', assigned_projects: [] },
+        { user_id: 'usr_asy', email: 'asy@icebergma.com', full_name: 'Mohamed Asy', role: 'ADMIN', assigned_projects: [] },
+        { user_id: 'usr_abanoub', email: 'abanoub@icebergma.com', full_name: 'Abanoub', role: 'MEMBER', assigned_projects: [] },
+        { user_id: 'usr_steven', email: 'steven@icebergma.com', full_name: 'Steven', role: 'MEMBER', assigned_projects: [] },
+        { user_id: 'usr_baher', email: 'baher@icebergma.com', full_name: 'Baher', role: 'MEMBER', assigned_projects: [] }
       ]
     });
     await workspace.save();
@@ -105,11 +107,12 @@ async function seedUpbaseData() {
         scheduled_date: todayStr,
         start_time: '09:00',
         duration_minutes: 60,
+        assignees: [{ user_id: 'usr_baher', full_name: 'Baher', title: 'Creative Intern' }],
         subtasks: [
           { subtask_id: 'st_1', title: 'Verify primary cyan #06b6d4 contrast ratio', completed: true },
           { subtask_id: 'st_2', title: 'Arabic font pairing with Outfit & Inter', completed: false }
         ],
-        created_by: ownerId
+        created_by: 'usr_baher'
       },
       {
         task_id: 'tsk_102',
@@ -123,34 +126,37 @@ async function seedUpbaseData() {
         scheduled_date: todayStr,
         start_time: '11:00',
         duration_minutes: 90,
+        assignees: [{ user_id: 'usr_steven', full_name: 'Steven', title: 'Video Editor' }],
         subtasks: [
           { subtask_id: 'st_3', title: '10Hz Alpha Waves binaural oscillator', completed: true },
           { subtask_id: 'st_4', title: 'Rain pink noise buffer filter', completed: true }
         ],
-        created_by: ownerId
+        created_by: 'usr_steven'
       },
       {
         task_id: 'tsk_103',
         workspace_id: wsId,
         project_id: prjId1,
-        title: 'Deploy Client Portal Isolation & RLS Guest Scoping',
+        title: 'Executive Sign-off on Client Portal & Q4 Enterprise SLA',
         status: 'REVIEW',
         priority: 'HIGH',
         position: '0|h00002:',
         due_date: todayStr,
         duration_minutes: 45,
-        created_by: ownerId
+        assignees: [{ user_id: 'usr_fady', full_name: 'Fady', title: 'CEO' }],
+        created_by: 'usr_fady'
       },
       {
         task_id: 'tsk_104',
         workspace_id: wsId,
         project_id: prjId1,
-        title: 'Setup LexoRank Fractional Indexing Engine for O(1) Reordering',
+        title: 'Full-stack LexoRank Fractional Indexing Engine for O(1) Reordering',
         status: 'DONE',
         priority: 'MEDIUM',
         position: '0|h00003:',
         duration_minutes: 30,
-        created_by: ownerId
+        assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', title: 'Dev' }],
+        created_by: 'usr_asy'
       }
     ];
 

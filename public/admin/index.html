@@ -2061,12 +2061,34 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <!-- Projects Sidebar Column (Col 3) -->
                     <div class="lg:col-span-3 space-y-4">
+                        <!-- Projects List Card -->
                         <div class="glass-card p-4 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-3">
                             <div class="flex items-center justify-between">
                                 <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Project Lists</span>
                                 <button onclick="openCreateProjectModal()" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold transition-colors flex items-center gap-1">+ New List</button>
                             </div>
-                            <div id="upbase-projects-list" class="space-y-1.5 max-h-[500px] overflow-y-auto"></div>
+                            <div id="upbase-projects-list" class="space-y-1.5 max-h-[360px] overflow-y-auto"></div>
+                        </div>
+
+                        <!-- Team Roles & Ownership Roster Card -->
+                        <div class="glass-card p-4 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-3 shadow-lg">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-1.5">
+                                    <i data-lucide="shield-check" class="w-4 h-4 text-cyan-400"></i>
+                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-200">Team & Ownership</span>
+                                </div>
+                                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-950/80 border border-cyan-800/60 text-cyan-300 font-semibold">5 Members</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400 leading-snug">Official agency mandates. Click any member to filter tasks.</p>
+                            
+                            <div id="upbase-team-roster" class="space-y-2 max-h-[460px] overflow-y-auto pr-0.5">
+                                <!-- Populated dynamically by workspaces-ui.js renderTeamRosterSidebar() -->
+                            </div>
+
+                            <div id="upbase-team-filter-status" class="hidden pt-2.5 border-t border-slate-800/80 text-[11px] flex items-center justify-between text-cyan-300">
+                                <span id="upbase-team-filter-text" class="truncate pr-2">Filtered by member</span>
+                                <button type="button" onclick="clearAssigneeFilter()" class="px-2 py-0.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-rose-400 text-[10px] font-bold transition-colors shrink-0">Reset &times;</button>
+                            </div>
                         </div>
                     </div>
 
@@ -3305,10 +3327,11 @@
                         <div class="flex items-center gap-2">
                             <select id="task-drawer-assignee-select" onchange="onDrawerAssigneeChange(this.value)" class="bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-lg px-2.5 py-1 focus:outline-none focus:border-cyan-500">
                                 <option value="">No Assignee</option>
-                                <option value="usr_asy" selected>MA Mohamed Asy</option>
-                                <option value="usr_sarah">SO Sarah Osama</option>
-                                <option value="usr_tarek">TD Tarek Dev</option>
-                                <option value="usr_nour">ND Nour Designer</option>
+                                <option value="usr_fady">👑 Fady — CEO (Roadmaps & Approvals)</option>
+                                <option value="usr_asy" selected>💻 Mohamed Asy — Dev (Full-stack & Architecture)</option>
+                                <option value="usr_abanoub">📈 Abanoub — Marketing Manager & Media Buyer</option>
+                                <option value="usr_steven">🎬 Steven — Video Editor (Assets & Reels)</option>
+                                <option value="usr_baher">🎨 Baher — Creative Intern (Visuals & Staging)</option>
                             </select>
                         </div>
                     </div>
@@ -3459,9 +3482,13 @@
                     
                     <input type="file" id="task-drawer-comment-file-input" class="hidden" multiple onchange="handleCommentFileInputChange(event)">
 
-                    <div class="flex items-center justify-between pt-1 text-slate-400 text-xs border-t border-slate-800/60 mt-1">
-                        <div class="flex items-center gap-2">
-                            <button type="button" title="Mention team member" class="hover:text-cyan-400 p-1">@</button>
+                        <div class="flex items-center gap-2 relative">
+                            <div class="relative inline-block">
+                                <button type="button" id="task-comment-mention-btn" onclick="toggleCommentMentionDropdown(event)" title="Mention team member" class="hover:text-cyan-400 p-1 font-bold text-slate-300 hover:bg-slate-800 rounded transition-colors">@</button>
+                                <div id="comment-mention-dropdown" class="hidden absolute left-0 bottom-full mb-2 w-72 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-2xl shadow-2xl z-50 p-2 space-y-1">
+                                    <!-- Populated dynamically by workspaces-ui.js -->
+                                </div>
+                            </div>
                             <button type="button" title="Upload & attach file from device" onclick="triggerCommentFileUpload()" class="hover:text-cyan-400 p-1 text-amber-400 flex items-center gap-0.5">
                                 <i data-lucide="paperclip" class="w-3.5 h-3.5"></i>
                             </button>

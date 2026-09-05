@@ -122,13 +122,89 @@ const DEFAULT_FALLBACK_PROJECTS = [
   }
 ];
 
+// ==========================================
+// OFFICIAL TEAM ROLES & OWNERSHIP ROSTER
+// ==========================================
+const ICEBERG_TEAM_MEMBERS = [
+  {
+    user_id: 'usr_fady',
+    full_name: 'Fady',
+    title: 'CEO',
+    role: 'Executive',
+    ownership: 'Final sign-off, high-level roadmaps, and business approvals',
+    initials: 'FD',
+    avatar_color: '#e11d48',
+    bgClass: 'bg-rose-600',
+    borderClass: 'border-rose-500',
+    textClass: 'text-rose-400',
+    badgeClass: 'bg-rose-950/70 text-rose-300 border-rose-800/60',
+    emoji: '👑'
+  },
+  {
+    user_id: 'usr_asy',
+    full_name: 'Mohamed Asy',
+    title: 'Dev',
+    role: 'Full-stack Dev',
+    ownership: 'Full-stack web development, technical architecture, and site maintenance',
+    initials: 'MA',
+    avatar_color: '#0891b2',
+    bgClass: 'bg-cyan-600',
+    borderClass: 'border-cyan-500',
+    textClass: 'text-cyan-400',
+    badgeClass: 'bg-cyan-950/70 text-cyan-300 border-cyan-800/60',
+    emoji: '💻'
+  },
+  {
+    user_id: 'usr_abanoub',
+    full_name: 'Abanoub',
+    title: 'Marketing Manager & Media Buyer',
+    role: 'Marketing & Media',
+    ownership: 'Conversion tracking, landing page requirements, and campaign integrations',
+    initials: 'AB',
+    avatar_color: '#d97706',
+    bgClass: 'bg-amber-600',
+    borderClass: 'border-amber-500',
+    textClass: 'text-amber-400',
+    badgeClass: 'bg-amber-950/70 text-amber-300 border-amber-800/60',
+    emoji: '📈'
+  },
+  {
+    user_id: 'usr_steven',
+    full_name: 'Steven',
+    title: 'Video Editor',
+    role: 'Video Production',
+    ownership: 'Video assets, media compression, and embedded reel optimization',
+    initials: 'ST',
+    avatar_color: '#9333ea',
+    bgClass: 'bg-purple-600',
+    borderClass: 'border-purple-500',
+    textClass: 'text-purple-400',
+    badgeClass: 'bg-purple-950/70 text-purple-300 border-purple-800/60',
+    emoji: '🎬'
+  },
+  {
+    user_id: 'usr_baher',
+    full_name: 'Baher',
+    title: 'Creative Intern',
+    role: 'Creative Support',
+    ownership: 'Visual assets, graphic support, and content staging',
+    initials: 'BH',
+    avatar_color: '#059669',
+    bgClass: 'bg-emerald-600',
+    borderClass: 'border-emerald-500',
+    textClass: 'text-emerald-400',
+    badgeClass: 'bg-emerald-950/70 text-emerald-300 border-emerald-800/60',
+    emoji: '🎨'
+  }
+];
+
 const DEFAULT_FALLBACK_TASKS = {
   prj_dentaquik: [
     {
       task_id: 'task_dq_1',
       project_id: 'prj_dentaquik',
-      title: 'Audit Shopify checkout funnel drop-off points',
-      description: 'Review Heatmaps & session recordings on Hotjar. Isolate drop-off between cart view and shipping selection.\n\n### Objectives:\n- Measure 3-step checkout abandonment\n- Optimize mobile express checkout button (Apple Pay & Google Pay)\n- Coordinate with client dental procurement team',
+      title: 'Audit Shopify checkout funnel drop-off points & conversion tracking',
+      description: 'Review Heatmaps & session recordings on Hotjar. Isolate drop-off between cart view and shipping selection.\n\n### Mandate & Ownership:\n- Conversion tracking, landing page requirements, and campaign integrations (Abanoub)\n- Measure 3-step checkout abandonment\n- Optimize mobile express checkout button (Apple Pay & Google Pay)\n- Coordinate with client dental procurement team',
       status: 'TODO',
       priority: 'HIGH',
       due_date: '2026-09-08',
@@ -136,9 +212,9 @@ const DEFAULT_FALLBACK_TASKS = {
       logged_minutes: 45,
       position: '0|hzzzzz:',
       tags: ['Funnel', 'CRO', 'Shopify'],
-      created_by: 'Sarah Osama',
+      created_by: 'Abanoub',
       created_at: '2026-09-02T10:30:00Z',
-      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_abanoub', full_name: 'Abanoub', title: 'Marketing Manager & Media Buyer', avatar_url: '' }],
       subtasks: [
         { subtask_id: 'st_1', title: 'Review Hotjar recordings for EU users', completed: true },
         { subtask_id: 'st_2', title: 'Map abandoned checkout steps in GA4 funnel', completed: false },
@@ -149,28 +225,28 @@ const DEFAULT_FALLBACK_TASKS = {
         { name: 'Checkout_Figma_Audit.png', size: '840 KB', url: '#' }
       ],
       comments: [
-        { comment_id: 'c1', author_name: 'Mohamed Asy', author_initials: 'MA', text: 'Checked the numbers: 34% drop occurs right at shipping estimation. We should offer automatic rate lookups.', created_at: '2026-09-04T12:00:00Z' },
-        { comment_id: 'c2', author_name: 'Sarah Osama', author_initials: 'SO', text: 'Agreed! Wireframing the updated shipping preview component now.', created_at: '2026-09-05T09:15:00Z' }
+        { comment_id: 'c1', author_name: 'Mohamed Asy', author_initials: 'MA', text: 'Checked the numbers: 34% drop occurs right at shipping estimation. We should offer automatic rate lookups in the custom app.', created_at: '2026-09-04T12:00:00Z' },
+        { comment_id: 'c2', author_name: 'Abanoub', author_initials: 'AB', text: 'Agreed! Wireframing the updated shipping preview component and conversion tracking pixels now.', created_at: '2026-09-05T09:15:00Z' }
       ]
     },
     {
       task_id: 'task_dq_2',
       project_id: 'prj_dentaquik',
-      title: 'Design high-converting mobile product page layout',
-      description: 'Full-bleed dental equipment photo carousel, sticky Add-To-Cart bar, and accordion specs section.\n\nClient requested fast loading time under 1.2s on 4G networks.',
+      title: 'Design high-converting mobile product page layout & API',
+      description: 'Full-bleed dental equipment photo carousel, sticky Add-To-Cart bar, and accordion specs section.\n\n### Mandate & Ownership:\n- Full-stack web development, technical architecture, and site maintenance (Mohamed Asy)\n- Client requested fast loading time under 1.2s on 4G networks.',
       status: 'IN_PROGRESS',
       priority: 'URGENT',
       due_date: '2026-09-07',
       duration_minutes: 90,
       logged_minutes: 60,
       position: '0|i00000:',
-      tags: ['Design', 'Mobile', 'UI/UX'],
+      tags: ['Development', 'Mobile', 'UI/UX'],
       created_by: 'Mohamed Asy',
       created_at: '2026-09-01T14:20:00Z',
-      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', title: 'Dev', avatar_url: '' }],
       subtasks: [
         { subtask_id: 'st_4', title: 'Figma high-fidelity mobile wireframes', completed: true },
-        { subtask_id: 'st_5', title: 'Internal design review with art director', completed: true },
+        { subtask_id: 'st_5', title: 'Internal technical review with dev architecture', completed: true },
         { subtask_id: 'st_6', title: 'Present prototype to DentaQuik leadership', completed: false }
       ],
       attachments: [
@@ -183,8 +259,8 @@ const DEFAULT_FALLBACK_TASKS = {
     {
       task_id: 'task_dq_3',
       project_id: 'prj_dentaquik',
-      title: 'Set up Meta & TikTok Ads retargeting catalog',
-      description: 'Configure dynamic product ads (DPA) targeting dentists and clinic managers who viewed high-ticket autoclaves and whitening kits in the last 14 days.',
+      title: 'Set up Meta & TikTok Ads retargeting catalog & campaigns',
+      description: 'Configure dynamic product ads (DPA) targeting dentists and clinic managers who viewed high-ticket autoclaves and whitening kits in the last 14 days.\n\n### Mandate & Ownership:\n- Conversion tracking, landing page requirements, and campaign integrations (Abanoub)',
       status: 'REVIEW',
       priority: 'MEDIUM',
       due_date: '2026-09-09',
@@ -192,9 +268,9 @@ const DEFAULT_FALLBACK_TASKS = {
       logged_minutes: 30,
       position: '0|i00008:',
       tags: ['Media', 'Meta', 'TikTok'],
-      created_by: 'Tarek Dev',
+      created_by: 'Abanoub',
       created_at: '2026-09-03T11:00:00Z',
-      assignees: [{ user_id: 'usr_tarek', full_name: 'Tarek Dev', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_abanoub', full_name: 'Abanoub', title: 'Marketing Manager & Media Buyer', avatar_url: '' }],
       subtasks: [
         { subtask_id: 'st_7', title: 'Pixel health & catalog sync verification', completed: true },
         { subtask_id: 'st_8', title: 'Ad copy in Arabic and English approved by compliance', completed: true }
@@ -205,24 +281,25 @@ const DEFAULT_FALLBACK_TASKS = {
     {
       task_id: 'task_dq_4',
       project_id: 'prj_dentaquik',
-      title: 'Connect Klaviyo B2B wholesale onboarding flow',
-      description: 'Automated 5-email sequence triggered when a dental clinic signs up for tax-exempt B2B purchasing.',
+      title: 'Final sign-off on DentaQuik Q4 enterprise roadmap & billing model',
+      description: 'Review high-level roadmaps, revenue projections, and contract expansion terms for DentaQuik wholesale tier.\n\n### Mandate & Ownership:\n- Final sign-off, high-level roadmaps, and business approvals (Fady)',
       status: 'DONE',
-      priority: 'LOW',
+      priority: 'HIGH',
       due_date: '2026-09-05',
       duration_minutes: 30,
       logged_minutes: 30,
       position: '0|i00010:',
-      tags: ['Automation', 'Email', 'Klaviyo'],
-      created_by: 'Sarah Osama',
+      tags: ['Executive', 'Roadmap', 'Approval'],
+      created_by: 'Fady',
       created_at: '2026-08-28T09:00:00Z',
-      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_fady', full_name: 'Fady', title: 'CEO', avatar_url: '' }],
       subtasks: [
-        { subtask_id: 'st_9', title: 'Welcome series live and tested', completed: true }
+        { subtask_id: 'st_9', title: 'Review Q4 growth goals and SLA tiering', completed: true },
+        { subtask_id: 'st_10', title: 'Executive client sign-off documented', completed: true }
       ],
       attachments: [],
       comments: [
-        { comment_id: 'c4', author_name: 'Sarah Osama', author_initials: 'SO', text: 'Live! Open rates are currently at 52%.', created_at: '2026-09-05T14:10:00Z' }
+        { comment_id: 'c4', author_name: 'Fady', author_initials: 'FD', text: 'Executive approval complete. Roadmap approved for full Q4 rollout.', created_at: '2026-09-05T14:10:00Z' }
       ]
     }
   ],
@@ -230,77 +307,86 @@ const DEFAULT_FALLBACK_TASKS = {
     {
       task_id: 'task_mb_1',
       project_id: 'prj_musical_bag',
-      title: 'Refine packaging typography & metallic foil spec',
-      description: 'Specifying gold-leaf stamping thickness and matte velvet unboxing box.',
+      title: 'Refine packaging typography & metallic foil spec for staging',
+      description: 'Specifying gold-leaf stamping thickness and matte velvet unboxing box.\n\n### Mandate & Ownership:\n- Visual assets, graphic support, and content staging (Baher)',
       status: 'IN_PROGRESS',
       priority: 'HIGH',
       due_date: '2026-09-08',
       duration_minutes: 60,
       logged_minutes: 40,
       position: '0|hzzzzz:',
-      tags: ['Branding', 'Print'],
-      created_by: 'Sarah Osama',
+      tags: ['Branding', 'Print', 'Creative'],
+      created_by: 'Baher',
       created_at: '2026-09-02T10:00:00Z',
-      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_baher', full_name: 'Baher', title: 'Creative Intern', avatar_url: '' }],
       subtasks: [{ subtask_id: 'st_mb_1', title: 'CMYK color-correct print test', completed: true }],
       attachments: [{ name: 'Foil_Spec_Final.ai', size: '8.2 MB', url: '#' }],
-      comments: []
+      comments: [
+        { comment_id: 'c_mb_1', author_name: 'Baher', author_initials: 'BH', text: 'Prepared 3 metallic proof variations. Ready for staging review.', created_at: '2026-09-04T15:00:00Z' }
+      ]
     },
     {
       task_id: 'task_mb_2',
       project_id: 'prj_musical_bag',
-      title: 'Render 3D product turntable video in Blender',
-      description: '360 degree product showcase video for Shopify landing hero section.',
+      title: 'Render 3D product turntable video & reel compression',
+      description: '360 degree product showcase video for Shopify landing hero section and Instagram Reels.\n\n### Mandate & Ownership:\n- Video assets, media compression, and embedded reel optimization (Steven)',
       status: 'TODO',
       priority: 'MEDIUM',
       due_date: '2026-09-10',
       duration_minutes: 120,
       logged_minutes: 0,
       position: '0|i00000:',
-      tags: ['3D', 'Blender', 'Motion'],
-      created_by: 'Mohamed Asy',
+      tags: ['Video', '3D', 'Reels'],
+      created_by: 'Steven',
       created_at: '2026-09-03T14:00:00Z',
-      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
-      subtasks: [],
+      assignees: [{ user_id: 'usr_steven', full_name: 'Steven', title: 'Video Editor', avatar_url: '' }],
+      subtasks: [
+        { subtask_id: 'st_mb_v1', title: 'Export 4K ProRes master render', completed: false },
+        { subtask_id: 'st_mb_v2', title: 'Encode web-optimized AV1 and H.265 reel format', completed: false }
+      ],
       attachments: [],
-      comments: []
+      comments: [
+        { comment_id: 'c_mb_2', author_name: 'Steven', author_initials: 'ST', text: 'Optimizing lighting passes now. Will output 60fps vertical reel cut.', created_at: '2026-09-05T11:00:00Z' }
+      ]
     },
     {
       task_id: 'task_mb_3',
       project_id: 'prj_musical_bag',
-      title: 'Brand guidelines book print approval',
-      description: 'Printed copy signed off by client CEO.',
+      title: 'Executive sign-off on retail expansion & distributor terms',
+      description: 'High-level business approvals and licensing roadmaps with international music distributors.\n\n### Mandate & Ownership:\n- Final sign-off, high-level roadmaps, and business approvals (Fady)',
       status: 'DONE',
       priority: 'URGENT',
       due_date: '2026-09-04',
       duration_minutes: 45,
       logged_minutes: 45,
       position: '0|i00008:',
-      tags: ['Branding'],
-      created_by: 'Sarah Osama',
+      tags: ['Executive', 'Approval'],
+      created_by: 'Fady',
       created_at: '2026-08-30T10:00:00Z',
-      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_fady', full_name: 'Fady', title: 'CEO', avatar_url: '' }],
       subtasks: [],
       attachments: [],
-      comments: []
+      comments: [
+        { comment_id: 'c_mb_3', author_name: 'Fady', author_initials: 'FD', text: 'Approved distributor contract. Green light to move into mass production.', created_at: '2026-09-04T18:00:00Z' }
+      ]
     }
   ],
   prj_call_worship: [
     {
       task_id: 'task_cw_1',
       project_id: 'prj_call_worship',
-      title: 'Soundtrack mastering for episode 04 documentary',
-      description: 'High-dynamic range audio master for theatrical and streaming releases.',
+      title: 'Soundtrack mastering & multi-format video compression',
+      description: 'High-dynamic range audio and video export for streaming and live broadcasts.\n\n### Mandate & Ownership:\n- Video assets, media compression, and embedded reel optimization (Steven)',
       status: 'TODO',
       priority: 'HIGH',
       due_date: '2026-09-09',
       duration_minutes: 90,
       logged_minutes: 0,
       position: '0|hzzzzz:',
-      tags: ['Audio', 'Media'],
-      created_by: 'Tarek Dev',
+      tags: ['Video', 'Audio', 'Compression'],
+      created_by: 'Steven',
       created_at: '2026-09-02T10:00:00Z',
-      assignees: [{ user_id: 'usr_tarek', full_name: 'Tarek Dev', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_steven', full_name: 'Steven', title: 'Video Editor', avatar_url: '' }],
       subtasks: [],
       attachments: [],
       comments: []
@@ -308,39 +394,41 @@ const DEFAULT_FALLBACK_TASKS = {
     {
       task_id: 'task_cw_2',
       project_id: 'prj_call_worship',
-      title: 'Color grading on 4K multi-cam concert footage',
-      description: 'DaVinci Resolve color timing with cinematic teal-orange highlights.',
+      title: 'Color grading & reel optimization on 4K concert footage',
+      description: 'DaVinci Resolve color timing with cinematic highlights, plus 9:16 social reel edits.\n\n### Mandate & Ownership:\n- Video assets, media compression, and embedded reel optimization (Steven)',
       status: 'IN_PROGRESS',
       priority: 'URGENT',
       due_date: '2026-09-07',
       duration_minutes: 180,
       logged_minutes: 120,
       position: '0|i00000:',
-      tags: ['Video', 'Production'],
-      created_by: 'Mohamed Asy',
+      tags: ['Video', 'Production', 'Reels'],
+      created_by: 'Steven',
       created_at: '2026-09-01T15:00:00Z',
-      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_steven', full_name: 'Steven', title: 'Video Editor', avatar_url: '' }],
       subtasks: [],
       attachments: [],
-      comments: []
+      comments: [
+        { comment_id: 'c_cw_1', author_name: 'Steven', author_initials: 'ST', text: 'Color graded first 20 minutes. Compressing social teaser snippets today.', created_at: '2026-09-05T13:30:00Z' }
+      ]
     }
   ],
   prj_drum_shop: [
     {
       task_id: 'task_ds_1',
       project_id: 'prj_drum_shop',
-      title: 'Weekly TikTok / Reels batch shoot scheduling',
-      description: 'Coordinate with drum artists and camera crew.',
+      title: 'Visual assets & graphic banner staging for clinic promotion',
+      description: 'Coordinate graphic assets, event flyers, and digital signage.\n\n### Mandate & Ownership:\n- Visual assets, graphic support, and content staging (Baher)',
       status: 'TODO',
       priority: 'MEDIUM',
       due_date: '2026-09-08',
       duration_minutes: 60,
       logged_minutes: 0,
       position: '0|hzzzzz:',
-      tags: ['Social', 'Shooting'],
-      created_by: 'Sarah Osama',
+      tags: ['Creative', 'Visuals', 'Staging'],
+      created_by: 'Baher',
       created_at: '2026-09-02T10:00:00Z',
-      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_baher', full_name: 'Baher', title: 'Creative Intern', avatar_url: '' }],
       subtasks: [],
       attachments: [],
       comments: []
@@ -348,18 +436,18 @@ const DEFAULT_FALLBACK_TASKS = {
     {
       task_id: 'task_ds_2',
       project_id: 'prj_drum_shop',
-      title: 'Cymbal demo video edit & motion graphics title',
-      description: 'Showcase low-volume cymbals for practice studios.',
+      title: 'Cymbal demo video edit & optimized vertical reels',
+      description: 'Showcase low-volume cymbals with punchy captions and audio sync.\n\n### Mandate & Ownership:\n- Video assets, media compression, and embedded reel optimization (Steven)',
       status: 'IN_PROGRESS',
       priority: 'HIGH',
       due_date: '2026-09-07',
       duration_minutes: 75,
       logged_minutes: 45,
       position: '0|i00000:',
-      tags: ['Video', 'Reels'],
-      created_by: 'Mohamed Asy',
+      tags: ['Video', 'Reels', 'Optimization'],
+      created_by: 'Steven',
       created_at: '2026-09-03T11:00:00Z',
-      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_steven', full_name: 'Steven', title: 'Video Editor', avatar_url: '' }],
       subtasks: [],
       attachments: [],
       comments: []
@@ -369,17 +457,18 @@ const DEFAULT_FALLBACK_TASKS = {
     {
       task_id: 'task_gn_1',
       project_id: 'prj_ghost_note',
-      title: 'Vinyl cover design typography proofing',
+      title: 'Vinyl cover design typography proofing & visual graphics',
+      description: 'Pre-press vector alignment and inner sleeve graphic support.\n\n### Mandate & Ownership:\n- Visual assets, graphic support, and content staging (Baher)',
       status: 'TODO',
       priority: 'HIGH',
       due_date: '2026-09-08',
       duration_minutes: 60,
       logged_minutes: 0,
       position: '0|hzzzzz:',
-      tags: ['Vinyl', 'Art'],
-      created_by: 'Sarah Osama',
+      tags: ['Vinyl', 'Creative', 'Graphic'],
+      created_by: 'Baher',
       created_at: '2026-09-02T10:00:00Z',
-      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_baher', full_name: 'Baher', title: 'Creative Intern', avatar_url: '' }],
       subtasks: [],
       attachments: [],
       comments: []
@@ -387,17 +476,18 @@ const DEFAULT_FALLBACK_TASKS = {
     {
       task_id: 'task_gn_2',
       project_id: 'prj_ghost_note',
-      title: 'Release announcement teaser animation in After Effects',
+      title: 'Release teaser video animation & reel media compression',
+      description: 'Motion teaser in After Effects rendered for TikTok, Instagram, and web banner.\n\n### Mandate & Ownership:\n- Video assets, media compression, and embedded reel optimization (Steven)',
       status: 'IN_PROGRESS',
       priority: 'URGENT',
       due_date: '2026-09-07',
       duration_minutes: 90,
       logged_minutes: 60,
       position: '0|i00000:',
-      tags: ['Animation'],
-      created_by: 'Mohamed Asy',
+      tags: ['Video', 'Animation', 'Reels'],
+      created_by: 'Steven',
       created_at: '2026-09-03T12:00:00Z',
-      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_steven', full_name: 'Steven', title: 'Video Editor', avatar_url: '' }],
       subtasks: [],
       attachments: [],
       comments: []
@@ -407,17 +497,18 @@ const DEFAULT_FALLBACK_TASKS = {
     {
       task_id: 'task_gp_1',
       project_id: 'prj_golden_perfume',
-      title: '3D luxury bottle render with amber liquid refractions',
+      title: '3D luxury bottle visual assets & social staging',
+      description: 'Visual asset rendering with amber refractions, gold cap staging, and catalog shots.\n\n### Mandate & Ownership:\n- Visual assets, graphic support, and content staging (Baher)',
       status: 'IN_PROGRESS',
       priority: 'HIGH',
       due_date: '2026-09-08',
       duration_minutes: 120,
       logged_minutes: 80,
       position: '0|hzzzzz:',
-      tags: ['Luxury', '3D'],
-      created_by: 'Mohamed Asy',
+      tags: ['Luxury', '3D', 'Visuals'],
+      created_by: 'Baher',
       created_at: '2026-09-02T10:00:00Z',
-      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_baher', full_name: 'Baher', title: 'Creative Intern', avatar_url: '' }],
       subtasks: [],
       attachments: [],
       comments: []
@@ -425,17 +516,18 @@ const DEFAULT_FALLBACK_TASKS = {
     {
       task_id: 'task_gp_2',
       project_id: 'prj_golden_perfume',
-      title: 'Bilingual luxury press kit copy in English & Arabic',
+      title: 'Influencer conversion tracking & landing page campaign integration',
+      description: 'Set up UTM tracking, conversion pixels, and affiliate media buying parameters for Middle East launch.\n\n### Mandate & Ownership:\n- Conversion tracking, landing page requirements, and campaign integrations (Abanoub)',
       status: 'REVIEW',
       priority: 'MEDIUM',
       due_date: '2026-09-09',
       duration_minutes: 45,
       logged_minutes: 30,
       position: '0|i00000:',
-      tags: ['Copywriting', 'PR'],
-      created_by: 'Sarah Osama',
+      tags: ['Marketing', 'Tracking', 'Campaigns'],
+      created_by: 'Abanoub',
       created_at: '2026-09-03T15:00:00Z',
-      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_abanoub', full_name: 'Abanoub', title: 'Marketing Manager & Media Buyer', avatar_url: '' }],
       subtasks: [],
       attachments: [],
       comments: []
@@ -445,55 +537,84 @@ const DEFAULT_FALLBACK_TASKS = {
     {
       task_id: 'task_ac_1',
       project_id: 'prj_acrostone',
-      title: 'Sync B2B distributor catalog pricing with ERP',
+      title: 'Sync B2B distributor catalog pricing with ERP & maintain backend',
+      description: 'Automate ERP sync for medical distributor wholesale prices and stock levels.\n\n### Mandate & Ownership:\n- Full-stack web development, technical architecture, and site maintenance (Mohamed Asy)',
       status: 'TODO',
       priority: 'HIGH',
       due_date: '2026-09-09',
       duration_minutes: 60,
       logged_minutes: 0,
       position: '0|hzzzzz:',
-      tags: ['B2B', 'ERP'],
-      created_by: 'Tarek Dev',
+      tags: ['Development', 'ERP', 'Backend'],
+      created_by: 'Mohamed Asy',
       created_at: '2026-09-02T10:00:00Z',
-      assignees: [{ user_id: 'usr_tarek', full_name: 'Tarek Dev', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', title: 'Dev', avatar_url: '' }],
       subtasks: [],
       attachments: [],
       comments: []
+    },
+    {
+      task_id: 'task_ac_2',
+      project_id: 'prj_acrostone',
+      title: 'Final sign-off on enterprise wholesale SLA & partnership terms',
+      description: 'Executive contract review and credit lines approval for Waterpik national distribution.\n\n### Mandate & Ownership:\n- Final sign-off, high-level roadmaps, and business approvals (Fady)',
+      status: 'DONE',
+      priority: 'HIGH',
+      due_date: '2026-09-04',
+      duration_minutes: 30,
+      logged_minutes: 30,
+      position: '0|i00008:',
+      tags: ['Executive', 'Approval', 'Roadmap'],
+      created_by: 'Fady',
+      created_at: '2026-09-01T10:00:00Z',
+      assignees: [{ user_id: 'usr_fady', full_name: 'Fady', title: 'CEO', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: [
+        { comment_id: 'c_ac_1', author_name: 'Fady', author_initials: 'FD', text: 'Contract executed with Acrostone board. Wholesale operations are live.', created_at: '2026-09-04T16:00:00Z' }
+      ]
     }
   ],
   prj_sprint_14: [
     {
       task_id: 'task_sp_1',
       project_id: 'prj_sprint_14',
-      title: 'Finalize Q4 cross-brand influencer briefs',
+      title: 'Final sign-off on Q4 high-level roadmaps & business approvals',
+      description: 'Review multi-brand agency deliverables, capacity planning, and holiday revenue milestones.\n\n### Mandate & Ownership:\n- Final sign-off, high-level roadmaps, and business approvals (Fady)',
       status: 'TODO',
       priority: 'URGENT',
       due_date: '2026-09-08',
       duration_minutes: 60,
       logged_minutes: 0,
       position: '0|hzzzzz:',
-      tags: ['Influencers', 'Q4'],
-      created_by: 'Sarah Osama',
+      tags: ['Executive', 'Roadmap', 'Strategy'],
+      created_by: 'Fady',
       created_at: '2026-09-02T10:00:00Z',
-      assignees: [{ user_id: 'usr_sarah', full_name: 'Sarah Osama', avatar_url: '' }],
-      subtasks: [],
+      assignees: [{ user_id: 'usr_fady', full_name: 'Fady', title: 'CEO', avatar_url: '' }],
+      subtasks: [
+        { subtask_id: 'st_sp_1', title: 'Consolidate 8 client scopes into Q4 master timeline', completed: true },
+        { subtask_id: 'st_sp_2', title: 'Sign-off on video and dev capacity allocations', completed: false }
+      ],
       attachments: [],
-      comments: []
+      comments: [
+        { comment_id: 'c_sp_1', author_name: 'Fady', author_initials: 'FD', text: 'All department leads: please confirm resource requirements before Monday sign-off.', created_at: '2026-09-05T18:00:00Z' }
+      ]
     },
     {
       task_id: 'task_sp_2',
       project_id: 'prj_sprint_14',
-      title: 'Ad creative matrix review with creative director',
+      title: 'Omnichannel conversion tracking & media campaign matrix',
+      description: 'Coordinate cross-client pixel integrations, landing page requirements, and paid ad spend tracking.\n\n### Mandate & Ownership:\n- Conversion tracking, landing page requirements, and campaign integrations (Abanoub)',
       status: 'IN_PROGRESS',
       priority: 'HIGH',
       due_date: '2026-09-07',
       duration_minutes: 45,
       logged_minutes: 30,
       position: '0|i00000:',
-      tags: ['Ads', 'Creative'],
-      created_by: 'Mohamed Asy',
+      tags: ['Marketing', 'Tracking', 'Omnichannel'],
+      created_by: 'Abanoub',
       created_at: '2026-09-03T11:00:00Z',
-      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_abanoub', full_name: 'Abanoub', title: 'Marketing Manager & Media Buyer', avatar_url: '' }],
       subtasks: [],
       attachments: [],
       comments: []
@@ -503,26 +624,47 @@ const DEFAULT_FALLBACK_TASKS = {
     {
       task_id: 'task_ib_1',
       project_id: 'prj_iceberg_internal',
-      title: 'Upgrade Upbase offline resilience & client syncing',
-      description: 'Implement full Upbase features: sliding task drawer, comments, checklists, and time tracking.',
+      title: 'Full-stack web development, technical architecture & Upbase engine',
+      description: 'Maintain and scale agency systems: Sliding task drawer, LexoRank Kanban, attachments, comments, and site maintenance.\n\n### Mandate & Ownership:\n- Full-stack web development, technical architecture, and site maintenance (Mohamed Asy)',
       status: 'IN_PROGRESS',
       priority: 'URGENT',
       due_date: '2026-09-06',
       duration_minutes: 60,
       logged_minutes: 50,
       position: '0|hzzzzz:',
-      tags: ['Upbase', 'Core Dev'],
+      tags: ['Development', 'Architecture', 'Maintenance'],
       created_by: 'Mohamed Asy',
       created_at: '2026-09-05T10:00:00Z',
-      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', avatar_url: '' }],
+      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', title: 'Dev', avatar_url: '' }],
       subtasks: [
-        { subtask_id: 'st_ib_1', title: 'Build sliding drawer UI', completed: true },
-        { subtask_id: 'st_ib_2', title: 'Connect comments and subtasks', completed: true },
-        { subtask_id: 'st_ib_3', title: 'Verify offline fallback', completed: true }
+        { subtask_id: 'st_ib_1', title: 'Build sliding drawer UI with 60fps GPU smoothness', completed: true },
+        { subtask_id: 'st_ib_2', title: 'Universal attachment download engine', completed: true },
+        { subtask_id: 'st_ib_3', title: 'Integrate official 5 team roles and ownership roster', completed: true }
       ],
       attachments: [],
       comments: [
-        { comment_id: 'c_ib_1', author_name: 'Mohamed Asy', author_initials: 'MA', text: 'All Upbase modules aligned with production specifications.', created_at: '2026-09-06T00:10:00Z' }
+        { comment_id: 'c_ib_1', author_name: 'Mohamed Asy', author_initials: 'MA', text: 'All agency technical modules and team ownership parameters synchronized.', created_at: '2026-09-06T00:10:00Z' }
+      ]
+    },
+    {
+      task_id: 'task_ib_2',
+      project_id: 'prj_iceberg_internal',
+      title: 'Final sign-off on Iceberg agency infrastructure & hosting budget',
+      description: 'Approve annual Vercel Enterprise, MongoDB Atlas dedicated tier, and tool subscriptions.\n\n### Mandate & Ownership:\n- Final sign-off, high-level roadmaps, and business approvals (Fady)',
+      status: 'DONE',
+      priority: 'HIGH',
+      due_date: '2026-09-05',
+      duration_minutes: 30,
+      logged_minutes: 30,
+      position: '0|i00008:',
+      tags: ['Executive', 'Approvals', 'Budget'],
+      created_by: 'Fady',
+      created_at: '2026-09-03T10:00:00Z',
+      assignees: [{ user_id: 'usr_fady', full_name: 'Fady', title: 'CEO', avatar_url: '' }],
+      subtasks: [],
+      attachments: [],
+      comments: [
+        { comment_id: 'c_ib_2', author_name: 'Fady', author_initials: 'FD', text: 'Hosting budget approved for 2026/2027.', created_at: '2026-09-05T16:00:00Z' }
       ]
     }
   ]
@@ -769,6 +911,8 @@ function renderProjectsSidebar() {
       </div>
     </button>
   `).join('');
+
+  renderTeamRosterSidebar();
 }
 
 // Select a Project
@@ -889,6 +1033,8 @@ async function loadWorkspaceTasks() {
   } else {
     renderTaskListView();
   }
+
+  renderTeamRosterSidebar();
 }
 
 // ==========================================
@@ -972,13 +1118,20 @@ function renderKanbanColumns() {
     { id: 'DONE', title: 'Done', color: '#10b981' }
   ];
 
+  const activeFilterId = window.WorkspacesState.assigneeFilter;
+  const activeFilterMember = activeFilterId ? (window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS).find(m => m.user_id === activeFilterId) : null;
+
   columns.forEach(col => {
     const colKey = col.id.toLowerCase();
     const container = document.getElementById(`kanban-col-${colKey}`) || document.getElementById(`kanban-col-${colKey.replace('_', '-')}`);
     const countBadge = document.getElementById(`kanban-count-${colKey}`) || document.getElementById(`kanban-count-${colKey.replace('_', '-')}`);
     if (!container) return;
 
-    const colTasks = (window.WorkspacesState.tasks || []).filter(t => t.status === col.id);
+    let colTasks = (window.WorkspacesState.tasks || []).filter(t => t.status === col.id);
+    if (activeFilterMember) {
+      colTasks = colTasks.filter(t => (t.assignees || []).some(a => a.user_id === activeFilterId || a.full_name === activeFilterMember.full_name));
+    }
+
     if (countBadge) countBadge.innerText = colTasks.length;
 
     const cardsHtml = colTasks.map(t => {
@@ -988,10 +1141,13 @@ function renderKanbanColumns() {
       const attachmentsCount = (t.attachments || []).length;
       const commentsCount = (t.comments || []).length;
 
-      // Assignee avatar stack
+      // Assignee avatar stack with official team styling
       const assigneesHtml = (t.assignees && t.assignees.length > 0) ? t.assignees.map((a, i) => {
-        const initials = a.full_name ? a.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'MA';
-        return `<span class="w-5 h-5 rounded-full bg-cyan-600 text-white font-bold text-[9px] flex items-center justify-center border border-slate-900 shadow-sm ${i > 0 ? '-ml-1.5' : ''}" title="${escapeHtml(a.full_name)}">${initials}</span>`;
+        const member = (window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS).find(m => m.user_id === a.user_id || m.full_name === a.full_name);
+        const bgClass = member ? member.bgClass : 'bg-cyan-600';
+        const initials = a.full_name ? a.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : (member ? member.initials : 'MA');
+        const tooltip = member ? `${member.emoji} ${member.full_name} (${member.title}) — ${member.ownership}` : (a.full_name || 'Team Member');
+        return `<span class="w-5 h-5 rounded-full ${bgClass} text-white font-bold text-[9px] flex items-center justify-center border border-slate-900 shadow-sm ${i > 0 ? '-ml-1.5' : ''}" title="${escapeHtml(tooltip)}">${initials}</span>`;
       }).join('') : `<span class="w-5 h-5 rounded-full bg-slate-800 text-slate-400 font-bold text-[9px] flex items-center justify-center border border-slate-700" title="Unassigned"><i data-lucide="user" class="w-2.5 h-2.5"></i></span>`;
 
       // Upbase Tag Badges
@@ -1077,9 +1233,16 @@ function renderTaskListView() {
   const container = document.getElementById('upbase-tasks-table');
   if (!container) return;
 
-  const tasks = window.WorkspacesState.tasks || [];
+  const activeFilterId = window.WorkspacesState.assigneeFilter;
+  const activeFilterMember = activeFilterId ? (window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS).find(m => m.user_id === activeFilterId) : null;
+
+  let tasks = window.WorkspacesState.tasks || [];
+  if (activeFilterMember) {
+    tasks = tasks.filter(t => (t.assignees || []).some(a => a.user_id === activeFilterId || a.full_name === activeFilterMember.full_name));
+  }
+
   if (tasks.length === 0) {
-    container.innerHTML = `<div class="text-xs text-slate-500 py-6 text-center">No tasks in this project yet. Use the input above or switch to Kanban!</div>`;
+    container.innerHTML = `<div class="text-xs text-slate-500 py-6 text-center">No tasks found${activeFilterMember ? ` assigned to ${escapeHtml(activeFilterMember.full_name)}` : ''} in this project. Use the input above or clear filter!</div>`;
     return;
   }
 
@@ -1090,7 +1253,7 @@ function renderTaskListView() {
           <tr>
             <th class="py-2.5 px-3">Status</th>
             <th class="py-2.5 px-3">Task Title</th>
-            <th class="py-2.5 px-3">Assignee</th>
+            <th class="py-2.5 px-3">Assignee & Role</th>
             <th class="py-2.5 px-3">Due Date</th>
             <th class="py-2.5 px-3">Priority</th>
             <th class="py-2.5 px-3">Tags</th>
@@ -1102,7 +1265,16 @@ function renderTaskListView() {
             const isDone = t.status === 'DONE';
             const completedSubtasks = (t.subtasks || []).filter(st => st.completed).length;
             const totalSubtasks = (t.subtasks || []).length;
-            const mainAssignee = (t.assignees && t.assignees[0]) ? t.assignees[0].full_name : 'Unassigned';
+            
+            const firstAssignee = (t.assignees && t.assignees[0]) ? t.assignees[0] : null;
+            const member = firstAssignee ? (window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS).find(m => m.user_id === firstAssignee.user_id || m.full_name === firstAssignee.full_name) : null;
+            const assigneeBadge = member ? `
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg ${member.badgeClass} text-[11px] font-semibold" title="${escapeHtml(`${member.full_name} (${member.title}) — ${member.ownership}`)}">
+                <span class="w-2 h-2 rounded-full ${member.bgClass}"></span>
+                <span>${escapeHtml(member.full_name)}</span>
+                <span class="opacity-70 text-[10px]">(${escapeHtml(member.title)})</span>
+              </span>
+            ` : (firstAssignee ? `<span class="text-slate-400">${escapeHtml(firstAssignee.full_name)}</span>` : '<span class="text-slate-500 italic">Unassigned</span>');
 
             return `
               <tr onclick="openTaskDetailsModal('${t.task_id}')" class="hover:bg-slate-800/50 cursor-pointer transition-colors group">
@@ -1116,7 +1288,7 @@ function renderTaskListView() {
                     ${escapeHtml(t.title)}
                   </div>
                 </td>
-                <td class="py-3 px-3 text-slate-400">${escapeHtml(mainAssignee)}</td>
+                <td class="py-3 px-3">${assigneeBadge}</td>
                 <td class="py-3 px-3 font-mono text-slate-400">${t.due_date || '—'}</td>
                 <td class="py-3 px-3">
                   <span class="text-[10px] font-mono px-2 py-0.5 rounded-md ${t.priority === 'URGENT' ? 'bg-rose-950/60 text-rose-400 border border-rose-800/40' : t.priority === 'HIGH' ? 'bg-amber-950/60 text-amber-400 border border-amber-800/40' : 'bg-slate-800 text-slate-400'}">
@@ -1401,23 +1573,190 @@ function onDrawerAssigneeChange(userId) {
   const task = getActiveDrawerTask();
   if (!task) return;
 
-  const nameMap = {
-    'usr_asy': 'Mohamed Asy',
-    'usr_sarah': 'Sarah Osama',
-    'usr_tarek': 'Tarek Dev',
-    'usr_nour': 'Nour Designer'
-  };
+  const member = (window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS).find(m => m.user_id === userId);
 
-  if (!userId) {
+  if (!userId || !member) {
     task.assignees = [];
   } else {
-    task.assignees = [{ user_id: userId, full_name: nameMap[userId] || 'Team Member' }];
+    task.assignees = [{
+      user_id: member.user_id,
+      full_name: member.full_name,
+      title: member.title,
+      role: member.role,
+      ownership: member.ownership,
+      avatar_url: ''
+    }];
   }
 
   if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
   else renderTaskListView();
 
+  renderTeamRosterSidebar();
   syncTaskUpdateToServer(task);
+}
+
+// Render Team Roles & Ownership Roster Card in Left Sidebar
+function renderTeamRosterSidebar() {
+  const container = document.getElementById('upbase-team-roster');
+  if (!container) return;
+
+  const members = window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS;
+  const currentTasks = window.WorkspacesState.tasks || [];
+  const activeFilterId = window.WorkspacesState.assigneeFilter;
+
+  container.innerHTML = members.map(m => {
+    // Count active tasks assigned to this member in current workspace
+    const memberTasksCount = currentTasks.filter(t => 
+      (t.assignees || []).some(a => a.user_id === m.user_id || a.full_name === m.full_name) ||
+      t.created_by === m.full_name
+    ).length;
+
+    const isSelected = activeFilterId === m.user_id;
+
+    return `
+      <div onclick="filterTasksByAssignee('${m.user_id}')" 
+           class="p-2.5 rounded-xl border transition-all cursor-pointer group select-none relative ${
+             isSelected 
+               ? 'bg-cyan-500/15 border-cyan-400 shadow-md shadow-cyan-950/50' 
+               : 'bg-slate-900/70 border-slate-800/90 hover:border-slate-700 hover:bg-slate-850'
+           }">
+        <div class="flex items-start gap-2.5">
+          <div class="w-8 h-8 rounded-lg ${m.bgClass} text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform border border-white/20">
+            ${m.initials}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-1">
+              <span class="text-xs font-bold text-slate-100 group-hover:text-cyan-300 transition-colors truncate">
+                ${m.emoji} ${escapeHtml(m.full_name)}
+              </span>
+              <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded ${m.badgeClass} shrink-0">
+                ${escapeHtml(m.title)}
+              </span>
+            </div>
+            <p class="text-[10.5px] text-slate-400 mt-1 leading-snug line-clamp-2">
+              ${escapeHtml(m.ownership)}
+            </p>
+            <div class="flex items-center justify-between mt-2 pt-1.5 border-t border-slate-800/60 text-[10px]">
+              <span class="flex items-center gap-1 font-mono text-cyan-400">
+                <i data-lucide="check-circle-2" class="w-3 h-3"></i>
+                ${memberTasksCount} ${memberTasksCount === 1 ? 'task' : 'tasks'}
+              </span>
+              <span class="text-[10px] font-semibold ${isSelected ? 'text-amber-400' : 'text-slate-500 group-hover:text-slate-300'} transition-colors">
+                ${isSelected ? 'Active Filter &times;' : 'Filter &rarr;'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Update filter status bar in sidebar
+  const filterStatusEl = document.getElementById('upbase-team-filter-status');
+  const filterTextEl = document.getElementById('upbase-team-filter-text');
+  if (filterStatusEl && filterTextEl) {
+    if (activeFilterId) {
+      const activeMember = members.find(m => m.user_id === activeFilterId);
+      filterStatusEl.classList.remove('hidden');
+      filterTextEl.innerHTML = `Showing tasks for: <strong>${activeMember ? `${activeMember.emoji} ${escapeHtml(activeMember.full_name)}` : 'Filtered'}</strong>`;
+    } else {
+      filterStatusEl.classList.add('hidden');
+    }
+  }
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+// Interactive filter by team member
+function filterTasksByAssignee(userId) {
+  if (window.WorkspacesState.assigneeFilter === userId) {
+    window.WorkspacesState.assigneeFilter = null; // Toggle off
+  } else {
+    window.WorkspacesState.assigneeFilter = userId;
+  }
+
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else if (window.WorkspacesState.activeTool === 'tasks') renderTaskListView();
+
+  renderTeamRosterSidebar();
+}
+
+// Clear member filter
+function clearAssigneeFilter() {
+  window.WorkspacesState.assigneeFilter = null;
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else if (window.WorkspacesState.activeTool === 'tasks') renderTaskListView();
+  renderTeamRosterSidebar();
+}
+
+// Comment Mention Dropdown for @ button
+function toggleCommentMentionDropdown(e) {
+  if (e) e.stopPropagation();
+  const dropdown = document.getElementById('comment-mention-dropdown');
+  if (!dropdown) return;
+
+  const isHidden = dropdown.classList.contains('hidden');
+  if (isHidden) {
+    const members = window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS;
+    dropdown.innerHTML = `
+      <div class="px-2 py-1 text-[10px] uppercase font-bold tracking-wider text-slate-400 border-b border-slate-800/80 mb-1 flex items-center justify-between">
+        <span>Mention Team Member</span>
+        <span class="text-cyan-400 font-mono">Team Roles</span>
+      </div>
+      <div class="space-y-1 max-h-56 overflow-y-auto">
+        ${members.map(m => `
+          <button type="button" 
+                  onclick="insertCommentMention('${escapeHtml(m.full_name)}')" 
+                  class="w-full text-left p-1.5 rounded-lg hover:bg-slate-800/80 transition-colors flex items-center gap-2 group">
+            <span class="w-6 h-6 rounded-md ${m.bgClass} text-white font-bold text-[10px] flex items-center justify-center shrink-0">
+              ${m.initials}
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-200 group-hover:text-cyan-300 transition-colors truncate">
+                  ${m.emoji} ${escapeHtml(m.full_name)}
+                </span>
+                <span class="text-[9px] px-1 py-0.2 rounded ${m.badgeClass}">
+                  ${escapeHtml(m.title)}
+                </span>
+              </div>
+              <p class="text-[10px] text-slate-400 truncate">${escapeHtml(m.ownership)}</p>
+            </div>
+          </button>
+        `).join('')}
+      </div>
+    `;
+    dropdown.classList.remove('hidden');
+
+    // Auto-close on click outside
+    const closeListener = (evt) => {
+      if (!dropdown.contains(evt.target) && evt.target.id !== 'task-comment-mention-btn') {
+        dropdown.classList.add('hidden');
+        document.removeEventListener('click', closeListener);
+      }
+    };
+    setTimeout(() => document.addEventListener('click', closeListener), 10);
+  } else {
+    dropdown.classList.add('hidden');
+  }
+}
+
+// Insert @Name into comment input
+function insertCommentMention(fullName) {
+  const commentInput = document.getElementById('task-drawer-comment-input');
+  const dropdown = document.getElementById('comment-mention-dropdown');
+  if (dropdown) dropdown.classList.add('hidden');
+
+  if (!commentInput) return;
+  const mentionText = `@${fullName} `;
+  const currentVal = commentInput.value;
+  const selStart = commentInput.selectionStart || currentVal.length;
+  const selEnd = commentInput.selectionEnd || currentVal.length;
+
+  commentInput.value = currentVal.substring(0, selStart) + mentionText + currentVal.substring(selEnd);
+  commentInput.focus();
+  const nextCursor = selStart + mentionText.length;
+  commentInput.setSelectionRange(nextCursor, nextCursor);
 }
 
 function renderDrawerTags(task) {
@@ -3466,6 +3805,12 @@ window.handleCommentFileInputChange = handleCommentFileInputChange;
 window.removePendingCommentAttachment = removePendingCommentAttachment;
 window.insertCommentLinkTemplate = insertCommentLinkTemplate;
 window.parseAndEmbedLinks = parseAndEmbedLinks;
+window.ICEBERG_TEAM_MEMBERS = ICEBERG_TEAM_MEMBERS;
+window.renderTeamRosterSidebar = renderTeamRosterSidebar;
+window.filterTasksByAssignee = filterTasksByAssignee;
+window.clearAssigneeFilter = clearAssigneeFilter;
+window.toggleCommentMentionDropdown = toggleCommentMentionDropdown;
+window.insertCommentMention = insertCommentMention;
 
 // Keyboard shortcuts (Esc to close drawer)
 if (typeof document !== 'undefined') {
