@@ -85,7 +85,7 @@ const connectToDatabase = async () => {
 
 // Middleware to ensure DB connection for API routes
 app.use('/api', async (req, res, next) => {
-  if (req.path === '/health' || req.path === '/meta/status' || req.path === '/meta/event' || req.path === '/idex/data') return next();
+  if (req.path === '/health' || req.path === '/iams/health' || req.path === '/meta/status' || req.path === '/meta/event' || req.path === '/idex/data') return next();
   try {
     await connectToDatabase();
   } catch (err) {
