@@ -110,35 +110,32 @@ const iamsTasksRoutes = require('../lib/routes/iams/tasks');
 const iamsInvoicesRoutes = require('../lib/routes/iams/invoices');
 const iamsAnalyticsRoutes = require('../lib/routes/iams/analytics');
 
-// API Routes
-app.use('/api/content', contentRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/projects', projectRoutes);
-app.use('/api/services', serviceRoutes);
-app.use('/api/meta', metaRoutes);
-app.use('/api/leads', leadsRoutes);
-app.use('/api/calendar', calendarRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/analytics', analyticsRoutes);
+// Helper to mount routes on both /api/path and /path (handles Vercel rewrite variations)
+const mountRoute = (routePath, handler) => {
+  app.use(`/api${routePath}`, handler);
+  app.use(routePath, handler);
+};
 
-// IAMS Routes
-app.use('/api/iams/auth', iamsAuthRoutes);
-app.use('/api/iams/clients', iamsClientsRoutes);
-app.use('/api/iams/projects', iamsProjectsRoutes);
-app.use('/api/iams/tasks', iamsTasksRoutes);
-app.use('/api/iams/invoices', iamsInvoicesRoutes);
-app.use('/api/iams/analytics', iamsAnalyticsRoutes);
+// Core API Routes
+mountRoute('/content', contentRoutes);
+mountRoute('/contact', contactRoutes);
+mountRoute('/projects', projectRoutes);
+mountRoute('/services', serviceRoutes);
+mountRoute('/meta', metaRoutes);
+mountRoute('/leads', leadsRoutes);
+mountRoute('/calendar', calendarRoutes);
+mountRoute('/notifications', notificationRoutes);
+mountRoute('/analytics', analyticsRoutes);
 
-app.get('/api/iams/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    service: 'ICEBERG Internal Accounts Management System (IAMS)',
-    version: '1.0.0',
-    timestamp: new Date().toISOString()
-  });
-});
+// IAMS Modular Routes
+mountRoute('/iams/auth', iamsAuthRoutes);
+mountRoute('/iams/clients', iamsClientsRoutes);
+mountRoute('/iams/projects', iamsProjectsRoutes);
+mountRoute('/iams/tasks', iamsTasksRoutes);
+mountRoute('/iams/invoices', iamsInvoicesRoutes);
+mountRoute('/iams/analytics', iamsAnalyticsRoutes);
 
-app.get('/api/iams', (req, res) => {
+app.get(['/api/iams/health', '/iams/health', '/api/iams', '/iams'], (req, res) => {
   res.json({
     status: 'OK',
     service: 'ICEBERG Internal Accounts Management System (IAMS)',
@@ -207,7 +204,7 @@ app.get('/idex/case-study/:slug', (req, res) => {
 });
 
 // Health check endpoint
-app.get('/api/health', async (req, res) => {
+app.get(['/api/health', '/health'], async (req, res) => {
   let connectionError = null;
   try {
     await connectToDatabase();
