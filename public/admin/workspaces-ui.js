@@ -1545,57 +1545,361 @@ function deleteDrawerSubtask(subtaskId) {
   syncTaskUpdateToServer(task);
 }
 
-// Attachments
-function renderDrawerAttachments(task) {
-  const listEl = document.getElementById('task-drawer-attachments-list');
-  if (!listEl) return;
-  const attachments = task.attachments || [];
+// ==========================================
+// SMART LINK DETECTION & EMBEDDED MEDIA ENGINE
+// Protects Account Managers from misleading / cryptic links
+// ==========================================
 
-  if (attachments.length === 0) {
-    listEl.innerHTML = `<div class="text-xs text-slate-500 py-1 italic">No files attached to this task.</div>`;
-    return;
-  }
-
-  listEl.innerHTML = attachments.map((att, idx) => `
-    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-cyan-500/40 transition-colors">
-      <div class="flex items-center gap-2.5 min-w-0">
-        <i data-lucide="file-text" class="w-4 h-4 text-cyan-400 shrink-0"></i>
-        <div class="min-w-0">
-          <p class="text-xs font-semibold text-slate-200 truncate">${escapeHtml(att.name)}</p>
-          <span class="text-[10px] text-slate-500 font-mono">${att.size || '1.2 MB'}</span>
-        </div>
-      </div>
-      <div class="flex items-center gap-1.5 shrink-0">
-        <a href="${att.url || '#'}" target="_blank" class="p-1 hover:bg-slate-800 text-slate-400 hover:text-cyan-400 rounded transition-colors" title="Download">
-          <i data-lucide="download" class="w-3.5 h-3.5"></i>
-        </a>
-        <button type="button" onclick="removeDrawerAttachment(${idx})" class="p-1 hover:bg-slate-800 text-slate-500 hover:text-rose-400 rounded transition-colors" title="Remove">
-          <i data-lucide="x" class="w-3.5 h-3.5"></i>
-        </button>
-      </div>
-    </div>
-  `).join('');
-
-  if (window.lucide) window.lucide.createIcons();
+function formatFileSize(bytes) {
+  if (!bytes || isNaN(bytes)) return '1.2 MB';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 }
 
-function promptAddDrawerAttachment() {
+function generateSmartLinkCardHtml(url) {
+  if (!url) return '';
+  const trimmed = url.trim();
+
+  // 1. YouTube Video Embed
+  const ytMatch = trimmed.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i);
+  if (ytMatch && ytMatch[1]) {
+    const ytId = ytMatch[1];
+    return `
+      <div class="my-2 rounded-xl overflow-hidden border border-rose-900/60 bg-slate-950/90 shadow-md">
+        <div class="px-3 py-1.5 bg-rose-950/40 border-b border-rose-900/30 flex items-center justify-between text-xs">
+          <span class="text-rose-400 font-bold flex items-center gap-1.5">
+            <i data-lucide="play-circle" class="w-3.5 h-3.5"></i> YouTube Video
+          </span>
+          <a href="${trimmed}" target="_blank" rel="noopener noreferrer" class="text-[11px] text-cyan-400 hover:underline flex items-center gap-1">
+            Open in YouTube <i data-lucide="external-link" class="w-3 h-3"></i>
+          </a>
+        </div>
+        <div class="aspect-video w-full">
+          <iframe src="https://www.youtube-nocookie.com/embed/${ytId}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    `;
+  }
+
+  // 2. Loom Screen Recording Embed
+  const loomMatch = trimmed.match(/loom\.com\/share\/([a-zA-Z0-9]+)/i);
+  if (loomMatch && loomMatch[1]) {
+    const loomId = loomMatch[1];
+    return `
+      <div class="my-2 rounded-xl overflow-hidden border border-purple-900/60 bg-slate-950/90 shadow-md">
+        <div class="px-3 py-1.5 bg-purple-950/40 border-b border-purple-900/30 flex items-center justify-between text-xs">
+          <span class="text-purple-300 font-bold flex items-center gap-1.5">
+            <i data-lucide="video" class="w-3.5 h-3.5"></i> Loom Screen Recording
+          </span>
+          <a href="${trimmed}" target="_blank" rel="noopener noreferrer" class="text-[11px] text-cyan-400 hover:underline flex items-center gap-1">
+            Open in Loom <i data-lucide="external-link" class="w-3 h-3"></i>
+          </a>
+        </div>
+        <div class="aspect-video w-full">
+          <iframe src="https://www.loom.com/embed/${loomId}" class="w-full h-full" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+        </div>
+      </div>
+    `;
+  }
+
+  // 3. Figma Design / Prototype Verified Card
+  if (trimmed.includes('figma.com')) {
+    return `
+      <div class="my-2 p-3 rounded-xl bg-[#1e1b2e] border border-purple-800/60 flex items-center justify-between gap-3 shadow-md">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-300 font-black text-xs shrink-0">
+            FIG
+          </div>
+          <div class="min-w-0">
+            <div class="text-xs font-bold text-purple-200 truncate">Figma Design & Prototype</div>
+            <div class="text-[10px] text-purple-400/80 font-mono truncate">${escapeHtml(trimmed)}</div>
+          </div>
+        </div>
+        <a href="${trimmed}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-bold transition-all shrink-0 flex items-center gap-1 shadow-sm">
+          <span>Open Design</span> <i data-lucide="external-link" class="w-3 h-3"></i>
+        </a>
+      </div>
+    `;
+  }
+
+  // 4. Google Drive / Docs / Sheets Verified Card
+  if (trimmed.includes('drive.google.com') || trimmed.includes('docs.google.com')) {
+    const isDoc = trimmed.includes('/document/');
+    const isSheet = trimmed.includes('/spreadsheets/');
+    const label = isDoc ? 'Google Doc Document' : isSheet ? 'Google Spreadsheet' : 'Google Drive Cloud Asset';
+    return `
+      <div class="my-2 p-3 rounded-xl bg-[#13202e] border border-blue-800/60 flex items-center justify-between gap-3 shadow-md">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-300 font-bold text-xs shrink-0">
+            ${isDoc ? 'DOC' : isSheet ? 'SHT' : 'DRV'}
+          </div>
+          <div class="min-w-0">
+            <div class="text-xs font-bold text-blue-200 truncate">${label}</div>
+            <div class="text-[10px] text-blue-400/80 font-mono truncate">${escapeHtml(trimmed)}</div>
+          </div>
+        </div>
+        <a href="${trimmed}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold transition-all shrink-0 flex items-center gap-1 shadow-sm">
+          <span>Open File</span> <i data-lucide="external-link" class="w-3 h-3"></i>
+        </a>
+      </div>
+    `;
+  }
+
+  // 5. Direct Image Preview Link
+  if (/\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(trimmed) || trimmed.startsWith('data:image/')) {
+    return `
+      <div class="my-2">
+        <img src="${trimmed}" alt="Embedded Image" onclick="previewFullAttachmentImage('${trimmed}', 'Image Preview')" class="max-h-48 max-w-full rounded-xl border border-slate-700 object-cover cursor-pointer hover:opacity-90 shadow-md transition-opacity">
+      </div>
+    `;
+  }
+
+  // 6. Generic Verified Web Link Card
+  try {
+    const parsed = new URL(trimmed);
+    const domain = parsed.hostname.replace(/^www\./, '');
+    const cleanPath = parsed.pathname.length > 20 ? parsed.pathname.substring(0, 20) + '...' : parsed.pathname;
+    return `
+      <a href="${trimmed}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 my-1 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-cyan-500 text-cyan-300 hover:text-cyan-200 text-xs font-medium transition-all shadow-sm">
+        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
+        <span class="font-bold text-slate-200">${domain}</span>
+        <span class="text-slate-500 text-[10px]">${cleanPath || ''}</span>
+        <i data-lucide="external-link" class="w-3 h-3 text-cyan-400 shrink-0"></i>
+      </a>
+    `;
+  } catch (e) {
+    return `<a href="${trimmed}" target="_blank" class="text-cyan-400 underline">${escapeHtml(trimmed)}</a>`;
+  }
+}
+
+function parseAndEmbedLinks(rawText) {
+  if (!rawText) return '';
+  const urlRegex = /(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/gi;
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = urlRegex.exec(rawText)) !== null) {
+    const url = match[0];
+    const offset = match.index;
+    if (offset > lastIndex) {
+      parts.push(escapeHtml(rawText.substring(lastIndex, offset)).replace(/\n/g, '<br>'));
+    }
+
+    parts.push(generateSmartLinkCardHtml(url));
+    lastIndex = offset + url.length;
+  }
+
+  if (lastIndex < rawText.length) {
+    parts.push(escapeHtml(rawText.substring(lastIndex)).replace(/\n/g, '<br>'));
+  }
+
+  return parts.join('');
+}
+
+// ==========================================
+// REAL FILE UPLOAD & ATTACHMENTS ENGINE
+// ==========================================
+
+function triggerDeviceFileUpload() {
+  const input = document.getElementById('task-drawer-file-input');
+  if (input) input.click();
+}
+
+function handleTaskFileInputChange(event) {
+  const files = event.target.files;
+  if (!files || files.length === 0) return;
+  processUploadedFiles(files);
+  event.target.value = '';
+}
+
+function handleAttachmentDragOver(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const zone = document.getElementById('task-drawer-drop-zone');
+  if (zone) zone.classList.add('border-cyan-500', 'bg-cyan-950/20');
+}
+
+function handleAttachmentDragLeave(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const zone = document.getElementById('task-drawer-drop-zone');
+  if (zone) zone.classList.remove('border-cyan-500', 'bg-cyan-950/20');
+}
+
+function handleAttachmentDrop(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const zone = document.getElementById('task-drawer-drop-zone');
+  if (zone) zone.classList.remove('border-cyan-500', 'bg-cyan-950/20');
+
+  const files = event.dataTransfer?.files;
+  if (files && files.length > 0) {
+    processUploadedFiles(files);
+  }
+}
+
+async function processUploadedFiles(files) {
   const task = getActiveDrawerTask();
   if (!task) return;
-  const name = prompt('Enter attachment file name (e.g. Creative_Brief_v2.pdf):');
-  if (!name || !name.trim()) return;
-
   if (!task.attachments) task.attachments = [];
+
+  const fileArray = Array.from(files);
+  if (typeof showNotification === 'function') {
+    showNotification(`Uploading ${fileArray.length} file(s)...`, 'info');
+  }
+
+  for (const file of fileArray) {
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      const isImg = file.type.startsWith('image/');
+
+      const attachmentObj = {
+        name: file.name,
+        size: formatFileSize(file.size),
+        type: file.type || 'application/octet-stream',
+        url: dataUrl,
+        is_image: isImg,
+        uploaded_at: new Date().toISOString()
+      };
+
+      task.attachments.push(attachmentObj);
+
+      // Async sync to /api/iams/upload
+      fetch('/api/iams/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: file.name,
+          size: formatFileSize(file.size),
+          type: file.type,
+          data: dataUrl
+        })
+      }).catch(() => {});
+    } catch (err) {
+      console.warn('Failed reading file:', file.name, err);
+    }
+  }
+
+  renderDrawerAttachments(task);
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else renderTaskListView();
+
+  syncTaskUpdateToServer(task);
+  if (typeof showNotification === 'function') {
+    showNotification(`Added ${fileArray.length} attachment(s) to task!`, 'success');
+  }
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function promptAddWebEmbedLink() {
+  const url = prompt('Enter web link to embed (Figma, Loom, YouTube, Google Drive, or URL):');
+  if (!url || !url.trim()) return;
+
+  const trimmed = url.trim();
+  let name = 'Web Link';
+  if (trimmed.includes('figma.com')) name = 'Figma Design File';
+  else if (trimmed.includes('loom.com')) name = 'Loom Video Recording';
+  else if (trimmed.includes('youtube.com') || trimmed.includes('youtu.be')) name = 'YouTube Video';
+  else if (trimmed.includes('drive.google.com') || trimmed.includes('docs.google.com')) name = 'Google Drive Asset';
+  else {
+    try {
+      name = new URL(trimmed).hostname.replace(/^www\./, '') + ' Link';
+    } catch (e) {
+      name = 'External Link';
+    }
+  }
+
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  if (!task.attachments) task.attachments = [];
+
   task.attachments.push({
-    name: name.trim(),
-    size: '1.5 MB',
-    url: '#'
+    name,
+    size: 'Web Embed',
+    url: trimmed,
+    type: 'link',
+    is_image: /\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(trimmed),
+    uploaded_at: new Date().toISOString()
   });
 
   renderDrawerAttachments(task);
   if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
   else renderTaskListView();
   syncTaskUpdateToServer(task);
+
+  if (typeof showNotification === 'function') {
+    showNotification(`Embedded "${name}" link successfully!`, 'success');
+  }
+}
+
+function renderDrawerAttachments(task) {
+  const listEl = document.getElementById('task-drawer-attachments-list');
+  if (!listEl) return;
+  const attachments = task.attachments || [];
+
+  if (attachments.length === 0) {
+    listEl.innerHTML = `<div class="text-xs text-slate-500 py-2 italic text-center">No files or links attached yet.</div>`;
+    return;
+  }
+
+  listEl.innerHTML = attachments.map((att, idx) => {
+    const isImg = att.is_image || /\.(png|jpe?g|gif|webp|svg)/i.test(att.name) || (att.url && att.url.startsWith('data:image/'));
+    const isFigma = (att.url || '').includes('figma.com');
+    const isVideo = (att.url || '').includes('loom.com') || (att.url || '').includes('youtube.com') || (att.url || '').includes('youtu.be');
+
+    return `
+      <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 transition-all shadow-sm group">
+        <div class="flex items-center gap-3 min-w-0">
+          ${isImg && att.url && att.url !== '#' ? `
+            <img src="${att.url}" alt="${escapeHtml(att.name)}" onclick="previewFullAttachmentImage('${att.url}', '${escapeHtml(att.name)}')" class="w-10 h-10 object-cover rounded-lg border border-slate-700 cursor-pointer hover:scale-105 transition-transform shrink-0">
+          ` : isFigma ? `
+            <div class="w-10 h-10 rounded-lg bg-purple-500/20 border border-purple-500/40 text-purple-300 font-black text-xs flex items-center justify-center shrink-0">FIG</div>
+          ` : isVideo ? `
+            <div class="w-10 h-10 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-300 font-bold text-xs flex items-center justify-center shrink-0"><i data-lucide="video" class="w-4 h-4"></i></div>
+          ` : `
+            <div class="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center shrink-0"><i data-lucide="file-text" class="w-5 h-5"></i></div>
+          `}
+          
+          <div class="min-w-0">
+            <p class="text-xs font-semibold text-slate-200 truncate hover:text-cyan-300 transition-colors">${escapeHtml(att.name)}</p>
+            <div class="flex items-center gap-2 text-[10px] text-slate-500 font-mono">
+              <span>${att.size || '1.2 MB'}</span>
+              <span>•</span>
+              <span class="text-cyan-400/80">${isFigma ? 'Figma Project' : isVideo ? 'Video' : isImg ? 'Image' : 'File'}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 shrink-0">
+          ${isImg && att.url && att.url !== '#' ? `
+            <button type="button" onclick="previewFullAttachmentImage('${att.url}', '${escapeHtml(att.name)}')" class="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-cyan-400 rounded-lg transition-colors" title="View Full Image">
+              <i data-lucide="eye" class="w-4 h-4"></i>
+            </button>
+          ` : ''}
+
+          <a href="${att.url || '#'}" target="_blank" download="${escapeHtml(att.name)}" class="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-emerald-400 rounded-lg transition-colors" title="Download / Open">
+            <i data-lucide="external-link" class="w-4 h-4"></i>
+          </a>
+
+          <button type="button" onclick="removeDrawerAttachment(${idx})" class="p-1.5 hover:bg-slate-800 text-slate-500 hover:text-rose-400 rounded-lg transition-colors" title="Remove Attachment">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function removeDrawerAttachment(idx) {
@@ -1609,37 +1913,158 @@ function removeDrawerAttachment(idx) {
 }
 
 function focusTaskAttachment() {
-  promptAddDrawerAttachment();
+  triggerDeviceFileUpload();
 }
 
-// Activity & Comments
+function promptAddDrawerAttachment() {
+  triggerDeviceFileUpload();
+}
+
+// Global Image Lightbox Preview
+function previewFullAttachmentImage(url, title) {
+  const lightbox = document.getElementById('iceberg-media-lightbox');
+  const img = document.getElementById('iceberg-lightbox-img');
+  const titleEl = document.getElementById('iceberg-lightbox-title');
+  if (!lightbox || !img) return;
+
+  img.src = url;
+  if (titleEl) titleEl.innerText = title || 'Image Attachment';
+  lightbox.classList.remove('hidden');
+  lightbox.classList.add('flex');
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function closeMediaLightbox() {
+  const lightbox = document.getElementById('iceberg-media-lightbox');
+  if (!lightbox) return;
+  lightbox.classList.add('hidden');
+  lightbox.classList.remove('flex');
+}
+
+// ==========================================
+// ACTIVITY & COMMENTS STREAM WITH SMART EMBEDS
+// ==========================================
+
+window.pendingCommentAttachments = [];
+
+function triggerCommentFileUpload() {
+  const input = document.getElementById('task-drawer-comment-file-input');
+  if (input) input.click();
+}
+
+async function handleCommentFileInputChange(event) {
+  const files = event.target.files;
+  if (!files || files.length === 0) return;
+
+  const bar = document.getElementById('task-drawer-pending-comment-attachments');
+  for (const file of Array.from(files)) {
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      const isImg = file.type.startsWith('image/');
+      window.pendingCommentAttachments.push({
+        name: file.name,
+        size: formatFileSize(file.size),
+        url: dataUrl,
+        is_image: isImg
+      });
+    } catch (err) {
+      console.warn('Comment file read failed:', err);
+    }
+  }
+
+  renderPendingCommentAttachments();
+  event.target.value = '';
+}
+
+function renderPendingCommentAttachments() {
+  const bar = document.getElementById('task-drawer-pending-comment-attachments');
+  if (!bar) return;
+
+  if (window.pendingCommentAttachments.length === 0) {
+    bar.classList.add('hidden');
+    bar.innerHTML = '';
+    return;
+  }
+
+  bar.classList.remove('hidden');
+  bar.innerHTML = window.pendingCommentAttachments.map((att, idx) => `
+    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyan-950/70 border border-cyan-800/60 text-xs text-cyan-200">
+      <i data-lucide="paperclip" class="w-3 h-3 text-amber-400"></i>
+      <span class="font-medium truncate max-w-[150px]">${escapeHtml(att.name)}</span>
+      <span class="text-[10px] text-slate-400 font-mono">(${att.size})</span>
+      <button type="button" onclick="removePendingCommentAttachment(${idx})" class="hover:text-rose-400 ml-1 font-bold">&times;</button>
+    </span>
+  `).join('');
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function removePendingCommentAttachment(idx) {
+  window.pendingCommentAttachments.splice(idx, 1);
+  renderPendingCommentAttachments();
+}
+
+function insertCommentLinkTemplate() {
+  const input = document.getElementById('task-drawer-comment-input');
+  if (!input) return;
+  const link = prompt('Enter Figma, Loom, YouTube, or Drive URL:');
+  if (link && link.trim()) {
+    input.value += (input.value ? ' ' : '') + link.trim();
+    input.focus();
+  }
+}
+
 function renderDrawerComments(task) {
   const streamEl = document.getElementById('task-drawer-comments-stream');
   if (!streamEl) return;
   const comments = task.comments || [];
 
   if (comments.length === 0) {
-    streamEl.innerHTML = `<div class="text-xs text-slate-500 py-2 italic text-center">No comments posted yet. Be the first to comment below!</div>`;
+    streamEl.innerHTML = `<div class="text-xs text-slate-500 py-3 italic text-center">No comments posted yet. Be the first to comment below!</div>`;
     return;
   }
 
-  streamEl.innerHTML = comments.map(c => `
-    <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800/80">
-      <div class="w-7 h-7 rounded-full bg-cyan-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0 shadow-sm">
-        ${escapeHtml(c.author_initials || 'MA')}
+  streamEl.innerHTML = comments.map(c => {
+    // Process text through smart link & embed parser
+    const parsedTextHtml = parseAndEmbedLinks(c.text);
+
+    const attachmentsHtml = (c.attachments && c.attachments.length > 0) ? `
+      <div class="mt-2.5 flex flex-wrap gap-2">
+        ${c.attachments.map(att => `
+          <div class="p-2 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-2">
+            ${att.is_image ? `
+              <img src="${att.url}" alt="${escapeHtml(att.name)}" onclick="previewFullAttachmentImage('${att.url}', '${escapeHtml(att.name)}')" class="w-9 h-9 object-cover rounded-lg border border-slate-700 cursor-pointer hover:scale-105 transition-transform">
+            ` : `
+              <i data-lucide="file" class="w-4 h-4 text-cyan-400"></i>
+            `}
+            <div class="text-xs">
+              <a href="${att.url}" target="_blank" download="${escapeHtml(att.name)}" class="text-cyan-300 hover:underline font-medium">${escapeHtml(att.name)}</a>
+              <div class="text-[10px] text-slate-500">${att.size || ''}</div>
+            </div>
+          </div>
+        `).join('')}
       </div>
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center justify-between mb-1">
-          <span class="text-xs font-bold text-slate-200">${escapeHtml(c.author_name || 'Mohamed Asy')}</span>
-          <span class="text-[10px] text-slate-500 font-mono">${c.created_at ? new Date(c.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now'}</span>
+    ` : '';
+
+    return `
+      <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 shadow-sm">
+        <div class="w-8 h-8 rounded-full bg-cyan-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
+          ${escapeHtml(c.author_initials || 'MA')}
         </div>
-        <p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(c.text)}</p>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold text-slate-200">${escapeHtml(c.author_name || 'Mohamed Asy')}</span>
+            <span class="text-[10px] text-slate-500 font-mono">${c.created_at ? new Date(c.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now'}</span>
+          </div>
+          <div class="text-xs text-slate-300 leading-relaxed break-words">${parsedTextHtml}</div>
+          ${attachmentsHtml}
+        </div>
+        <button type="button" onclick="deleteDrawerComment('${c.comment_id}')" class="text-slate-600 hover:text-rose-400 p-1 transition-colors" title="Delete comment">
+          <i data-lucide="trash" class="w-3.5 h-3.5"></i>
+        </button>
       </div>
-      <button type="button" onclick="deleteDrawerComment('${c.comment_id}')" class="text-slate-600 hover:text-rose-400 p-1 transition-colors" title="Delete comment">
-        <i data-lucide="trash" class="w-3 h-3"></i>
-      </button>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 
   if (window.lucide) window.lucide.createIcons();
 }
@@ -1647,22 +2072,39 @@ function renderDrawerComments(task) {
 function handleDrawerAddComment(e) {
   if (e) e.preventDefault();
   const input = document.getElementById('task-drawer-comment-input');
-  if (!input || !input.value.trim()) return;
+  if (!input) return;
+  const text = input.value.trim();
+
+  if (!text && window.pendingCommentAttachments.length === 0) return;
 
   const task = getActiveDrawerTask();
   if (!task) return;
   if (!task.comments) task.comments = [];
 
+  const attachedCopy = [...window.pendingCommentAttachments];
+
+  // Also auto-add comment attachments to task attachments for convenience
+  if (attachedCopy.length > 0) {
+    if (!task.attachments) task.attachments = [];
+    attachedCopy.forEach(att => {
+      task.attachments.push({ ...att });
+    });
+    renderDrawerAttachments(task);
+  }
+
   const newComment = {
     comment_id: 'c_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
     author_name: 'Mohamed Asy',
     author_initials: 'MA',
-    text: input.value.trim(),
+    text: text || '(Attached files)',
+    attachments: attachedCopy,
     created_at: new Date().toISOString()
   };
 
   task.comments.push(newComment);
   input.value = '';
+  window.pendingCommentAttachments = [];
+  renderPendingCommentAttachments();
   renderDrawerComments(task);
 
   if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
@@ -2799,6 +3241,19 @@ window.copyTaskDeepLink = copyTaskDeepLink;
 window.toggleTaskMenuDropdown = toggleTaskMenuDropdown;
 window.deleteActiveTask = deleteActiveTask;
 window.promptQuickAddTaskToColumn = promptQuickAddTaskToColumn;
+window.triggerDeviceFileUpload = triggerDeviceFileUpload;
+window.handleTaskFileInputChange = handleTaskFileInputChange;
+window.handleAttachmentDragOver = handleAttachmentDragOver;
+window.handleAttachmentDragLeave = handleAttachmentDragLeave;
+window.handleAttachmentDrop = handleAttachmentDrop;
+window.promptAddWebEmbedLink = promptAddWebEmbedLink;
+window.previewFullAttachmentImage = previewFullAttachmentImage;
+window.closeMediaLightbox = closeMediaLightbox;
+window.triggerCommentFileUpload = triggerCommentFileUpload;
+window.handleCommentFileInputChange = handleCommentFileInputChange;
+window.removePendingCommentAttachment = removePendingCommentAttachment;
+window.insertCommentLinkTemplate = insertCommentLinkTemplate;
+window.parseAndEmbedLinks = parseAndEmbedLinks;
 
 // Keyboard shortcuts (Esc to close drawer)
 if (typeof document !== 'undefined') {

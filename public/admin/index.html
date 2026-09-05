@@ -3333,16 +3333,36 @@
                 </form>
             </div>
 
-            <!-- 5. Attachments Section -->
+            <!-- 5. Attachments Section (Real Upload + Drag&Drop + Embed) -->
             <div class="space-y-2.5">
                 <div class="flex items-center justify-between">
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
                         <i data-lucide="paperclip" class="w-4 h-4 text-amber-400"></i> Attachments
                     </h4>
-                    <button type="button" onclick="promptAddDrawerAttachment()" class="text-xs text-cyan-400 hover:underline font-medium">+ Add File / Link</button>
+                    <div class="flex items-center gap-2">
+                        <input type="file" id="task-drawer-file-input" class="hidden" multiple onchange="handleTaskFileInputChange(event)">
+                        <button type="button" onclick="triggerDeviceFileUpload()" class="px-2.5 py-1 bg-cyan-950/60 border border-cyan-800/60 hover:border-cyan-500 text-cyan-300 hover:text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
+                            <i data-lucide="upload" class="w-3.5 h-3.5"></i> Upload File
+                        </button>
+                        <button type="button" onclick="promptAddWebEmbedLink()" class="px-2.5 py-1 bg-purple-950/60 border border-purple-800/60 hover:border-purple-500 text-purple-300 hover:text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
+                            <i data-lucide="link-2" class="w-3.5 h-3.5"></i> Embed Link
+                        </button>
+                    </div>
                 </div>
-                <div id="task-drawer-attachments-list" class="space-y-1.5">
-                    <!-- Populated by JS -->
+
+                <!-- Drag & Drop Zone + Attachments List -->
+                <div id="task-drawer-drop-zone" 
+                     ondragover="handleAttachmentDragOver(event)" 
+                     ondragleave="handleAttachmentDragLeave(event)" 
+                     ondrop="handleAttachmentDrop(event)"
+                     class="rounded-xl border border-dashed border-slate-800 hover:border-cyan-500/50 p-2.5 transition-all bg-slate-900/30">
+                    <div id="task-drawer-attachments-list" class="space-y-2">
+                        <!-- Populated by JS -->
+                    </div>
+                    <div class="text-center py-2 text-[11px] text-slate-500 flex items-center justify-center gap-1.5 cursor-pointer hover:text-slate-300" onclick="triggerDeviceFileUpload()">
+                        <i data-lucide="upload-cloud" class="w-3.5 h-3.5 text-slate-400"></i>
+                        <span>Drag & drop files here or click to browse</span>
+                    </div>
                 </div>
             </div>
 
@@ -3352,23 +3372,32 @@
                     <i data-lucide="message-square" class="w-4 h-4 text-blue-400"></i> Activity & Comments
                 </h4>
                 <div id="task-drawer-comments-stream" class="space-y-3">
-                    <!-- Comments Stream Populated by JS -->
+                    <!-- Comments Stream Populated by JS with Smart Link Embeds -->
                 </div>
             </div>
         </div>
 
-        <!-- Fixed Bottom Comment Box (Exact replica of Image 2) -->
+        <!-- Fixed Bottom Comment Box with Real File Upload & Smart Embeds -->
         <div class="p-4 border-t border-slate-800/90 bg-[#141720]">
+            <!-- Pending comment attachments preview bar -->
+            <div id="task-drawer-pending-comment-attachments" class="hidden flex flex-wrap gap-2 mb-2 p-2 bg-slate-900/90 rounded-xl border border-slate-800"></div>
+
             <form onsubmit="handleDrawerAddComment(event)" class="flex items-end gap-3">
                 <div class="w-8 h-8 rounded-full bg-cyan-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
                     MA
                 </div>
                 <div class="flex-1 bg-slate-900 border border-slate-800 rounded-xl p-2 focus-within:border-cyan-500/50 transition-colors">
-                    <textarea id="task-drawer-comment-input" rows="1" placeholder="Write a comment..." onkeydown="handleCommentKeyDown(event)" class="w-full bg-transparent text-xs text-slate-100 placeholder-slate-500 focus:outline-none resize-none p-1"></textarea>
+                    <textarea id="task-drawer-comment-input" rows="1" placeholder="Write a comment or paste links (Figma, Loom, YouTube, Drive)..." onkeydown="handleCommentKeyDown(event)" class="w-full bg-transparent text-xs text-slate-100 placeholder-slate-500 focus:outline-none resize-none p-1"></textarea>
+                    
+                    <input type="file" id="task-drawer-comment-file-input" class="hidden" multiple onchange="handleCommentFileInputChange(event)">
+
                     <div class="flex items-center justify-between pt-1 text-slate-400 text-xs border-t border-slate-800/60 mt-1">
                         <div class="flex items-center gap-2">
                             <button type="button" title="Mention team member" class="hover:text-cyan-400 p-1">@</button>
-                            <button type="button" title="Attach file" onclick="promptAddDrawerAttachment()" class="hover:text-cyan-400 p-1"><i data-lucide="paperclip" class="w-3.5 h-3.5"></i></button>
+                            <button type="button" title="Upload & attach file from device" onclick="triggerCommentFileUpload()" class="hover:text-cyan-400 p-1 text-amber-400 flex items-center gap-0.5">
+                                <i data-lucide="paperclip" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button type="button" title="Insert Figma / Loom link format" onclick="insertCommentLinkTemplate()" class="hover:text-purple-400 p-1 text-xs">🔗</button>
                             <button type="button" title="Add emoji" onclick="insertCommentEmoji('🚀')" class="hover:text-cyan-400 p-1">😀</button>
                         </div>
                         <button type="submit" class="px-3 py-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-lg transition-all shadow-sm">
@@ -3379,6 +3408,17 @@
             </form>
         </div>
     </aside>
+
+    <!-- Global Image / Media Lightbox Modal -->
+    <div id="iceberg-media-lightbox" onclick="closeMediaLightbox()" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden items-center justify-center p-4">
+        <div class="relative max-w-5xl max-h-[90vh] flex flex-col items-center" onclick="event.stopPropagation()">
+            <button type="button" onclick="closeMediaLightbox()" class="absolute -top-12 right-0 text-slate-400 hover:text-white p-2 rounded-full bg-slate-800/80">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <img id="iceberg-lightbox-img" src="" alt="Media Preview" class="max-h-[82vh] max-w-full rounded-2xl object-contain shadow-2xl border border-slate-800">
+            <p id="iceberg-lightbox-title" class="text-slate-300 text-xs font-semibold mt-3 text-center"></p>
+        </div>
+    </div>
 
     <script src="./iams.js"></script>
     <script src="./workspaces-ui.js"></script>

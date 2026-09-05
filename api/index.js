@@ -177,6 +177,26 @@ app.get('/iams/health', iamsHealthHandler);
 app.get('/api/iams', iamsHealthHandler);
 app.get('/iams', iamsHealthHandler);
 
+// IAMS Resilient File Upload Endpoint (Zero-disk ephemeral serverless compatible)
+app.post(['/api/iams/upload', '/iams/upload'], (req, res) => {
+  try {
+    const { name, size, type, data } = req.body;
+    if (!name) {
+      return res.status(400).json({ success: false, error: 'File name is required.' });
+    }
+    const filePayload = {
+      name,
+      size: size || 'Unknown size',
+      type: type || 'application/octet-stream',
+      url: data || '#',
+      uploaded_at: new Date().toISOString()
+    };
+    res.json({ success: true, data: filePayload });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // ---------- Analytics Legacy Compat Shims ----------
 // The new analytics logic lives in lib/routes/analytics.js (MongoDB-backed).
 // These shims translate the old page-tracker.js POST format to the new endpoint
