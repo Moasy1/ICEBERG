@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
-const User = require('../api/models/User');
-const Client = require('../api/models/Client');
-const AccountProject = require('../api/models/AccountProject');
-const Task = require('../api/models/Task');
-const Invoice = require('../api/models/Invoice');
-const AuditLog = require('../api/models/AuditLog');
+const User = require('../lib/models/User');
+const Client = require('../lib/models/Client');
+const AccountProject = require('../lib/models/AccountProject');
+const Task = require('../lib/models/Task');
+const Invoice = require('../lib/models/Invoice');
+const AuditLog = require('../lib/models/AuditLog');
 
 const seedData = async () => {
   try {

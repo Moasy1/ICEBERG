@@ -96,16 +96,16 @@ app.use('/api', async (req, res, next) => {
 });
 
 // Import routes
-const contentRoutes = require('./routes/content');
-const contactRoutes = require('./routes/contact');
-const projectRoutes = require('./routes/projects');
-const serviceRoutes = require('./routes/services');
-const metaRoutes = require('./routes/meta');
-const leadsRoutes = require('./routes/leads');
-const calendarRoutes = require('./routes/calendar');
-const notificationRoutes = require('./routes/notifications');
-const analyticsRoutes = require('./routes/analytics');
-const iamsRoutes = require('./routes/iams');
+const contentRoutes = require('../lib/routes/content');
+const contactRoutes = require('../lib/routes/contact');
+const projectRoutes = require('../lib/routes/projects');
+const serviceRoutes = require('../lib/routes/services');
+const metaRoutes = require('../lib/routes/meta');
+const leadsRoutes = require('../lib/routes/leads');
+const calendarRoutes = require('../lib/routes/calendar');
+const notificationRoutes = require('../lib/routes/notifications');
+const analyticsRoutes = require('../lib/routes/analytics');
+const iamsRoutes = require('../lib/routes/iams');
 
 // API Routes
 app.use('/api/content', contentRoutes);
@@ -120,7 +120,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/iams', iamsRoutes);
 
 // ---------- Analytics Legacy Compat Shims ----------
-// The new analytics logic lives in api/routes/analytics.js (MongoDB-backed).
+// The new analytics logic lives in lib/routes/analytics.js (MongoDB-backed).
 // These shims translate the old page-tracker.js POST format to the new endpoint
 // so any cached script versions keep working without changes.
 
@@ -138,7 +138,7 @@ app.post('/api/analytics/pageview', (req, res) => {
 app.get('/api/analytics/pageviews', async (req, res) => {
   try {
     const mongoose = require('mongoose');
-    const PageView = require('./models/PageView');
+    const PageView = require('../lib/models/PageView');
     if (mongoose.connection.readyState !== 1) return res.json({ success: true, total: 0, pages: [] });
     const agg = await PageView.aggregate([
       { $group: { _id: { page: '$page', label: '$label' }, count: { $sum: 1 } } },
