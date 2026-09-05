@@ -188,6 +188,15 @@ function showSection(sectionId) {
         case 'iams-billing':
             if (window.IAMS) window.IAMS.loadInvoices();
             break;
+        case 'upbase-planner':
+            if (window.initDailyPlanner) window.initDailyPlanner();
+            break;
+        case 'upbase-workspaces':
+            if (window.initUpbaseWorkspaces) window.initUpbaseWorkspaces();
+            break;
+        case 'upbase-focus':
+            if (window.initFocusMode) window.initFocusMode();
+            break;
     }
     lucide.createIcons();
 }

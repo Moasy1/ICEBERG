@@ -361,6 +361,31 @@
                             Invoices & Tax Ledger
                         </a>
                     </li>
+                    <!-- Upbase Workspaces & Productivity Suite -->
+                    <li class="pt-3 pb-1 border-t border-slate-800">
+                        <span class="px-4 text-[10px] font-extrabold uppercase tracking-widest text-emerald-400">Upbase Productivity</span>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('upbase-planner')"
+                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="sun" class="w-4 h-4 text-emerald-400"></i>
+                            Daily Planner & Grid
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('upbase-workspaces')"
+                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="folders" class="w-4 h-4 text-emerald-400"></i>
+                            Projects & Tools
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('upbase-focus')"
+                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="timer" class="w-4 h-4 text-emerald-400"></i>
+                            Focus & Ambient Sound
+                        </a>
+                    </li>
                     <li class="pt-2">
                         <a href="#" onclick="showSection('clients')" 
                             class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
@@ -1769,6 +1794,338 @@
                     </div>
                 </div>
             </section>
+
+            <!-- ========================================== -->
+            <!-- UPBASE 01: DAILY PLANNER & TIME-BLOCKING   -->
+            <!-- ========================================== -->
+            <section id="upbase-planner" class="content-section hidden space-y-6">
+                <!-- Header & Date Controls -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest mb-1">
+                            <i data-lucide="sun" class="w-4 h-4"></i> Personal Daily Planner
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white" id="planner-date-display">Today's Schedule</h2>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="changePlannerDate(-1)" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i> Prev
+                        </button>
+                        <button onclick="initDailyPlanner(new Date().toISOString().split('T')[0])" class="px-3.5 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs font-bold transition-all">
+                            Today
+                        </button>
+                        <button onclick="changePlannerDate(1)" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all">
+                            Next <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3-Column Split View -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Left: Daily Habits (Col 3) -->
+                    <div class="lg:col-span-3 space-y-4">
+                        <div class="glass-card p-5 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                                    <i data-lucide="check-circle" class="w-4 h-4"></i> Daily Habits
+                                </h3>
+                                <span id="planner-habits-progress" class="text-[11px] font-mono text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded-md">0/0 (0%)</span>
+                            </div>
+                            <div id="planner-habits-container" class="space-y-2 max-h-80 overflow-y-auto"></div>
+                            
+                            <!-- Add Habit Form -->
+                            <form onsubmit="addNewHabit(event)" class="space-y-2 pt-2 border-t border-slate-800/80">
+                                <input type="text" id="new-habit-title" placeholder="New habit (e.g. Read specs)..." class="form-input w-full px-3 py-2 rounded-xl text-xs bg-slate-950 border border-slate-800 text-white placeholder-slate-500">
+                                <div class="flex gap-2">
+                                    <input type="time" id="new-habit-time" class="form-input px-2 py-1.5 rounded-xl text-xs bg-slate-950 border border-slate-800 text-white font-mono">
+                                    <button type="submit" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs rounded-xl transition-all">Add Habit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Center: Scratchpad & Retrospective (Col 4) -->
+                    <div class="lg:col-span-4 space-y-4">
+                        <div class="glass-card p-5 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-2">
+                                    <i data-lucide="edit-3" class="w-4 h-4"></i> Daily Scratchpad
+                                </h3>
+                                <span id="scratchpad-save-status" class="text-[10px] text-emerald-400 font-mono">Ready</span>
+                            </div>
+                            <textarea id="planner-scratchpad" oninput="handleScratchpadInput(this.value)" rows="9" placeholder="Brain dump quick notes, phone numbers, client talking points..." class="form-input w-full p-3 rounded-xl text-xs bg-slate-950/80 border border-slate-800 text-slate-200 placeholder-slate-600 focus:border-cyan-500 transition-all"></textarea>
+                        </div>
+
+                        <!-- Retrospective Journal -->
+                        <div class="glass-card p-5 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-3">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-2">
+                                <i data-lucide="book-open" class="w-4 h-4"></i> End-of-Day Retrospective
+                            </h3>
+                            <textarea id="planner-reflection-note" rows="3" placeholder="What went well today? Any blockers or learnings?" class="form-input w-full p-2.5 rounded-xl text-xs bg-slate-950/80 border border-slate-800 text-slate-200 placeholder-slate-600"></textarea>
+                            <div class="flex items-center justify-between pt-1">
+                                <div class="flex items-center gap-2 text-xs text-slate-400">
+                                    <span>Score:</span>
+                                    <select id="planner-reflection-score" class="form-input px-2 py-1 rounded-lg text-xs bg-slate-950 border border-slate-800 text-white font-mono">
+                                        <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                                        <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                                        <option value="3">⭐⭐⭐ (3/5)</option>
+                                        <option value="2">⭐⭐ (2/5)</option>
+                                        <option value="1">⭐ (1/5)</option>
+                                    </select>
+                                </div>
+                                <button onclick="saveDailyReflection()" class="px-3 py-1.5 bg-purple-600/80 hover:bg-purple-600 text-white text-xs font-bold rounded-xl transition-all">Save Reflection</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Hourly Time-Block Grid & Task Drawer (Col 5) -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="glass-card p-5 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-2">
+                                    <i data-lucide="clock" class="w-4 h-4"></i> Hourly Time-Grid (08:00 - 22:00)
+                                </h3>
+                                <span class="text-[10px] text-slate-500 font-mono">Drag task to block</span>
+                            </div>
+                            <div id="planner-timegrid-slots" class="space-y-1 max-h-[380px] overflow-y-auto pr-1"></div>
+                        </div>
+
+                        <!-- Due Tasks Drawer for Today -->
+                        <div class="glass-card p-5 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-3">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                                <i data-lucide="inbox" class="w-4 h-4"></i> Due Today & Scheduled Tasks
+                            </h3>
+                            <div id="planner-tasks-drawer" class="space-y-2 max-h-56 overflow-y-auto"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- UPBASE 02: WORKSPACES, PROJECTS & TOOLS    -->
+            <!-- ========================================== -->
+            <section id="upbase-workspaces" class="content-section hidden space-y-6">
+                <!-- Workspace & Project Switcher Header -->
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800">
+                            <i data-lucide="folder" class="w-4 h-4 text-cyan-400 ml-2"></i>
+                            <select id="upbase-workspace-select" onchange="switchWorkspace(this.value)" class="bg-transparent text-white font-bold text-sm focus:outline-none pr-4">
+                                <option>Loading Workspaces...</option>
+                            </select>
+                        </div>
+                        <h2 class="text-xl font-bold text-white flex items-center" id="upbase-project-title">
+                            Select a Project
+                        </h2>
+                    </div>
+
+                    <!-- Modular Tool Switcher Tabs -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto p-1 bg-slate-900/80 rounded-2xl border border-slate-800" id="upbase-tool-tabs">
+                        <!-- Rendered by workspaces-ui.js -->
+                    </div>
+                </div>
+
+                <!-- Main Workspaces Split (Sidebar Projects List + Active Tool View) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Projects Sidebar Column (Col 3) -->
+                    <div class="lg:col-span-3 space-y-4">
+                        <div class="glass-card p-4 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Project Lists</span>
+                                <button onclick="alert('Create Project Modal')" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold">+ New List</button>
+                            </div>
+                            <div id="upbase-projects-list" class="space-y-1.5 max-h-[500px] overflow-y-auto"></div>
+                        </div>
+                    </div>
+
+                    <!-- Active Tool Panel Container (Col 9) -->
+                    <div class="lg:col-span-9">
+                        <!-- Panel 1: Kanban Board -->
+                        <div id="upbase-panel-kanban" class="space-y-4">
+                            <!-- Quick Add Task -->
+                            <form onsubmit="createQuickTask(event)" class="flex gap-2">
+                                <input type="text" id="new-task-title" placeholder="+ Add a task to this project..." class="form-input flex-1 px-4 py-2.5 rounded-xl text-xs bg-slate-900 border border-slate-800 text-white placeholder-slate-500">
+                                <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all">Add Task</button>
+                            </form>
+
+                            <!-- 4 Kanban Columns with LexoRank -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                                <!-- Col: TODO -->
+                                <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 min-h-[450px]"
+                                     ondragover="handleKanbanDragOver(event)"
+                                     ondrop="handleKanbanDrop(event, 'TODO')">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-xs font-bold text-slate-400 uppercase">To Do</span>
+                                        <span id="kanban-count-todo" class="text-xs font-mono text-slate-500 bg-slate-900 px-2 py-0.5 rounded-md">0</span>
+                                    </div>
+                                    <div id="kanban-col-todo" class="space-y-2.5"></div>
+                                </div>
+
+                                <!-- Col: IN_PROGRESS -->
+                                <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 min-h-[450px]"
+                                     ondragover="handleKanbanDragOver(event)"
+                                     ondrop="handleKanbanDrop(event, 'IN_PROGRESS')">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-xs font-bold text-cyan-400 uppercase">In Progress</span>
+                                        <span id="kanban-count-in_progress" class="text-xs font-mono text-cyan-400 bg-cyan-950/40 px-2 py-0.5 rounded-md border border-cyan-800/50">0</span>
+                                    </div>
+                                    <div id="kanban-col-in_progress" class="space-y-2.5"></div>
+                                </div>
+
+                                <!-- Col: REVIEW -->
+                                <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 min-h-[450px]"
+                                     ondragover="handleKanbanDragOver(event)"
+                                     ondrop="handleKanbanDrop(event, 'REVIEW')">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-xs font-bold text-amber-400 uppercase">Review</span>
+                                        <span id="kanban-count-review" class="text-xs font-mono text-amber-400 bg-amber-950/40 px-2 py-0.5 rounded-md border border-amber-800/50">0</span>
+                                    </div>
+                                    <div id="kanban-col-review" class="space-y-2.5"></div>
+                                </div>
+
+                                <!-- Col: DONE -->
+                                <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 min-h-[450px]"
+                                     ondragover="handleKanbanDragOver(event)"
+                                     ondrop="handleKanbanDrop(event, 'DONE')">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-xs font-bold text-emerald-400 uppercase">Done</span>
+                                        <span id="kanban-count-done" class="text-xs font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-800/50">0</span>
+                                    </div>
+                                    <div id="kanban-col-done" class="space-y-2.5"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel 2: Tasks List View -->
+                        <div id="upbase-panel-tasks" class="hidden space-y-4">
+                            <div class="glass-card p-5 rounded-2xl border border-slate-800 bg-slate-900/60">
+                                <h3 class="text-sm font-bold text-white mb-3">Task Deliverables List</h3>
+                                <div id="upbase-tasks-table" class="space-y-2"></div>
+                            </div>
+                        </div>
+
+                        <!-- Panel 3: Async Messages -->
+                        <div id="upbase-panel-messages" class="hidden space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-bold text-white">Project Discussion Topics (Async Messages)</h3>
+                                <button onclick="document.getElementById('upbase-new-topic-modal').classList.remove('hidden')" class="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all">+ Post Topic</button>
+                            </div>
+                            <div id="upbase-messages-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                        </div>
+
+                        <!-- Panel 4: Collaborative Rich Docs -->
+                        <div id="upbase-panel-docs" class="hidden space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-bold text-white">Knowledge Base & Project Wikis</h3>
+                                <button onclick="createNewDoc()" class="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all">+ New Document</button>
+                            </div>
+                            <div id="upbase-docs-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+                        </div>
+
+                        <!-- Panel 5: Bookmarked Links -->
+                        <div id="upbase-panel-bookmarks" class="hidden space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-bold text-white">Bookmarked Resources & Previews</h3>
+                                <button onclick="document.getElementById('upbase-bookmark-modal').classList.remove('hidden')" class="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all">+ Add Link</button>
+                            </div>
+                            <div id="upbase-bookmarks-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+                        </div>
+
+                        <!-- Panel 6: Real-time Project Chat -->
+                        <div id="upbase-panel-chat" class="hidden space-y-4">
+                            <div class="glass-card p-5 rounded-2xl border border-slate-800 bg-slate-900/60 flex flex-col h-[520px]">
+                                <div id="upbase-chat-stream" class="flex-1 overflow-y-auto space-y-4 pr-2 mb-4"></div>
+                                <form onsubmit="sendChatMessage(event)" class="flex gap-2 pt-3 border-t border-slate-800">
+                                    <input type="text" id="chat-input-text" placeholder="Type a message to project channel..." class="form-input flex-1 px-4 py-2.5 rounded-xl text-xs bg-slate-950 border border-slate-800 text-white placeholder-slate-500">
+                                    <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all">Send</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- UPBASE 03: FOCUS MODE & AMBIENT SOUND      -->
+            <!-- ========================================== -->
+            <section id="upbase-focus" class="content-section hidden space-y-6">
+                <!-- Header -->
+                <div class="text-center max-w-xl mx-auto space-y-2">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold">
+                        <i data-lucide="timer" class="w-3.5 h-3.5"></i> Deep Focus & Mindfulness Suite
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-white">Flow State Studio</h2>
+                    <p class="text-xs text-slate-400">Customizable Pomodoro timer integrated with Web Audio real-time ambient noise synthesis.</p>
+                </div>
+
+                <!-- Timer Circular Display & Controls -->
+                <div class="max-w-md mx-auto glass-card p-8 rounded-3xl border border-slate-800 bg-slate-900/80 shadow-2xl flex flex-col items-center space-y-6">
+                    <!-- Mode Switcher Tabs -->
+                    <div class="flex items-center gap-2 p-1 bg-slate-950 rounded-2xl border border-slate-800">
+                        <button onclick="setPomodoroMode('POMODORO')" id="focus-tab-pomodoro" class="px-4 py-2 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-sm">Deep Focus</button>
+                        <button onclick="setPomodoroMode('SHORT_BREAK')" id="focus-tab-short_break" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent">Short Break</button>
+                        <button onclick="setPomodoroMode('LONG_BREAK')" id="focus-tab-long_break" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent">Long Break</button>
+                    </div>
+
+                    <!-- Circular Timer Display -->
+                    <div class="relative w-64 h-64 flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90">
+                            <circle cx="128" cy="128" r="110" stroke="currentColor" stroke-width="8" class="text-slate-800" fill="transparent" />
+                            <circle id="focus-progress-ring" cx="128" cy="128" r="110" stroke="#06b6d4" stroke-width="8" stroke-linecap="round" fill="transparent" class="transition-all duration-1000 ease-linear" />
+                        </svg>
+                        <div class="absolute text-center">
+                            <div class="text-5xl font-black font-mono text-white tracking-tighter" id="focus-timer-text">25:00</div>
+                            <div class="text-[11px] uppercase tracking-widest font-bold text-cyan-400 mt-1" id="focus-mode-label">Deep Focus</div>
+                        </div>
+                    </div>
+
+                    <!-- Play / Pause / Reset Action Buttons -->
+                    <div class="flex items-center gap-3 w-full">
+                        <button onclick="togglePomodoroTimer()" id="focus-play-btn" class="flex-1 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-sm rounded-2xl shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="play" class="w-5 h-5"></i> Start Focus
+                        </button>
+                        <button onclick="resetPomodoroTimer()" class="p-3.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-2xl border border-slate-700 transition-all">
+                            <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Ambient Audio Synthesizer Bar -->
+                    <div class="w-full pt-4 border-t border-slate-800 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                <i data-lucide="headphones" class="w-4 h-4 text-emerald-400"></i> Ambient Noise
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] text-slate-500">Vol:</span>
+                                <input type="range" min="0" max="1" step="0.05" value="0.5" oninput="setAmbientVolume(this.value)" class="w-16 accent-cyan-400">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="setAmbientSound('OFF')" id="sound-btn-off" class="px-2 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">🔇 Mute</button>
+                            <button onclick="setAmbientSound('RAIN')" id="sound-btn-rain" class="px-2 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 border border-slate-800 bg-slate-950">🌧️ Rain</button>
+                            <button onclick="setAmbientSound('ALPHA')" id="sound-btn-alpha" class="px-2 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 border border-slate-800 bg-slate-950">🌊 Alpha 10Hz</button>
+                            <button onclick="setAmbientSound('CAFE')" id="sound-btn-cafe" class="px-2 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 border border-slate-800 bg-slate-950">☕ Cafe</button>
+                            <button onclick="setAmbientSound('WHITE_NOISE')" id="sound-btn-white_noise" class="px-2 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 border border-slate-800 bg-slate-950 col-span-2">⚪ White Noise</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Summary -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+                    <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 text-center">
+                        <span class="text-[10px] uppercase font-bold text-slate-400">Today's Focus Time</span>
+                        <div class="text-2xl font-extrabold text-cyan-400 font-mono mt-1" id="focus-today-mins">0m</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 text-center">
+                        <span class="text-[10px] uppercase font-bold text-slate-400">Pomodoros Done</span>
+                        <div class="text-2xl font-extrabold text-emerald-400 font-mono mt-1" id="focus-today-count">0</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 text-center">
+                        <span class="text-[10px] uppercase font-bold text-slate-400">Weekly Progress</span>
+                        <div class="text-sm font-bold text-white mt-1" id="focus-week-mins">0m this week</div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -2442,6 +2799,94 @@
                 <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
                     <button type="button" onclick="closeAllModals()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg">Cancel</button>
                     <button type="submit" class="btn-primary px-6 py-2 text-white text-xs font-bold rounded-lg">Save Time Slot</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- UPBASE MODAL 01: DOC EDITOR & VERSIONS     -->
+    <!-- ========================================== -->
+    <div id="upbase-doc-modal" class="fixed inset-0 flex items-start sm:items-center justify-center z-50 hidden overflow-y-auto p-4">
+        <div class="glass-card rounded-2xl p-6 sm:p-8 w-full max-w-5xl max-h-[92vh] overflow-y-auto relative my-auto border border-cyan-500/30 shadow-2xl bg-slate-950">
+            <button type="button" onclick="closeAllModals()" aria-label="Close" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-slate-800 border border-slate-700">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 pb-4 border-b border-slate-800">
+                <input type="text" id="doc-editor-title" class="text-xl sm:text-2xl font-black text-white bg-transparent border-none focus:outline-none w-full" placeholder="Document Title...">
+                <div class="flex items-center gap-2">
+                    <button onclick="saveDocChanges()" class="px-5 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all">Save & Snapshot</button>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-8">
+                    <textarea id="doc-editor-body" rows="16" class="form-input w-full p-4 rounded-xl text-xs bg-slate-900 border border-slate-800 text-slate-200 font-mono focus:border-cyan-500 leading-relaxed"></textarea>
+                </div>
+                <div class="lg:col-span-4 space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Version History Snapshots</h4>
+                    <div id="doc-version-history" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- UPBASE MODAL 02: ADD BOOKMARK MODAL        -->
+    <!-- ========================================== -->
+    <div id="upbase-bookmark-modal" class="fixed inset-0 flex items-start sm:items-center justify-center z-50 hidden overflow-y-auto p-4">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto relative my-auto border border-cyan-500/30 bg-slate-950">
+            <button type="button" onclick="closeAllModals()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-slate-800">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            <h3 class="text-lg font-bold text-white mb-4">Add Project Bookmark</h3>
+            <form onsubmit="addProjectBookmark(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">Target URL *</label>
+                    <input type="url" id="new-bookmark-url" required placeholder="https://figma.com/file/..." class="form-input w-full px-3 py-2 rounded-xl text-xs bg-slate-900 border border-slate-800 text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">Custom Title (Optional)</label>
+                    <input type="text" id="new-bookmark-title" placeholder="Client Design System" class="form-input w-full px-3 py-2 rounded-xl text-xs bg-slate-900 border border-slate-800 text-white">
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+                    <button type="button" onclick="closeAllModals()" class="px-4 py-2 bg-slate-800 text-white text-xs font-bold rounded-xl">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 text-xs font-bold rounded-xl">Add & Scrape Preview</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- UPBASE MODAL 03: POST TOPIC MODAL          -->
+    <!-- ========================================== -->
+    <div id="upbase-new-topic-modal" class="fixed inset-0 flex items-start sm:items-center justify-center z-50 hidden overflow-y-auto p-4">
+        <div class="glass-card rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto relative my-auto border border-cyan-500/30 bg-slate-950">
+            <button type="button" onclick="closeAllModals()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-slate-800">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            <h3 class="text-lg font-bold text-white mb-4">Post Discussion Topic</h3>
+            <form onsubmit="postNewTopic(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">Topic Title *</label>
+                    <input type="text" id="new-topic-title" required placeholder="Sprint 14 Launch Architecture..." class="form-input w-full px-3 py-2 rounded-xl text-xs bg-slate-900 border border-slate-800 text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">Category</label>
+                    <select id="new-topic-category" class="form-input w-full px-3 py-2 rounded-xl text-xs bg-slate-900 border border-slate-800 text-white">
+                        <option value="GENERAL">General Discussion</option>
+                        <option value="ANNOUNCEMENT">Announcement</option>
+                        <option value="ARCHITECTURE">Architecture & Specs</option>
+                        <option value="CLIENT_UPDATE">Client Update</option>
+                        <option value="RETROSPECTIVE">Sprint Retrospective</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">Message Content *</label>
+                    <textarea id="new-topic-content" rows="6" required placeholder="Write your long-form async message..." class="form-input w-full p-3 rounded-xl text-xs bg-slate-900 border border-slate-800 text-white leading-relaxed"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+                    <button type="button" onclick="closeAllModals()" class="px-4 py-2 bg-slate-800 text-white text-xs font-bold rounded-xl">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 text-xs font-bold rounded-xl">Post Async Topic</button>
                 </div>
             </form>
         </div>

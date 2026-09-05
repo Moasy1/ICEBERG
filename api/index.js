@@ -123,6 +123,13 @@ const iamsProjectsRoutes = require('../lib/routes/iams/projects');
 const iamsTasksRoutes = require('../lib/routes/iams/tasks');
 const iamsInvoicesRoutes = require('../lib/routes/iams/invoices');
 const iamsAnalyticsRoutes = require('../lib/routes/iams/analytics');
+const iamsWorkspacesRoutes = require('../lib/routes/iams/workspaces');
+const iamsPlannerRoutes = require('../lib/routes/iams/planner');
+const iamsMessagesRoutes = require('../lib/routes/iams/messages');
+const iamsDocsRoutes = require('../lib/routes/iams/docs');
+const iamsChatRoutes = require('../lib/routes/iams/chat');
+const iamsFocusRoutes = require('../lib/routes/iams/focus');
+const iamsBookmarksRoutes = require('../lib/routes/iams/bookmarks');
 
 // Helper to mount routes on both /api/path and /path (handles Vercel rewrite variations)
 const mountRoute = (routePath, handler) => {
@@ -148,6 +155,13 @@ mountRoute('/iams/projects', iamsProjectsRoutes);
 mountRoute('/iams/tasks', iamsTasksRoutes);
 mountRoute('/iams/invoices', iamsInvoicesRoutes);
 mountRoute('/iams/analytics', iamsAnalyticsRoutes);
+mountRoute('/iams/workspaces', iamsWorkspacesRoutes);
+mountRoute('/iams/planner', iamsPlannerRoutes);
+mountRoute('/iams/messages', iamsMessagesRoutes);
+mountRoute('/iams/docs', iamsDocsRoutes);
+mountRoute('/iams/chat', iamsChatRoutes);
+mountRoute('/iams/focus', iamsFocusRoutes);
+mountRoute('/iams/bookmarks', iamsBookmarksRoutes);
 
 // IAMS Health Check Handlers
 const iamsHealthHandler = (req, res) => {
