@@ -105,7 +105,14 @@ const leadsRoutes = require('../lib/routes/leads');
 const calendarRoutes = require('../lib/routes/calendar');
 const notificationRoutes = require('../lib/routes/notifications');
 const analyticsRoutes = require('../lib/routes/analytics');
-const iamsRoutes = require('../lib/routes/iams.js');
+
+// IAMS Modular Sub-routes
+const iamsAuthRoutes = require('../lib/routes/iams/auth');
+const iamsClientsRoutes = require('../lib/routes/iams/clients');
+const iamsProjectsRoutes = require('../lib/routes/iams/projects');
+const iamsTasksRoutes = require('../lib/routes/iams/tasks');
+const iamsInvoicesRoutes = require('../lib/routes/iams/invoices');
+const iamsAnalyticsRoutes = require('../lib/routes/iams/analytics');
 
 // API Routes
 app.use('/api/content', contentRoutes);
@@ -117,7 +124,23 @@ app.use('/api/leads', leadsRoutes);
 app.use('/api/calendar', calendarRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/analytics', analyticsRoutes);
-app.use('/api/iams', iamsRoutes);
+
+// IAMS Routes
+app.use('/api/iams/auth', iamsAuthRoutes);
+app.use('/api/iams/clients', iamsClientsRoutes);
+app.use('/api/iams/projects', iamsProjectsRoutes);
+app.use('/api/iams/tasks', iamsTasksRoutes);
+app.use('/api/iams/invoices', iamsInvoicesRoutes);
+app.use('/api/iams/analytics', iamsAnalyticsRoutes);
+
+app.get(['/api/iams', '/api/iams/health'], (req, res) => {
+  res.json({
+    status: 'OK',
+    service: 'ICEBERG Internal Accounts Management System (IAMS)',
+    version: '1.0.0',
+    timestamp: new Date().toISOString()
+  });
+});
 
 // ---------- Analytics Legacy Compat Shims ----------
 // The new analytics logic lives in lib/routes/analytics.js (MongoDB-backed).
