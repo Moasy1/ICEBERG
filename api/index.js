@@ -47,6 +47,19 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Debug route inspector
+app.get(['/api/debug-routes', '/debug-routes'], (req, res) => {
+  res.json({
+    url: req.url,
+    originalUrl: req.originalUrl,
+    baseUrl: req.baseUrl,
+    path: req.path,
+    headers_host: req.headers.host,
+    node_env: process.env.NODE_ENV,
+    has_mongo: !!process.env.MONGODB_URI
+  });
+});
+
 // Serve static files before API database middleware so the site can load even if
 // the database is temporarily unavailable. Supports clean HTML URLs (e.g. /birthday-campaign -> birthday-campaign.html).
 app.use(express.static(path.join(__dirname, '../public'), {
