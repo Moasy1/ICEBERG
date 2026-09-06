@@ -239,7 +239,7 @@
         var passEl = document.getElementById('login-password');
         var errEl  = document.getElementById('login-error');
         var username = (userEl ? userEl.value : '').trim() || 'admin';
-        var password = (passEl ? passEl.value : '').trim() || 'iceberg-dev';
+        var password = (passEl ? passEl.value : '').trim() || 'password';
 
         var host = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000') ? 'http://localhost:3001' : '';
         try {
@@ -256,6 +256,7 @@
             sessionStorage.setItem('iceberg_user_role', data.user.role || 'CEO');
             sessionStorage.setItem('iceberg_user_name', data.user.full_name || data.user.username || 'Admin');
             sessionStorage.setItem('iceberg_username', data.user.username || username);
+            sessionStorage.setItem('iceberg_must_change_password', (data.user && data.user.must_change_password) ? 'true' : 'false');
             localStorage.setItem('token', data.token);
             localStorage.setItem('iceberg_jwt', data.token);
             if (errEl) errEl.classList.add('hidden');
@@ -263,6 +264,7 @@
             if (modal) modal.classList.add('hidden');
             applyRoleGating();
             if (window.showSection) window.showSection('dashboard');
+            checkPasswordChangeReminder();
             return;
           }
           // Auth failed
@@ -274,10 +276,12 @@
           sessionStorage.setItem('iceberg_user_role', 'CEO');
           sessionStorage.setItem('iceberg_user_name', 'Admin (Offline)');
           sessionStorage.setItem('iceberg_username', username);
+          sessionStorage.setItem('iceberg_must_change_password', 'true');
           var modal = document.getElementById('login-modal');
           if (modal) modal.classList.add('hidden');
           applyRoleGating();
           if (window.showSection) window.showSection('dashboard');
+          checkPasswordChangeReminder();
         }
       }
 
@@ -285,7 +289,7 @@
         var userEl = document.getElementById('login-username');
         var passEl = document.getElementById('login-password');
         if (userEl) userEl.value = 'admin';
-        if (passEl) passEl.value = 'iceberg-dev';
+        if (passEl) passEl.value = 'password';
         handleLogin(null);
       }
 
@@ -330,6 +334,119 @@
             el.style.display = '';
           }
         });
+
+        checkPasswordChangeReminder();
+      }
+
+      // ── Default Password Reminder & Creation Flow ─────────────────────────
+      async function checkPasswordChangeReminder() {
+        var mustChange = sessionStorage.getItem('iceberg_must_change_password');
+        var banner = document.getElementById('password-reminder-banner');
+
+        if (mustChange === null) {
+          var token = sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt');
+          if (token) {
+            try {
+              var host = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000') ? 'http://localhost:3001' : '';
+              var res = await fetch(host + '/api/iams/auth/me', {
+                headers: { 'Authorization': 'Bearer ' + token }
+              });
+              var data = await res.json();
+              if (data.success && data.user) {
+                mustChange = data.user.must_change_password !== false ? 'true' : 'false';
+                sessionStorage.setItem('iceberg_must_change_password', mustChange);
+              }
+            } catch (e) {
+              console.warn('Could not verify password status:', e);
+            }
+          }
+        }
+
+        if (mustChange === 'true') {
+          if (banner) banner.classList.remove('hidden');
+          if (!sessionStorage.getItem('iceberg_pwd_modal_dismissed')) {
+            showPasswordChangeModal();
+          }
+        } else {
+          if (banner) banner.classList.add('hidden');
+        }
+      }
+
+      function showPasswordChangeModal() {
+        var modal = document.getElementById('password-change-modal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          if (window.lucide) lucide.createIcons();
+        }
+      }
+
+      function closePasswordChangeModal(markDismissed) {
+        var modal = document.getElementById('password-change-modal');
+        if (modal) modal.classList.add('hidden');
+        if (markDismissed) {
+          sessionStorage.setItem('iceberg_pwd_modal_dismissed', 'true');
+        }
+      }
+
+      async function handlePasswordChangeSubmit(e) {
+        if (e) e.preventDefault();
+        var newPassEl = document.getElementById('new-password-input');
+        var confirmPassEl = document.getElementById('confirm-password-input');
+        var errEl = document.getElementById('pwd-change-error');
+        var succEl = document.getElementById('pwd-change-success');
+        var btn = document.getElementById('pwd-change-submit-btn');
+
+        if (errEl) errEl.classList.add('hidden');
+        if (succEl) succEl.classList.add('hidden');
+
+        var newPass = (newPassEl ? newPassEl.value : '').trim();
+        var confirmPass = (confirmPassEl ? confirmPassEl.value : '').trim();
+
+        if (!newPass || newPass.length < 6) {
+          if (errEl) { errEl.textContent = 'Password must be at least 6 characters long.'; errEl.classList.remove('hidden'); }
+          return;
+        }
+        if (newPass === 'password') {
+          if (errEl) { errEl.textContent = 'Please choose a secure personal password other than "password".'; errEl.classList.remove('hidden'); }
+          return;
+        }
+        if (newPass !== confirmPass) {
+          if (errEl) { errEl.textContent = 'Passwords do not match. Please verify and try again.'; errEl.classList.remove('hidden'); }
+          return;
+        }
+
+        var token = sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt');
+        var host = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000') ? 'http://localhost:3001' : '';
+
+        try {
+          if (btn) { btn.disabled = true; btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin inline mr-1"></i> Saving...'; }
+          var res = await fetch(host + '/api/iams/auth/change-password', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': token ? ('Bearer ' + token) : ''
+            },
+            body: JSON.stringify({ new_password: newPass })
+          });
+          var data = await res.json();
+          if (data.success) {
+            sessionStorage.setItem('iceberg_must_change_password', 'false');
+            if (succEl) { succEl.textContent = data.message || 'Password updated successfully!'; succEl.classList.remove('hidden'); }
+            var banner = document.getElementById('password-reminder-banner');
+            if (banner) banner.classList.add('hidden');
+            setTimeout(function() {
+              closePasswordChangeModal(false);
+              if (newPassEl) newPassEl.value = '';
+              if (confirmPassEl) confirmPassEl.value = '';
+            }, 1200);
+          } else {
+            if (errEl) { errEl.textContent = data.error || 'Failed to update password.'; errEl.classList.remove('hidden'); }
+          }
+        } catch (err) {
+          if (errEl) { errEl.textContent = 'Network or server error while updating password.'; errEl.classList.remove('hidden'); }
+        } finally {
+          if (btn) { btn.disabled = false; btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 inline mr-1"></i> Save My Password'; if (window.lucide) lucide.createIcons(); }
+        }
       }
     </script>
 
@@ -365,7 +482,7 @@
                     <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Password</label>
                     <div class="relative">
                         <i data-lucide="key-round" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="password" id="login-password" required autocomplete="current-password" value="iceberg-dev" placeholder="••••••••" class="form-input w-full pl-11 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/90 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all">
+                        <input type="password" id="login-password" required autocomplete="current-password" value="password" placeholder="••••••••" class="form-input w-full pl-11 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900/90 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all">
                     </div>
                 </div>
 
@@ -377,6 +494,56 @@
                 <div class="mt-4 text-center">
                     <button type="button" id="quick-login-btn" onclick="quickAdminLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold underline transition-all">
                         ⚡ Quick Demo Sign-In (Instant One-Click Access)
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Password Creation / Change Modal Overlay -->
+    <div id="password-change-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-xl p-4 transition-all duration-300">
+        <div class="glass-card max-w-md w-full p-6 sm:p-8 rounded-2xl border border-amber-500/40 shadow-2xl shadow-amber-950/60 relative">
+            <button type="button" onclick="closePasswordChangeModal(true)" class="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-amber-500/25">
+                    <i data-lucide="key-round" class="w-7 h-7 text-white"></i>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Create Your Password</h2>
+                <p class="text-xs sm:text-sm text-gray-400 mt-1">
+                    Your account is currently using the default password (<span class="text-amber-300 font-mono font-bold">password</span>). Please create a private, secure password now.
+                </p>
+            </div>
+
+            <form id="password-change-form" class="space-y-4" onsubmit="handlePasswordChangeSubmit(event)">
+                <div id="pwd-change-error" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-xs p-3 rounded-lg text-center font-medium"></div>
+                <div id="pwd-change-success" class="hidden bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs p-3 rounded-lg text-center font-medium"></div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5">New Password</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="password" id="new-password-input" required minlength="6" placeholder="At least 6 characters" class="form-input w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-700 bg-slate-900/90 text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 text-sm transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5">Confirm New Password</label>
+                    <div class="relative">
+                        <i data-lucide="check-check" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="password" id="confirm-password-input" required minlength="6" placeholder="Re-enter new password" class="form-input w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-700 bg-slate-900/90 text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 text-sm transition-all">
+                    </div>
+                </div>
+
+                <div class="pt-2 flex flex-col sm:flex-row items-center gap-2">
+                    <button type="button" onclick="closePasswordChangeModal(true)" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-xs font-semibold transition-all">
+                        Remind Me Later
+                    </button>
+                    <button type="submit" id="pwd-change-submit-btn" class="flex-1 w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-1.5">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                        Save My Password
                     </button>
                 </div>
             </form>
@@ -465,6 +632,22 @@
             </div>
         </div>
     </header>
+
+    <!-- Temporary Default Password Warning Banner -->
+    <div id="password-reminder-banner" class="hidden bg-gradient-to-r from-amber-950/95 via-amber-900/90 to-amber-950/95 border-b border-amber-500/50 text-amber-200 px-4 py-2.5 shadow-lg relative z-20">
+        <div class="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2.5">
+                <div class="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0 border border-amber-500/40">
+                    <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-amber-400"></i>
+                </div>
+                <span><strong>Security Notice:</strong> Your account is currently using the default password (<code class="bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-700/50 font-mono text-amber-300 font-bold">password</code>). Please create your private password.</span>
+            </div>
+            <button onclick="showPasswordChangeModal()" class="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-lg transition-all flex items-center gap-1.5 shrink-0 shadow-md">
+                <i data-lucide="key" class="w-3.5 h-3.5"></i>
+                <span>Set Password Now</span>
+            </button>
+        </div>
+    </div>
 
     <!-- Mobile Sidebar Backdrop Overlay -->
     <div id="sidebar-backdrop" onclick="closeMobileSidebar()" class="fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm hidden md:hidden transition-opacity"></div>
