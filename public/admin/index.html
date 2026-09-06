@@ -600,6 +600,34 @@
                             Invoices & Tax Ledger
                         </a>
                     </li>
+                    <li>
+                        <a href="#" onclick="showSection('audit-center')"
+                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-rose-400"></i>
+                            Audit Center
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('db-center')"
+                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="database" class="w-4 h-4 text-amber-400"></i>
+                            Database Toolkit
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('user-behavior')"
+                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
+                            User Behavior
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('opportunities')"
+                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="target" class="w-4 h-4 text-emerald-400"></i>
+                            Opportunities Pipeline
+                        </a>
+                    </li>
                     <li class="pt-2">
                         <a href="#" onclick="showSection('clients')" 
                             class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
@@ -2283,6 +2311,406 @@
                         <div class="text-sm font-bold text-white mt-1" id="focus-week-mins">0m this week</div>
                     </div>
                 </div>
+            <!-- Audit Center Section -->
+            <section id="audit-center" class="content-section hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i data-lucide="shield-check" class="w-6 h-6 text-rose-400"></i>
+                            Audit Trail & Compliance Center
+                        </h2>
+                        <p class="text-sm text-slate-400">Enterprise tamper-resistant audit logs and automated anomaly detection</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button type="button" onclick="window.AuditCenter.loadOverview()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-2">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
+                        </button>
+                        <button type="button" onclick="window.AuditCenter.exportLogs('csv')" class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-cyan-500/20">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4 KPI Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Events Today</span>
+                            <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
+                        </div>
+                        <div class="text-2xl font-extrabold text-white font-mono" id="audit-kpi-today">0</div>
+                        <span class="text-[11px] text-slate-400">Live mutated actions</span>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Critical Alerts</span>
+                            <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-400"></i>
+                        </div>
+                        <div class="text-2xl font-extrabold text-rose-400 font-mono" id="audit-kpi-critical">0</div>
+                        <span class="text-[11px] text-slate-400">Security / Failures this week</span>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Top Actor</span>
+                            <i data-lucide="user-check" class="w-4 h-4 text-amber-400"></i>
+                        </div>
+                        <div class="text-lg font-bold text-white truncate" id="audit-kpi-top-user">-</div>
+                        <span class="text-[11px] text-slate-400">Highest volume user</span>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Most Active Entity</span>
+                            <i data-lucide="layers" class="w-4 h-4 text-emerald-400"></i>
+                        </div>
+                        <div class="text-lg font-bold text-emerald-400 truncate" id="audit-kpi-most-edited">-</div>
+                        <span class="text-[11px] text-slate-400">Past 7 days volume</span>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="flex border-b border-slate-800 gap-4">
+                    <button type="button" id="audit-tab-logs" onclick="window.AuditCenter.switchTab('logs')" class="audit-tab-btn py-2.5 px-4 font-bold text-xs border-b-2 bg-cyan-500/20 text-cyan-400 border-cyan-500/30 rounded-t-lg transition flex items-center gap-2">
+                        <i data-lucide="list" class="w-4 h-4"></i> Live Audit Log
+                    </button>
+                    <button type="button" id="audit-tab-suspicious" onclick="window.AuditCenter.switchTab('suspicious')" class="audit-tab-btn py-2.5 px-4 font-bold text-xs border-b-2 text-slate-400 border-transparent rounded-t-lg transition flex items-center gap-2">
+                        <i data-lucide="shield-alert" class="w-4 h-4"></i> Suspicious Activity & Threats
+                    </button>
+                </div>
+
+                <!-- View 1: Logs Table -->
+                <div id="audit-view-logs" class="space-y-4">
+                    <!-- Filter Toolbar -->
+                    <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-wrap items-center gap-3">
+                        <div class="flex-1 min-w-[200px]">
+                            <input type="text" id="audit-filter-search" oninput="window.AuditCenter.loadLogs(1)" placeholder="Search action, actor, IP, or entity ID..." class="form-input w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500">
+                        </div>
+                        <div>
+                            <select id="audit-filter-severity" onchange="window.AuditCenter.loadLogs(1)" class="form-input bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300">
+                                <option value="">All Severities</option>
+                                <option value="INFO">INFO</option>
+                                <option value="WARN">WARN</option>
+                                <option value="CRITICAL">CRITICAL</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select id="audit-filter-entity" onchange="window.AuditCenter.loadLogs(1)" class="form-input bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300">
+                                <option value="">All Entities</option>
+                                <option value="CLIENT">CLIENT</option>
+                                <option value="PROJECT">PROJECT</option>
+                                <option value="TASK">TASK</option>
+                                <option value="WORKSPACE">WORKSPACE</option>
+                                <option value="WORKSPACE_TASK">WORKSPACE_TASK</option>
+                                <option value="DOC">DOC</option>
+                                <option value="MESSAGE_TOPIC">MESSAGE_TOPIC</option>
+                                <option value="INVOICE">INVOICE</option>
+                                <option value="OPPORTUNITY">OPPORTUNITY</option>
+                                <option value="AUTH">AUTH</option>
+                                <option value="SYSTEM">SYSTEM</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-900/80 text-slate-400 uppercase text-[10px] font-bold tracking-wider border-b border-slate-800">
+                                    <tr>
+                                        <th class="py-3 px-4">Timestamp</th>
+                                        <th class="py-3 px-4">Severity</th>
+                                        <th class="py-3 px-4">User</th>
+                                        <th class="py-3 px-4">Action</th>
+                                        <th class="py-3 px-4">Entity</th>
+                                        <th class="py-3 px-4">IP Address</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="audit-logs-tbody" class="divide-y divide-slate-800/40">
+                                    <tr><td colspan="6" class="text-center py-8 text-slate-400">Loading audit trail...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="p-3 bg-slate-900/60 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                            <span id="audit-page-info">Page 1 of 1</span>
+                            <div class="flex gap-2">
+                                <button type="button" onclick="window.AuditCenter.loadLogs(Math.max(1, currentPage - 1))" class="px-3 py-1 rounded bg-slate-800 text-slate-300 hover:text-white">Prev</button>
+                                <button type="button" onclick="window.AuditCenter.loadLogs(currentPage + 1)" class="px-3 py-1 rounded bg-slate-800 text-slate-300 hover:text-white">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View 2: Suspicious Activity -->
+                <div id="audit-view-suspicious" class="hidden space-y-4">
+                    <div id="audit-suspicious-list">
+                        <div class="text-center py-8 text-slate-400">Scanning for threat signatures...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Database Center Section -->
+            <section id="db-center" class="content-section hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i data-lucide="database" class="w-6 h-6 text-amber-400"></i>
+                            Database Toolkit & Health
+                        </h2>
+                        <p class="text-sm text-slate-400">Schema exploration, in-place document inspector, and append-only backup manager</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button type="button" onclick="window.DatabaseCenter.loadCollections()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-2">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
+                        </button>
+                        <button type="button" onclick="window.DatabaseCenter.exportAll()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-amber-500/20">
+                            <i data-lucide="archive" class="w-3.5 h-3.5"></i> Full DB Backup (JSON)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4 KPI Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Total Models</span>
+                            <i data-lucide="database" class="w-4 h-4 text-cyan-400"></i>
+                        </div>
+                        <div class="text-2xl font-extrabold text-white font-mono" id="db-kpi-collections">0</div>
+                        <span class="text-[11px] text-slate-400">Active schemas</span>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Total Documents</span>
+                            <i data-lucide="file-text" class="w-4 h-4 text-emerald-400"></i>
+                        </div>
+                        <div class="text-2xl font-extrabold text-emerald-400 font-mono" id="db-kpi-docs">0</div>
+                        <span class="text-[11px] text-slate-400">Across all collections</span>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Engine State</span>
+                            <i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i>
+                        </div>
+                        <div class="text-lg font-bold text-white">MongoDB Atlas</div>
+                        <span class="text-[11px] text-emerald-400 font-bold">● Operational</span>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Audit Security</span>
+                            <i data-lucide="lock" class="w-4 h-4 text-amber-400"></i>
+                        </div>
+                        <div class="text-lg font-bold text-amber-400">Protected</div>
+                        <span class="text-[11px] text-slate-400">Users & Audit logs immutable</span>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="flex border-b border-slate-800 gap-4">
+                    <button type="button" id="db-tab-collections" onclick="window.DatabaseCenter.switchTab('collections')" class="db-tab-btn py-2.5 px-4 font-bold text-xs border-b-2 bg-cyan-500/20 text-cyan-400 border-cyan-500/30 rounded-t-lg transition flex items-center gap-2">
+                        <i data-lucide="table" class="w-4 h-4"></i> Collections & Models
+                    </button>
+                    <button type="button" id="db-tab-health" onclick="window.DatabaseCenter.switchTab('health')" class="db-tab-btn py-2.5 px-4 font-bold text-xs border-b-2 text-slate-400 border-transparent rounded-t-lg transition flex items-center gap-2">
+                        <i data-lucide="activity" class="w-4 h-4"></i> Storage & Health
+                    </button>
+                    <button type="button" id="db-tab-backups" onclick="window.DatabaseCenter.switchTab('backups')" class="db-tab-btn py-2.5 px-4 font-bold text-xs border-b-2 text-slate-400 border-transparent rounded-t-lg transition flex items-center gap-2">
+                        <i data-lucide="archive" class="w-4 h-4"></i> Append-Only Disk Backups
+                    </button>
+                </div>
+
+                <!-- View 1: Collections -->
+                <div id="db-view-collections">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="db-collections-grid">
+                        <div class="col-span-3 text-center py-10 text-slate-400">Loading models...</div>
+                    </div>
+                </div>
+
+                <!-- View 2: Health -->
+                <div id="db-view-health" class="hidden">
+                    <div id="db-health-container" class="glass-card p-6 rounded-2xl border border-slate-800">
+                        <div class="text-center py-6 text-slate-400">Gathering database telemetry...</div>
+                    </div>
+                </div>
+
+                <!-- View 3: Backups -->
+                <div id="db-view-backups" class="hidden">
+                    <div id="db-backups-container" class="glass-card p-6 rounded-2xl border border-slate-800">
+                        <div class="text-center py-6 text-slate-400">Listing backup archives...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- User Behavior Section -->
+            <section id="user-behavior" class="content-section hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i data-lucide="activity" class="w-6 h-6 text-cyan-400"></i>
+                            User Behavior & Telemetry Center
+                        </h2>
+                        <p class="text-sm text-slate-400">Productivity tracking, 24×7 activity heatmap, and feature adoption telemetry</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button type="button" onclick="window.BehaviorCenter.loadOverview()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-2">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4 KPI Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">DAU Today</span>
+                            <i data-lucide="users" class="w-4 h-4 text-cyan-400"></i>
+                        </div>
+                        <div class="text-2xl font-extrabold text-white font-mono" id="behavior-kpi-dau">0</div>
+                        <span class="text-[11px] text-slate-400">Daily active team members</span>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Telemetry Engine</span>
+                            <i data-lucide="zap" class="w-4 h-4 text-emerald-400"></i>
+                        </div>
+                        <div class="text-2xl font-extrabold text-emerald-400 font-mono">100%</div>
+                        <span class="text-[11px] text-slate-400">Mutation routes covered</span>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Peak Hour</span>
+                            <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+                        </div>
+                        <div class="text-lg font-bold text-white">02:00 PM - 04:00 PM</div>
+                        <span class="text-[11px] text-slate-400">Cairo UTC+2</span>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Data Window</span>
+                            <i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i>
+                        </div>
+                        <div class="text-lg font-bold text-indigo-400">30-Day Rolling</div>
+                        <span class="text-[11px] text-slate-400">Zero sampling rate</span>
+                    </div>
+                </div>
+
+                <!-- 30-Day DAU Trend Line Chart -->
+                <div class="glass-card p-6 rounded-2xl border border-slate-800">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-bold text-white text-sm">30-Day Daily Active Users (DAU)</h4>
+                        <span class="text-xs text-slate-400 font-mono">Telemetric Unique Actors</span>
+                    </div>
+                    <div id="behavior-dau-chart" class="w-full">
+                        <div class="text-center py-10 text-slate-400">Generating timeseries...</div>
+                    </div>
+                </div>
+
+                <!-- 24x7 Heatmap Grid -->
+                <div class="glass-card p-6 rounded-2xl border border-slate-800">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-bold text-white text-sm">24×7 Team Activity Volume Grid</h4>
+                        <span class="text-xs text-slate-400 font-mono">Cairo Timezone</span>
+                    </div>
+                    <div id="behavior-heatmap-grid" class="overflow-x-auto">
+                        <div class="text-center py-10 text-slate-400">Computing heat coordinates...</div>
+                    </div>
+                </div>
+
+                <!-- Two-Column: User Roster & Feature Adoption -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- User Roster -->
+                    <div class="lg:col-span-2 glass-card rounded-2xl border border-slate-800 overflow-hidden">
+                        <div class="p-4 border-b border-slate-800 flex justify-between items-center">
+                            <h4 class="font-bold text-white text-sm">User Productivity & Activity Roster</h4>
+                            <span class="text-xs text-slate-400 font-mono">Past 7 Days</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-900/80 text-slate-400 uppercase text-[10px] font-bold border-b border-slate-800">
+                                    <tr>
+                                        <th class="py-3 px-4">User</th>
+                                        <th class="py-3 px-4">Actions (7d)</th>
+                                        <th class="py-3 px-4">Top Action</th>
+                                        <th class="py-3 px-4">Last Seen</th>
+                                        <th class="py-3 px-4">Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="behavior-roster-tbody" class="divide-y divide-slate-800/40">
+                                    <tr><td colspan="5" class="text-center py-6 text-slate-400">Loading roster...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Feature Adoption -->
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <h4 class="font-bold text-white text-sm mb-4">Feature Adoption Matrix</h4>
+                        <div id="behavior-features-container" class="space-y-3">
+                            <div class="text-center py-8 text-slate-400">Calculating adoption percentages...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Opportunities Pipeline Section -->
+            <section id="opportunities" class="content-section hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i data-lucide="target" class="w-6 h-6 text-emerald-400"></i>
+                            Unified Opportunities Pipeline
+                        </h2>
+                        <p class="text-sm text-slate-400">Deal progression, probability forecasting, and automated Client conversion bridge</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button type="button" onclick="window.Opportunities.loadBoard()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-2">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
+                        </button>
+                        <button type="button" onclick="window.Opportunities.openCreateModal()" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+                            <i data-lucide="plus" class="w-4 h-4"></i> New Opportunity
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4 KPI Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Total Pipeline</span>
+                            <i data-lucide="dollar-sign" class="w-4 h-4 text-emerald-400"></i>
+                        </div>
+                        <div class="text-2xl font-extrabold text-white font-mono" id="opp-kpi-total-val">$0</div>
+                        <span class="text-[11px] text-slate-400">Unweighted nominal value</span>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Weighted Forecast</span>
+                            <i data-lucide="trending-up" class="w-4 h-4 text-cyan-400"></i>
+                        </div>
+                        <div class="text-2xl font-extrabold text-cyan-400 font-mono" id="opp-kpi-weighted-val">$0</div>
+                        <span class="text-[11px] text-slate-400">Adjusted by win probability</span>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Win Rate</span>
+                            <i data-lucide="award" class="w-4 h-4 text-amber-400"></i>
+                        </div>
+                        <div class="text-2xl font-extrabold text-amber-400 font-mono" id="opp-kpi-win-rate">0%</div>
+                        <span class="text-[11px] text-slate-400">Won vs closed lost ratio</span>
+                    </div>
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Avg Close Cycle</span>
+                            <i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i>
+                        </div>
+                        <div class="text-2xl font-extrabold text-indigo-400 font-mono" id="opp-kpi-avg-days">0d</div>
+                        <span class="text-[11px] text-slate-400">Creation to client sign-off</span>
+                    </div>
+                </div>
+
+                <!-- Kanban Pipeline Board -->
+                <div class="overflow-x-auto pb-4">
+                    <div class="flex gap-4 min-w-[1700px]" id="opp-board-columns">
+                        <div class="text-center py-10 text-slate-400 w-full">Loading pipeline stages...</div>
+                    </div>
+                </div>
             </section>
         </main>
     <!-- Global Modal Overlay Backdrop -->
@@ -3237,6 +3665,235 @@
     </div>
 
     <!-- ========================================================= -->
+    <!-- AUDIT CENTER MODAL: DIFF & PAYLOAD INSPECTOR              -->
+    <!-- ========================================================= -->
+    <div id="audit-diff-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+        <div class="glass-card w-full max-w-3xl max-h-[85vh] flex flex-col rounded-2xl border border-slate-700 bg-slate-900/95 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/80">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                        <i data-lucide="git-commit" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 id="audit-diff-title" class="text-sm font-bold text-white">Audit Event Inspection</h3>
+                        <p id="audit-diff-timestamp" class="text-[11px] text-slate-400 font-mono">Timestamp</p>
+                    </div>
+                </div>
+                <button type="button" onclick="window.AuditCenter.closeDiffModal()" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="px-6 py-3 bg-slate-950/60 border-b border-slate-800 flex flex-wrap items-center gap-4 text-xs font-mono">
+                <div><span class="text-slate-500">Actor:</span> <span id="audit-diff-actor" class="text-white font-semibold"></span></div>
+                <div><span class="text-slate-500">Entity:</span> <span id="audit-diff-entity" class="text-cyan-400"></span></div>
+                <div><span class="text-slate-500">Action:</span> <span id="audit-diff-action" class="text-amber-400"></span></div>
+                <div><span class="text-slate-500">Severity:</span> <span id="audit-diff-severity"></span></div>
+            </div>
+            <div id="audit-diff-content" class="flex-1 overflow-y-auto p-6 space-y-4">
+                <!-- Change diff injected here -->
+            </div>
+            <div class="px-6 py-3 border-t border-slate-800 bg-slate-900/80 flex justify-end">
+                <button type="button" onclick="window.AuditCenter.closeDiffModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- DATABASE CENTER MODAL: LIVE COLLECTION BROWSER            -->
+    <!-- ========================================================= -->
+    <div id="db-browse-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card w-full max-w-6xl h-[85vh] flex flex-col rounded-2xl border border-slate-700 bg-slate-900/95 shadow-2xl overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/80">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+                        <i data-lucide="database" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 id="db-browse-title" class="text-sm font-bold text-white">Collection Explorer</h3>
+                        <p class="text-[11px] text-slate-400">Live document explorer with field projection and filter search</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="db-browse-search" oninput="window.DatabaseCenter.onSearchInput(this.value)" placeholder="Regex search text..." class="pl-9 pr-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-slate-200 focus:outline-none focus:border-cyan-500 w-64">
+                    </div>
+                    <button type="button" onclick="window.DatabaseCenter.closeBrowseModal()" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 overflow-auto p-4">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+                            <th class="py-2.5 px-3">Document ID</th>
+                            <th class="py-2.5 px-3">Primary Field</th>
+                            <th class="py-2.5 px-3">Attributes</th>
+                            <th class="py-2.5 px-3">Metadata</th>
+                            <th class="py-2.5 px-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="db-browse-tbody">
+                        <!-- Documents rendered here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="px-6 py-3 border-t border-slate-800 bg-slate-900/80 flex items-center justify-between text-xs">
+                <span id="db-browse-page" class="text-slate-400 font-mono">Page 1</span>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="window.DatabaseCenter.prevPage()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition font-semibold">Previous</button>
+                    <button type="button" onclick="window.DatabaseCenter.nextPage()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition font-semibold">Next</button>
+                    <button type="button" onclick="window.DatabaseCenter.closeBrowseModal()" class="ml-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- DATABASE CENTER MODAL: DOCUMENT JSON VIEWER / EDITOR      -->
+    <!-- ========================================================= -->
+    <div id="db-doc-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card w-full max-w-3xl h-[80vh] flex flex-col rounded-2xl border border-slate-700 bg-slate-900/95 shadow-2xl overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/80">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                        <i data-lucide="code" class="w-4 h-4"></i>
+                    </div>
+                    <h3 id="db-doc-title" class="text-sm font-bold text-white">Document JSON</h3>
+                </div>
+                <button type="button" onclick="window.DatabaseCenter.closeDocModal()" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="flex-1 p-4 flex flex-col">
+                <textarea id="db-doc-json" spellcheck="false" class="flex-1 w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500 resize-none leading-relaxed"></textarea>
+            </div>
+            <div class="px-6 py-3 border-t border-slate-800 bg-slate-900/80 flex items-center justify-between">
+                <p class="text-[11px] text-slate-500 font-mono">Protected fields (_id, password, hash) are locked server-side</p>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="window.DatabaseCenter.closeDocModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition">Cancel</button>
+                    <button type="button" id="db-doc-save-btn" class="hidden px-5 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-cyan-500/20 transition">Save Document</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- OPPORTUNITIES MODAL: SLIDING DETAIL DRAWER                -->
+    <!-- ========================================================= -->
+    <div id="opp-detail-drawer" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="window.Opportunities.closeDetailDrawer()"></div>
+        <aside class="fixed top-0 right-0 bottom-0 w-full sm:w-[600px] lg:w-[680px] bg-[#12141a] border-l border-slate-800 shadow-2xl z-50 flex flex-col">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/40">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Opportunity Deal Card</span>
+                </div>
+                <button type="button" onclick="window.Opportunities.closeDetailDrawer()" class="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-white rounded-lg transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="opp-detail-content" class="flex-1 overflow-y-auto p-6 space-y-6">
+                <!-- Populated dynamically by opportunities-ui.js -->
+            </div>
+        </aside>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- OPPORTUNITIES MODAL: CREATE OPPORTUNITY MODAL             -->
+    <!-- ========================================================= -->
+    <div id="opp-create-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="glass-card w-full max-w-2xl my-8 flex flex-col rounded-2xl border border-slate-700 bg-slate-900/95 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/80">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                        <i data-lucide="target" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-white">Create New Opportunity</h3>
+                        <p class="text-[11px] text-slate-400">Add a prospective deal to the unified revenue pipeline</p>
+                    </div>
+                </div>
+                <button type="button" onclick="window.Opportunities.closeCreateModal()" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form onsubmit="window.Opportunities.handleCreateSubmit(event)" class="p-6 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Deal / Opportunity Name *</label>
+                        <input type="text" id="opp-create-name" required placeholder="e.g. Acme Corp Rebranding" class="form-input w-full p-2.5 rounded-xl text-xs bg-slate-950 border border-slate-800 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Company / Organization</label>
+                        <input type="text" id="opp-create-company" placeholder="e.g. Acme Corporation" class="form-input w-full p-2.5 rounded-xl text-xs bg-slate-950 border border-slate-800 text-white">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Estimated Value *</label>
+                        <input type="number" id="opp-create-value" required min="0" placeholder="15000" class="form-input w-full p-2.5 rounded-xl text-xs bg-slate-950 border border-slate-800 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Currency</label>
+                        <select id="opp-create-currency" class="form-input w-full p-2.5 rounded-xl text-xs bg-slate-950 border border-slate-800 text-white">
+                            <option value="USD" selected>USD ($)</option>
+                            <option value="EGP">EGP (LE)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Win Probability (%)</label>
+                        <input type="number" id="opp-create-probability" min="0" max="100" value="25" class="form-input w-full p-2.5 rounded-xl text-xs bg-slate-950 border border-slate-800 text-white">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Initial Source</label>
+                        <select id="opp-create-source" class="form-input w-full p-2.5 rounded-xl text-xs bg-slate-950 border border-slate-800 text-white">
+                            <option value="INBOUND_LEAD">Inbound Lead</option>
+                            <option value="REFERRAL">Referral</option>
+                            <option value="COLD_OUTREACH">Cold Outreach</option>
+                            <option value="INTERNAL_UPSELL">Internal Upsell</option>
+                            <option value="EXISTING_CLIENT">Existing Client</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Industry</label>
+                        <input type="text" id="opp-create-industry" placeholder="FinTech, E-Commerce, etc." class="form-input w-full p-2.5 rounded-xl text-xs bg-slate-950 border border-slate-800 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Expected Close Date</label>
+                        <input type="date" id="opp-create-date" class="form-input w-full p-2.5 rounded-xl text-xs bg-slate-950 border border-slate-800 text-white">
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-800">
+                    <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Key Contact Information</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <input type="email" id="opp-create-email" placeholder="contact@company.com" class="form-input w-full p-2.5 rounded-xl text-xs bg-slate-950 border border-slate-800 text-white">
+                        </div>
+                        <div>
+                            <input type="tel" id="opp-create-phone" placeholder="+1 (555) 000-0000" class="form-input w-full p-2.5 rounded-xl text-xs bg-slate-950 border border-slate-800 text-white">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="window.Opportunities.closeCreateModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-cyan-500/20 transition">Create Opportunity</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
     <!-- UPBASE MODAL 04: TASK DETAILS SLIDING DRAWER (IMAGE 2)     -->
     <!-- ========================================================= -->
     <div id="upbase-task-drawer-overlay" onclick="closeTaskDetailsModal()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"></div>
@@ -3519,6 +4176,8 @@
     <script src="./workspaces-ui.js"></script>
     <script src="./daily-planner.js"></script>
     <script src="./focus-mode.js"></script>
+    <script src="./audit-behavior-ui.js"></script>
+    <script src="./opportunities-ui.js"></script>
     <script src="./admin.js"></script>
 </body>
 

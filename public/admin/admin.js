@@ -44,7 +44,11 @@ const SECTION_HASH_MAP = {
     'idex-screens': 'idex-screens',
     'iams-overview': 'iams-overview',
     'iams-kanban': 'iams-kanban',
-    'iams-billing': 'iams-billing'
+    'iams-billing': 'iams-billing',
+    'audit-center': 'audit-center',
+    'db-center': 'db-center',
+    'user-behavior': 'user-behavior',
+    'opportunities': 'opportunities'
 };
 
 const HASH_TO_SECTION_MAP = {
@@ -68,7 +72,15 @@ const HASH_TO_SECTION_MAP = {
     'idex-screens': 'idex-screens',
     'iams-overview': 'iams-overview',
     'iams-kanban': 'iams-kanban',
-    'iams-billing': 'iams-billing'
+    'iams-billing': 'iams-billing',
+    'audit-center': 'audit-center',
+    'audit': 'audit-center',
+    'db-center': 'db-center',
+    'database': 'db-center',
+    'user-behavior': 'user-behavior',
+    'behavior': 'user-behavior',
+    'opportunities': 'opportunities',
+    'pipeline': 'opportunities'
 };
 
 function handleInitialRouting() {
@@ -293,6 +305,18 @@ function showSection(sectionId, updateHash = true) {
             break;
         case 'upbase-focus':
             if (window.initFocusMode) window.initFocusMode();
+            break;
+        case 'audit-center':
+            if (window.AuditCenter) window.AuditCenter.loadOverview();
+            break;
+        case 'db-center':
+            if (window.DatabaseCenter) window.DatabaseCenter.loadCollections();
+            break;
+        case 'user-behavior':
+            if (window.BehaviorCenter) window.BehaviorCenter.loadOverview();
+            break;
+        case 'opportunities':
+            if (window.Opportunities) window.Opportunities.loadBoard();
             break;
     }
     lucide.createIcons();
