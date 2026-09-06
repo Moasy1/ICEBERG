@@ -1,8 +1,10 @@
 // Initialize Lucide icons
 lucide.createIcons();
 
-// API Base URL
-const API_BASE = '/api';
+// API Base URL (auto-resolves backend port 3001 if loaded from port 3000 static server)
+const API_BASE = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000')
+  ? 'http://localhost:3001/api'
+  : '/api';
 
 // Current editing state
 let currentEditId = null;

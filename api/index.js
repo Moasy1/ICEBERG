@@ -40,7 +40,21 @@ app.use('/api/', limiter);
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const allowed = [
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3001',
+      'https://icebergma.com',
+      'https://www.icebergma.com'
+    ];
+    if (allowed.includes(origin) || origin.endsWith('.vercel.app') || (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL)) {
+      return callback(null, true);
+    }
+    callback(null, true);
+  },
   credentials: true
 }));
 
