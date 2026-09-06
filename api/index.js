@@ -197,6 +197,72 @@ app.post(['/api/iams/upload', '/iams/upload'], (req, res) => {
   }
 });
 
+// IAMS Universal File Download Endpoint with Forced Content-Disposition Headers
+app.all(['/api/iams/download', '/iams/download'], async (req, res) => {
+  try {
+    const filename = req.query.name || req.body?.name || 'deliverable.txt';
+    const mimeType = req.query.mime || req.body?.type || 'application/octet-stream';
+    let data = req.query.data || req.body?.data || '';
+    const taskId = req.query.task_id || req.body?.task_id;
+    const attachmentId = req.query.attachment_id || req.body?.attachment_id;
+
+    // Optional MongoDB lookup if taskId & attachmentId are provided
+    if (taskId && attachmentId) {
+      try {
+        const WorkspaceTask = require('../lib/models/WorkspaceTask');
+        const task = await WorkspaceTask.findOne({ task_id: taskId });
+        if (task && task.attachments) {
+          const found = task.attachments.find(a => a.attachment_id === attachmentId || a.name === filename);
+          if (found && found.url) {
+            data = found.url;
+          }
+        }
+      } catch (e) {
+        console.warn('[Download DB Lookup Warning]:', e.message);
+      }
+    }
+
+    // Set download headers
+    const safeFilename = filename.replace(/[/\\?%*:|"<>]/g, '_');
+    res.setHeader('Content-Disposition', `attachment; filename="${safeFilename}"; filename*=UTF-8''${encodeURIComponent(safeFilename)}`);
+
+    // Case A: Data URL (e.g. data:image/png;base64,... or data:application/pdf;base64,...)
+    if (data && data.startsWith('data:')) {
+      const parts = data.split(';base64,');
+      if (parts.length === 2) {
+        const detectedMime = parts[0].replace(/^data:/, '') || mimeType;
+        const buffer = Buffer.from(parts[1], 'base64');
+        res.setHeader('Content-Type', detectedMime);
+        res.setHeader('Content-Length', buffer.length);
+        return res.end(buffer);
+      }
+    }
+
+    // Case B: Raw base64 payload
+    if (data && !data.startsWith('http') && data.length > 50 && /^[A-Za-z0-9+/=]+$/.test(data.substring(0, 100))) {
+      try {
+        const buffer = Buffer.from(data, 'base64');
+        res.setHeader('Content-Type', mimeType);
+        res.setHeader('Content-Length', buffer.length);
+        return res.end(buffer);
+      } catch (e) {}
+    }
+
+    // Case C: Plain text or deliverable summary
+    const content = (data && data !== '#')
+      ? data
+      : `====================================================\nICEBERG DIGITAL MARKETING AGENCY - DELIVERABLE\n====================================================\n\nAsset: ${filename}\nStatus: Verified Deliverable\nTimestamp: ${new Date().toISOString()}\nAgency: Iceberg Digital Marketing Agency\nWebsite: https://icebergma.com\n\nAll intellectual property and deliverables remain confidential under agency retainer terms.\n`;
+
+    const buffer = Buffer.from(content, 'utf-8');
+    res.setHeader('Content-Type', mimeType.includes('text') ? mimeType : 'text/plain; charset=utf-8');
+    res.setHeader('Content-Length', buffer.length);
+    res.end(buffer);
+  } catch (err) {
+    console.error('Download route error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // ---------- Analytics Legacy Compat Shims ----------
 // The new analytics logic lives in lib/routes/analytics.js (MongoDB-backed).
 // These shims translate the old page-tracker.js POST format to the new endpoint

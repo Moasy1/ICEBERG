@@ -916,18 +916,24 @@ function renderProjectsSidebar() {
 }
 
 // Select a Project
-async function selectProject(prjId) {
+async function selectProject(prjId, updateUrl = true) {
   window.WorkspacesState.currentProjectId = prjId;
   renderProjectsSidebar();
   renderActiveProjectTools();
   await loadCurrentToolContent();
+  if (updateUrl && typeof updateWorkspacesUrl === 'function') {
+    updateWorkspacesUrl();
+  }
 }
 
 // Switch Active Tool Tab
-function switchProjectTool(toolKey) {
+function switchProjectTool(toolKey, updateUrl = true) {
   window.WorkspacesState.activeTool = toolKey;
   renderToolTabsUI();
   loadCurrentToolContent();
+  if (updateUrl && typeof updateWorkspacesUrl === 'function') {
+    updateWorkspacesUrl();
+  }
 }
 
 // Render Project Tool Tabs header
@@ -1319,9 +1325,12 @@ function renderTaskListView() {
 // (Matches Image 2 reference pixel-perfect)
 // ==========================================
 
-function openTaskDetailsModal(taskId) {
+function openTaskDetailsModal(taskId, updateUrl = true) {
   if (!taskId) return;
   window.WorkspacesState.activeTaskId = taskId;
+  if (updateUrl && typeof updateWorkspacesUrl === 'function') {
+    updateWorkspacesUrl(taskId);
+  }
 
   // Search active project tasks or fallback tasks
   let task = (window.WorkspacesState.tasks || []).find(t => t.task_id === taskId);
@@ -1422,13 +1431,16 @@ function openTaskDetailsModal(taskId) {
   if (window.lucide) window.lucide.createIcons();
 }
 
-function closeTaskDetailsModal() {
+function closeTaskDetailsModal(updateUrl = true) {
   const overlay = document.getElementById('upbase-task-drawer-overlay');
   const drawer = document.getElementById('upbase-task-drawer');
   if (overlay) overlay.classList.remove('drawer-open');
   if (drawer) drawer.classList.remove('drawer-open');
 
   window.WorkspacesState.activeTaskId = null;
+  if (updateUrl && typeof updateWorkspacesUrl === 'function') {
+    updateWorkspacesUrl(null);
+  }
 }
 
 function getActiveDrawerTask() {
@@ -2302,10 +2314,35 @@ function renderDrawerAttachments(task) {
 }
 
 // ==========================================
-// UNIVERSAL ROBUST FILE DOWNLOAD ENGINE
+// UNIVERSAL ROBUST FILE DOWNLOAD & PERSISTENCE ENGINE
 // Handles device uploads (Data URLs), Blob URLs,
-// remote fetch, and authenticated agency assets
+// remote fetch, authenticated agency assets, and server streams
 // ==========================================
+
+function dataUrlToBlob(dataUrl) {
+  if (!dataUrl || typeof dataUrl !== 'string') {
+    return new Blob([''], { type: 'application/octet-stream' });
+  }
+  const parts = dataUrl.split(';base64,');
+  if (parts.length === 2) {
+    const contentType = parts[0].replace(/^data:/, '') || 'application/octet-stream';
+    const binary = window.atob(parts[1]);
+    const len = binary.length;
+    const buffer = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      buffer[i] = binary.charCodeAt(i);
+    }
+    return new Blob([buffer], { type: contentType });
+  }
+  const comma = dataUrl.indexOf(',');
+  if (comma !== -1) {
+    const mime = (dataUrl.substring(5, comma).split(';')[0]) || 'application/octet-stream';
+    const decoded = decodeURIComponent(dataUrl.substring(comma + 1));
+    return new Blob([decoded], { type: mime });
+  }
+  return new Blob([dataUrl], { type: 'text/plain;charset=utf-8' });
+}
+
 function downloadTaskAttachment(idx) {
   const task = getActiveDrawerTask();
   if (!task || !task.attachments || !task.attachments[idx]) return;
@@ -2324,26 +2361,41 @@ function downloadCommentAttachment(commentId, attIdx) {
 
 function downloadAttachmentObj(att, contextTitle) {
   if (!att) return;
-  const filename = att.name || 'attachment';
+  const filename = att.name || 'deliverable.bin';
 
-  // 1. Data URLs & Blob URLs (Real user device uploads)
-  if (att.url && (att.url.startsWith('data:') || att.url.startsWith('blob:'))) {
+  // 1. Cloud collaborative links (Figma, Loom, YouTube, Google Drive) open in new tab
+  if (att.url && (att.url.includes('figma.com') || att.url.includes('loom.com') || att.url.includes('youtube.com') || att.url.includes('youtu.be') || att.url.includes('drive.google.com'))) {
+    window.open(att.url, '_blank', 'noopener,noreferrer');
+    if (typeof showNotification === 'function') {
+      showNotification(`Opening ${filename} in new tab...`, 'info');
+    }
+    return;
+  }
+
+  // 2. Data URLs (Device Uploads) -> Convert to Blob -> Object URL download
+  // This bypasses Chrome's strict security restrictions on top-frame data: navigation
+  if (att.url && att.url.startsWith('data:')) {
+    try {
+      const blob = dataUrlToBlob(att.url);
+      const blobUrl = URL.createObjectURL(blob);
+      triggerBrowserDownload(blobUrl, filename);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+      return;
+    } catch (e) {
+      console.warn('Data URL to blob conversion failed, routing via server download:', e);
+      triggerServerDownload(filename, att.type, att.url);
+      return;
+    }
+  }
+
+  // 3. Blob URLs
+  if (att.url && att.url.startsWith('blob:')) {
     triggerBrowserDownload(att.url, filename);
     return;
   }
 
-  // 2. Remote URLs (HTTP/HTTPS)
+  // 4. Direct Remote files (HTTP/HTTPS)
   if (att.url && (att.url.startsWith('http://') || att.url.startsWith('https://'))) {
-    // Cloud collaborative links (Figma, Loom, YouTube) open in new tab
-    if (att.url.includes('figma.com') || att.url.includes('loom.com') || att.url.includes('youtube.com') || att.url.includes('drive.google.com')) {
-      window.open(att.url, '_blank', 'noopener,noreferrer');
-      if (typeof showNotification === 'function') {
-        showNotification(`Opening ${filename} in new tab...`, 'info');
-      }
-      return;
-    }
-
-    // Direct files: convert to blob to guarantee browser initiates a real file download
     fetch(att.url)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -2352,16 +2404,57 @@ function downloadAttachmentObj(att, contextTitle) {
       .then(blob => {
         const blobUrl = URL.createObjectURL(blob);
         triggerBrowserDownload(blobUrl, filename);
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 15000);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
       })
       .catch(() => {
-        triggerBrowserDownload(att.url, filename);
+        // Fallback to server download endpoint
+        triggerServerDownload(filename, att.type, att.url);
       });
     return;
   }
 
-  // 3. Fallback for '#' or mock deliverables: generate authentic deliverable file
+  // 5. Fallback for '#' or mock deliverables: generate authentic deliverable file
   generateAndDownloadMockFile(att, contextTitle);
+}
+
+function triggerServerDownload(filename, mime, data) {
+  try {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/api/iams/download';
+    form.target = '_blank';
+    form.style.display = 'none';
+
+    const nameInput = document.createElement('input');
+    nameInput.name = 'name';
+    nameInput.value = filename;
+    form.appendChild(nameInput);
+
+    if (mime) {
+      const typeInput = document.createElement('input');
+      typeInput.name = 'type';
+      typeInput.value = mime;
+      form.appendChild(typeInput);
+    }
+
+    if (data) {
+      const dataInput = document.createElement('input');
+      dataInput.name = 'data';
+      dataInput.value = data;
+      form.appendChild(dataInput);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+    setTimeout(() => {
+      if (form.parentNode) form.parentNode.removeChild(form);
+    }, 1000);
+    if (typeof showNotification === 'function') {
+      showNotification(`Downloading ${filename} via secure agency gateway...`, 'success');
+    }
+  } catch (err) {
+    console.error('Server download form failed:', err);
+  }
 }
 
 function generateAndDownloadMockFile(att, contextTitle) {
@@ -2430,15 +2523,60 @@ function generateAndDownloadMockFile(att, contextTitle) {
 function triggerBrowserDownload(url, filename) {
   const a = document.createElement('a');
   a.href = url;
-  a.download = filename || 'download';
+  a.setAttribute('download', filename || 'download');
   a.style.display = 'none';
   document.body.appendChild(a);
   a.click();
   setTimeout(() => {
     if (a.parentNode) a.parentNode.removeChild(a);
-  }, 100);
+  }, 200);
   if (typeof showNotification === 'function') {
     showNotification(`Downloading ${filename}...`, 'success');
+  }
+}
+
+// Seamless background task sync to MongoDB & Local Cache
+async function syncTaskUpdateToServer(task) {
+  if (!task || !task.task_id) return;
+  try {
+    const wsId = window.WorkspacesState?.currentWorkspaceId || 'ws_agency_prod';
+    const payload = {
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      priority: task.priority,
+      assignees: task.assignees || [],
+      due_date: task.due_date || null,
+      scheduled_date: task.scheduled_date || null,
+      start_time: task.start_time || null,
+      duration_minutes: task.duration_minutes || 0,
+      logged_minutes: task.logged_minutes || 0,
+      tags: task.tags || [],
+      subtasks: task.subtasks || [],
+      attachments: task.attachments || [],
+      comments: task.comments || [],
+      is_favorite: !!task.is_favorite,
+      watchers: task.watchers || []
+    };
+
+    fetch(`/api/iams/workspaces/${wsId}/tasks/${task.task_id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-demo-admin': 'true',
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
+      },
+      body: JSON.stringify(payload)
+    }).catch(err => console.warn('Task sync warning:', err));
+
+    // Also persist in localStorage for instant offline access
+    if (window.WorkspacesState?.currentProjectId && window.WorkspacesState?.tasks) {
+      try {
+        localStorage.setItem(`iceberg_tasks_${window.WorkspacesState.currentProjectId}`, JSON.stringify(window.WorkspacesState.tasks));
+      } catch (e) {}
+    }
+  } catch (err) {
+    console.warn('Sync task failed:', err);
   }
 }
 
@@ -2701,14 +2839,73 @@ function toggleTaskFavorite() {
   }
 }
 
+// ==========================================
+// WORKSPACES DEEP LINK ROUTER
+// Syncs and resolves #workspaces?project=...&tool=...&task=...
+// ==========================================
+
+function updateWorkspacesUrl(taskId = undefined) {
+  const prjId = window.WorkspacesState.currentProjectId;
+  const tool = window.WorkspacesState.activeTool || 'kanban';
+  const activeTask = taskId !== undefined ? taskId : window.WorkspacesState.activeTaskId;
+
+  let hash = `#workspaces?project=${prjId || ''}&tool=${tool}`;
+  if (activeTask) {
+    hash += `&task=${activeTask}`;
+  }
+
+  if (window.location.hash !== hash) {
+    history.replaceState(null, '', hash);
+  }
+}
+
+async function routeWorkspacesDeepLink(routeParams) {
+  if (!routeParams) return;
+  const { project, tool, task } = routeParams;
+
+  // 1. Select project if specified and different
+  if (project && window.WorkspacesState.projects && window.WorkspacesState.projects.length > 0) {
+    const prjExists = window.WorkspacesState.projects.find(p => p.project_id === project);
+    if (prjExists && window.WorkspacesState.currentProjectId !== project) {
+      await selectProject(project, false);
+    }
+  }
+
+  // 2. Select tool if specified
+  if (tool && ['kanban', 'tasks', 'messages', 'docs', 'bookmarks', 'chat'].includes(tool)) {
+    if (window.WorkspacesState.activeTool !== tool) {
+      switchProjectTool(tool, false);
+    }
+  }
+
+  // 3. Open task drawer if specified
+  if (task) {
+    setTimeout(() => {
+      openTaskDetailsModal(task, false);
+    }, 150);
+  } else if (window.WorkspacesState.activeTaskId) {
+    closeTaskDetailsModal(false);
+  }
+}
+
+window.updateWorkspacesUrl = updateWorkspacesUrl;
+window.routeWorkspacesDeepLink = routeWorkspacesDeepLink;
+
 function copyTaskDeepLink() {
   const task = getActiveDrawerTask();
   if (!task) return;
-  const url = `${window.location.origin}${window.location.pathname}?task=${task.task_id}`;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(url);
-    if (typeof showNotification === 'function') showNotification('Task deep link copied to clipboard!', 'success');
-    else alert('Link copied!');
+  const prjId = window.WorkspacesState.currentProjectId || '';
+  const tool = window.WorkspacesState.activeTool || 'kanban';
+  const url = `${window.location.origin}${window.location.pathname}#workspaces?project=${prjId}&tool=${tool}&task=${task.task_id}`;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      if (typeof showNotification === 'function') showNotification('Task unique deep link copied to clipboard!', 'success');
+      else alert('Task unique deep link copied!');
+    }).catch(() => {
+      prompt('Task unique link (copy manually):', url);
+    });
+  } else {
+    prompt('Task unique link (copy manually):', url);
   }
 }
 
@@ -3823,15 +4020,27 @@ if (typeof document !== 'undefined') {
 
 // Auto-initialize immediately on script load so UI is instant and never hangs on "Loading..."
 if (typeof document !== 'undefined') {
-  const initApp = () => {
-    initUpbaseWorkspaces().then(() => {
-      // Check for deep-linked task in URL
-      const urlParams = (typeof window !== 'undefined' && window.location && window.location.search) ? new URLSearchParams(window.location.search) : new URLSearchParams();
-      const taskId = urlParams.get('task');
-      if (taskId) {
-        setTimeout(() => openTaskDetailsModal(taskId), 300);
+  const initApp = async () => {
+    await initUpbaseWorkspaces();
+
+    // Check for pending route or URL deep-link params
+    const pending = window._pendingWorkspacesRoute;
+    if (pending && (pending.project || pending.tool || pending.task)) {
+      await routeWorkspacesDeepLink(pending);
+      window._pendingWorkspacesRoute = null;
+    } else {
+      const rawHash = (window.location.hash || '').replace(/^#\/?/, '');
+      const searchParams = new URLSearchParams(window.location.search);
+      let routeQuery = '';
+      if (rawHash.includes('?')) routeQuery = rawHash.substring(rawHash.indexOf('?') + 1);
+      const hashParams = new URLSearchParams(routeQuery);
+      const prj = hashParams.get('project') || searchParams.get('project');
+      const tl = hashParams.get('tool') || searchParams.get('tool');
+      const tsk = hashParams.get('task') || searchParams.get('task');
+      if (prj || tl || tsk) {
+        await routeWorkspacesDeepLink({ project: prj, tool: tl, task: tsk });
       }
-    });
+    }
   };
 
   if (document.readyState === 'loading') {

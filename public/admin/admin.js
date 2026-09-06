@@ -24,6 +24,105 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+// Global Section & Deep Link URL Routing
+const SECTION_HASH_MAP = {
+    'dashboard': 'dashboard',
+    'upbase-workspaces': 'workspaces',
+    'upbase-planner': 'planner',
+    'analytics': 'analytics',
+    'clients': 'clients',
+    'projects': 'projects',
+    'services': 'services',
+    'content': 'content',
+    'contacts': 'contacts',
+    'showcase': 'showcase',
+    'idex-overview': 'idex-overview',
+    'idex-audits': 'idex-audits',
+    'idex-leads': 'idex-leads',
+    'idex-calendar': 'idex-calendar',
+    'idex-packages': 'idex-packages',
+    'idex-screens': 'idex-screens',
+    'iams-overview': 'iams-overview',
+    'iams-kanban': 'iams-kanban',
+    'iams-billing': 'iams-billing'
+};
+
+const HASH_TO_SECTION_MAP = {
+    'dashboard': 'dashboard',
+    'workspaces': 'upbase-workspaces',
+    'upbase-workspaces': 'upbase-workspaces',
+    'planner': 'upbase-planner',
+    'upbase-planner': 'upbase-planner',
+    'analytics': 'analytics',
+    'clients': 'clients',
+    'projects': 'projects',
+    'services': 'services',
+    'content': 'content',
+    'contacts': 'contacts',
+    'showcase': 'showcase',
+    'idex-overview': 'idex-overview',
+    'idex-audits': 'idex-audits',
+    'idex-leads': 'idex-leads',
+    'idex-calendar': 'idex-calendar',
+    'idex-packages': 'idex-packages',
+    'idex-screens': 'idex-screens',
+    'iams-overview': 'iams-overview',
+    'iams-kanban': 'iams-kanban',
+    'iams-billing': 'iams-billing'
+};
+
+function handleInitialRouting() {
+    const rawHash = (window.location.hash || '').replace(/^#\/?/, '');
+    const searchParams = new URLSearchParams(window.location.search);
+
+    let routeKey = 'dashboard';
+    let routeQuery = '';
+
+    if (rawHash) {
+        const qIndex = rawHash.indexOf('?');
+        if (qIndex !== -1) {
+            routeKey = rawHash.substring(0, qIndex).toLowerCase();
+            routeQuery = rawHash.substring(qIndex + 1);
+        } else {
+            routeKey = rawHash.toLowerCase();
+        }
+    } else if (searchParams.get('task') || searchParams.get('project')) {
+        routeKey = 'workspaces';
+    }
+
+    const targetSection = HASH_TO_SECTION_MAP[routeKey] || 'dashboard';
+
+    // Show section without overwriting URL hash
+    showSection(targetSection, false);
+
+    // If workspaces, dispatch deep link params (project, tool, task)
+    if (targetSection === 'upbase-workspaces') {
+        const hashParams = new URLSearchParams(routeQuery);
+        const projectId = hashParams.get('project') || searchParams.get('project');
+        const tool = hashParams.get('tool') || searchParams.get('tool');
+        const taskId = hashParams.get('task') || searchParams.get('task');
+
+        if (window.routeWorkspacesDeepLink) {
+            window.routeWorkspacesDeepLink({ project: projectId, tool, task: taskId });
+        } else {
+            window._pendingWorkspacesRoute = { project: projectId, tool, task: taskId };
+        }
+    }
+}
+
+// Listen for browser navigation & back/forward actions
+window.addEventListener('hashchange', () => {
+    handleInitialRouting();
+});
+window.addEventListener('popstate', () => {
+    handleInitialRouting();
+});
+
+window.SECTION_HASH_MAP = SECTION_HASH_MAP;
+window.HASH_TO_SECTION_MAP = HASH_TO_SECTION_MAP;
+window.handleInitialRouting = handleInitialRouting;
+window.showSection = showSection;
+
 // Authentication Handlers
 function checkAuth() {
     const isAuthenticated = sessionStorage.getItem('iceberg_admin_auth') === 'true';
@@ -31,7 +130,7 @@ function checkAuth() {
 
     if (isAuthenticated) {
         if (loginModal) loginModal.classList.add('hidden');
-        showSection('dashboard');
+        handleInitialRouting();
         setupEventListeners();
         if (typeof initNotificationCenter === 'function') {
             initNotificationCenter();
@@ -68,7 +167,7 @@ function quickAdminLogin() {
     showNotification('Quick authenticated! Welcome, Admin.', 'success');
     if (typeof applyRoleGating === 'function') applyRoleGating();
     setupEventListeners();
-    showSection('dashboard');
+    handleInitialRouting();
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
@@ -91,10 +190,24 @@ function setupEventListeners() {
 }
 
 // Navigation
-function showSection(sectionId) {
+function showSection(sectionId, updateHash = true) {
     // Fold back navigation panel on mobile when showing the screen of each panel
     if (window.innerWidth < 768) {
         closeMobileSidebar();
+    }
+
+    // Update URL hash for unique deep-linking across every panel
+    if (updateHash) {
+        if (sectionId === 'upbase-workspaces') {
+            if (typeof window.updateWorkspacesUrl === 'function') {
+                window.updateWorkspacesUrl();
+            } else {
+                history.replaceState(null, '', '#workspaces');
+            }
+        } else {
+            const hashKey = SECTION_HASH_MAP[sectionId] || sectionId;
+            history.replaceState(null, '', `#${hashKey}`);
+        }
     }
 
     // Hide all sections
@@ -313,9 +426,11 @@ var SOURCE_META = {
     direct:   { color: '#94a3b8',  label: 'Direct',          icon: 'navigation' }
 };
 
+var _analyticsRange = 30;
+
 /** Main analytics data loader. */
 async function loadAnalytics() {
-    var days = _analyticsRange || 30;
+    var days = (typeof _analyticsRange !== 'undefined') ? _analyticsRange : (window._analyticsRange || 30);
     try {
         var controller = new AbortController();
         var timer = setTimeout(function () { controller.abort(); }, 8000);
