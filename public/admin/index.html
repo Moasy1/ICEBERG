@@ -526,12 +526,19 @@
                             <i data-lucide="message-square" class="w-5 h-5"></i>
                             Contact Messages
                         </a>
-                        <!-- Events & Exhibitions Submenu (Nested under Contact Messages) -->
-                        <div class="mt-1 ml-4 pl-3 border-l border-cyan-500/20 space-y-0.5 pb-1">
-                            <div class="px-2 pt-1.5 pb-0.5 text-[9px] font-black uppercase tracking-widest text-cyan-400 flex items-center gap-1.5">
-                                <i data-lucide="calendar-check" class="w-3 h-3 text-cyan-400"></i>
-                                <span>Events & Exhibitions</span>
+                    </li>
+
+                    <!-- Events & Exhibitions (Collapsible / Minimized) -->
+                    <li>
+                        <button type="button" onclick="toggleNavGroup('nav-events-menu', 'chevron-events', event)"
+                            class="nav-group-toggle w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-slate-800/60 transition-all group">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="calendar-check" class="w-5 h-5 text-cyan-400"></i>
+                                <span class="font-medium text-sm">Events & Exhibitions</span>
                             </div>
+                            <i id="chevron-events" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200"></i>
+                        </button>
+                        <div id="nav-events-menu" class="hidden mt-1 ml-4 pl-3 border-l border-cyan-500/20 space-y-0.5 pb-1">
                             <a href="#idex-overview" onclick="showSection('idex-overview', event)"
                                 class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-cyan-300 transition-all">
                                 <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-cyan-400"></i>
@@ -564,6 +571,7 @@
                             </a>
                         </div>
                     </li>
+
                     <li>
                         <a href="#showcase" onclick="showSection('showcase', event)"
                             class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
@@ -579,13 +587,31 @@
                             <span class="text-[9px] px-1.5 py-0.2 bg-cyan-500/10 text-cyan-300 rounded font-semibold border border-cyan-500/20">IAMS</span>
                         </div>
                     </li>
+
+                    <!-- Clients, Retainers & Ledger (Collapsible / Minimized) -->
                     <li>
-                        <a href="#iams-overview" onclick="showSection('iams-overview', event)"
-                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="briefcase" class="w-4 h-4 text-cyan-400"></i>
-                            Clients & Retainers
-                        </a>
+                        <button type="button" onclick="toggleNavGroup('nav-clients-retainers-menu', 'chevron-clients-retainers', event, 'iams-overview')"
+                            class="nav-group-toggle w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-slate-800/60 transition-all group">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="briefcase" class="w-4 h-4 text-cyan-400"></i>
+                                <span class="font-medium text-sm">Clients & Retainers</span>
+                            </div>
+                            <i id="chevron-clients-retainers" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200"></i>
+                        </button>
+                        <div id="nav-clients-retainers-menu" class="hidden mt-1 ml-4 pl-3 border-l border-cyan-500/20 space-y-0.5 pb-1">
+                            <a href="#iams-overview" onclick="showSection('iams-overview', event)"
+                                class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-cyan-300 transition-all">
+                                <i data-lucide="briefcase" class="w-3.5 h-3.5 text-cyan-400"></i>
+                                Clients & Retainers
+                            </a>
+                            <a href="#iams-billing" onclick="showSection('iams-billing', event)" data-rbac-feature="viewBilling"
+                                class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-cyan-300 transition-all">
+                                <i data-lucide="receipt" class="w-3.5 h-3.5 text-cyan-400"></i>
+                                Invoices & Tax Ledger
+                            </a>
+                        </div>
                     </li>
+
                     <li>
                         <a href="#workspaces" onclick="showSection('upbase-workspaces', event)"
                             class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
@@ -614,34 +640,6 @@
                             Focus & Ambient Studio
                         </a>
                     </li>
-                    <li data-rbac-feature="viewBilling">
-                        <a href="#iams-billing" onclick="showSection('iams-billing', event)"
-                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="receipt" class="w-4 h-4 text-cyan-400"></i>
-                            Invoices & Tax Ledger
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#audit-center" onclick="showSection('audit-center', event)"
-                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="shield-check" class="w-4 h-4 text-rose-400"></i>
-                            Audit Center
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#db-center" onclick="showSection('db-center', event)"
-                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="database" class="w-4 h-4 text-amber-400"></i>
-                            Database Toolkit
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#user-behavior" onclick="showSection('user-behavior', event)"
-                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
-                            User Behavior
-                        </a>
-                    </li>
                     <li>
                         <a href="#opportunities" onclick="showSection('opportunities', event)"
                             class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
@@ -655,6 +653,39 @@
                             <i data-lucide="users" class="w-5 h-5"></i>
                             Client Logos
                         </a>
+                    </li>
+
+                    <!-- Development Tools (Audit Center, Database Toolkit, User Behavior) -->
+                    <li class="pt-3 pb-1 border-t border-slate-800">
+                        <div class="px-4 flex items-center justify-between mb-1">
+                            <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400">Development Tools</span>
+                            <span class="text-[9px] px-1.5 py-0.2 bg-amber-500/10 text-amber-300 rounded font-semibold border border-amber-500/20">DEV</span>
+                        </div>
+                        <button type="button" onclick="toggleNavGroup('nav-dev-tools-menu', 'chevron-dev-tools', event, 'audit-center')"
+                            class="nav-group-toggle w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-slate-800/60 transition-all group">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="terminal" class="w-4 h-4 text-amber-400"></i>
+                                <span class="font-medium text-sm">Development Tools</span>
+                            </div>
+                            <i id="chevron-dev-tools" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200"></i>
+                        </button>
+                        <div id="nav-dev-tools-menu" class="hidden mt-1 ml-4 pl-3 border-l border-amber-500/20 space-y-0.5 pb-1">
+                            <a href="#audit-center" onclick="showSection('audit-center', event)"
+                                class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-rose-300 transition-all">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-rose-400"></i>
+                                Audit Center
+                            </a>
+                            <a href="#db-center" onclick="showSection('db-center', event)"
+                                class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-amber-300 transition-all">
+                                <i data-lucide="database" class="w-3.5 h-3.5 text-amber-400"></i>
+                                Database Toolkit
+                            </a>
+                            <a href="#user-behavior" onclick="showSection('user-behavior', event)"
+                                class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-cyan-300 transition-all">
+                                <i data-lucide="activity" class="w-3.5 h-3.5 text-cyan-400"></i>
+                                User Behavior
+                            </a>
+                        </div>
                     </li>
                 </ul>
             </nav>

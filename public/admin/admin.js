@@ -210,6 +210,67 @@ function setupEventListeners() {
 }
 
 // Navigation
+/* ==========================================================================
+   SIDEBAR COLLAPSIBLE SUBMENU NAVIGATION SYSTEM
+   ========================================================================== */
+function toggleNavGroup(menuId, chevronId, event, defaultSectionId) {
+    if (event && typeof event.stopPropagation === 'function') {
+        event.stopPropagation();
+    }
+    const menu = document.getElementById(menuId);
+    const chevron = document.getElementById(chevronId);
+    if (!menu) return;
+
+    const isHidden = menu.classList.contains('hidden');
+    if (isHidden) {
+        menu.classList.remove('hidden');
+        if (chevron) chevron.classList.add('rotate-180');
+        if (defaultSectionId && typeof showSection === 'function') {
+            const activeChild = menu.querySelector('.nav-link.active');
+            if (!activeChild) {
+                showSection(defaultSectionId);
+            }
+        }
+    } else {
+        menu.classList.add('hidden');
+        if (chevron) chevron.classList.remove('rotate-180');
+    }
+}
+
+function syncNavSubmenus(sectionId) {
+    const groupMappings = [
+        {
+            menuId: 'nav-events-menu',
+            chevronId: 'chevron-events',
+            sections: ['idex-overview', 'idex-leads', 'idex-audits', 'idex-calendar', 'idex-packages', 'idex-screens']
+        },
+        {
+            menuId: 'nav-clients-retainers-menu',
+            chevronId: 'chevron-clients-retainers',
+            sections: ['iams-overview', 'iams-billing']
+        },
+        {
+            menuId: 'nav-dev-tools-menu',
+            chevronId: 'chevron-dev-tools',
+            sections: ['audit-center', 'db-center', 'user-behavior']
+        }
+    ];
+
+    groupMappings.forEach(group => {
+        const menu = document.getElementById(group.menuId);
+        const chevron = document.getElementById(group.chevronId);
+        if (!menu) return;
+        const isChildActive = group.sections.includes(sectionId);
+        if (isChildActive) {
+            menu.classList.remove('hidden');
+            if (chevron) chevron.classList.add('rotate-180');
+        }
+    });
+}
+
+window.toggleNavGroup = toggleNavGroup;
+window.syncNavSubmenus = syncNavSubmenus;
+
 function showSection(sectionId, eventOrUpdateHash = true) {
     if (eventOrUpdateHash && typeof eventOrUpdateHash === 'object' && typeof eventOrUpdateHash.preventDefault === 'function') {
         eventOrUpdateHash.preventDefault();
@@ -259,6 +320,9 @@ function showSection(sectionId, eventOrUpdateHash = true) {
             link.classList.add('active', 'bg-cyan-500/20', 'text-white');
         }
     });
+
+    // Automatically expand parent submenu if active section is inside one
+    syncNavSubmenus(sectionId);
 
     // Load section data
     switch (sectionId) {
