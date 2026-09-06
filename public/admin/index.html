@@ -229,6 +229,92 @@
                 height: 520px !important;
             }
         }
+
+        /* Sidebar Minimized (Icon-Only Rail) for Workspaces & Wide Views */
+        #admin-sidebar {
+            transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s ease-in-out;
+        }
+
+        @media (min-width: 768px) {
+            #admin-sidebar.sidebar-minimized {
+                width: 4.5rem !important;
+                min-width: 4.5rem !important;
+                max-width: 4.5rem !important;
+            }
+
+            #admin-sidebar.sidebar-minimized .sidebar-text,
+            #admin-sidebar.sidebar-minimized .sidebar-chevron,
+            #admin-sidebar.sidebar-minimized .sidebar-badge,
+            #admin-sidebar.sidebar-minimized .sidebar-brand {
+                display: none !important;
+            }
+
+            #admin-sidebar.sidebar-minimized .sidebar-header-desktop {
+                justify-content: center !important;
+                padding-left: 0.25rem !important;
+                padding-right: 0.25rem !important;
+            }
+
+            #admin-sidebar.sidebar-minimized .sidebar-section-header {
+                padding-top: 0.35rem !important;
+                padding-bottom: 0.35rem !important;
+            }
+
+            #admin-sidebar.sidebar-minimized .sidebar-section-header > div {
+                display: none !important;
+            }
+
+            #admin-sidebar.sidebar-minimized .sidebar-section-header::after {
+                content: '';
+                display: block;
+                width: 1.5rem;
+                height: 1px;
+                background: rgba(51, 65, 85, 0.6);
+                margin: 0.25rem auto;
+            }
+
+            #admin-sidebar.sidebar-minimized nav {
+                padding-left: 0.35rem !important;
+                padding-right: 0.35rem !important;
+            }
+
+            #admin-sidebar.sidebar-minimized .nav-link,
+            #admin-sidebar.sidebar-minimized .nav-group-toggle {
+                justify-content: center !important;
+                padding: 0 !important;
+                height: 2.75rem !important;
+                width: 100% !important;
+                border-radius: 0.75rem !important;
+                gap: 0 !important;
+            }
+
+            #admin-sidebar.sidebar-minimized .nav-link:hover,
+            #admin-sidebar.sidebar-minimized .nav-group-toggle:hover {
+                transform: none !important;
+                background: rgba(51, 65, 85, 0.5) !important;
+            }
+
+            #admin-sidebar.sidebar-minimized .nav-link.active {
+                border-left: none !important;
+                background: rgba(6, 182, 212, 0.25) !important;
+                box-shadow: 0 0 14px rgba(6, 182, 212, 0.35) !important;
+                color: #22d3ee !important;
+            }
+
+            #admin-sidebar.sidebar-minimized .sidebar-submenu {
+                margin-left: 0 !important;
+                padding-left: 0 !important;
+                border-left: none !important;
+                padding-top: 0.25rem !important;
+                padding-bottom: 0.25rem !important;
+            }
+
+            #admin-sidebar.sidebar-minimized .sidebar-submenu .nav-link {
+                padding: 0 !important;
+                height: 2.25rem !important;
+                justify-content: center !important;
+            }
+        }
     </style>
 
     <script>
@@ -654,7 +740,7 @@
 
     <div class="flex relative min-h-screen">
         <!-- Sidebar -->
-        <aside id="admin-sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 glass-card min-h-screen border-r border-slate-700 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out bg-slate-900/95 md:bg-transparent overflow-y-auto shrink-0">
+        <aside id="admin-sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 glass-card min-h-screen border-r border-slate-700 transform -translate-x-full md:translate-x-0 transition-all duration-300 ease-in-out bg-slate-900/95 md:bg-transparent overflow-y-auto shrink-0">
             <!-- Mobile Sidebar Header -->
             <div class="p-4 flex items-center justify-between md:hidden border-b border-slate-800 mb-1">
                 <div class="flex items-center gap-2">
@@ -666,207 +752,218 @@
                 </button>
             </div>
 
+            <!-- Desktop Sidebar Toggle & Header -->
+            <div class="hidden md:flex items-center justify-between px-3.5 py-3 border-b border-slate-800/80 mb-1 sidebar-header-desktop">
+                <div class="flex items-center gap-2 sidebar-brand overflow-hidden">
+                    <i data-lucide="layers" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+                    <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 sidebar-text truncate">Admin Panel</span>
+                </div>
+                <button type="button" onclick="toggleSidebarCollapse()" id="sidebar-collapse-btn" title="Toggle Sidebar Width" class="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/80 transition-all">
+                    <i data-lucide="panel-left-close" class="w-4 h-4 sidebar-toggle-icon"></i>
+                </button>
+            </div>
+
             <nav class="p-4">
                 <ul class="space-y-2">
                     <li>
-                        <a href="#dashboard" onclick="showSection('dashboard', event)"
+                        <a href="#dashboard" onclick="showSection('dashboard', event)" title="Dashboard"
                             class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all active">
-                            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-                            Dashboard
+                            <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0"></i>
+                            <span class="sidebar-text">Dashboard</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#analytics" onclick="showSection('analytics', event)"
+                        <a href="#analytics" onclick="showSection('analytics', event)" title="Analytics"
                             class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
-                            Analytics
+                            <i data-lucide="bar-chart-3" class="w-5 h-5 shrink-0"></i>
+                            <span class="sidebar-text">Analytics</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#content" onclick="showSection('content', event)"
+                        <a href="#content" onclick="showSection('content', event)" title="Content Management"
                             class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="file-text" class="w-5 h-5"></i>
-                            Content Management
+                            <i data-lucide="file-text" class="w-5 h-5 shrink-0"></i>
+                            <span class="sidebar-text">Content Management</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#projects" onclick="showSection('projects', event)"
+                        <a href="#projects" onclick="showSection('projects', event)" title="Projects"
                             class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="briefcase" class="w-5 h-5"></i>
-                            Projects
+                            <i data-lucide="briefcase" class="w-5 h-5 shrink-0"></i>
+                            <span class="sidebar-text">Projects</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#services" onclick="showSection('services', event)"
+                        <a href="#services" onclick="showSection('services', event)" title="Services"
                             class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="settings" class="w-5 h-5"></i>
-                            Services
+                            <i data-lucide="settings" class="w-5 h-5 shrink-0"></i>
+                            <span class="sidebar-text">Services</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#contacts" onclick="showSection('contacts', event)"
+                        <a href="#contacts" onclick="showSection('contacts', event)" title="Contact Messages"
                             class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="message-square" class="w-5 h-5"></i>
-                            Contact Messages
+                            <i data-lucide="message-square" class="w-5 h-5 shrink-0"></i>
+                            <span class="sidebar-text">Contact Messages</span>
                         </a>
                     </li>
 
                     <!-- Events & Exhibitions (Collapsible / Minimized) -->
                     <li>
-                        <button type="button" onclick="toggleNavGroup('nav-events-menu', 'chevron-events', event)"
+                        <button type="button" onclick="toggleNavGroup('nav-events-menu', 'chevron-events', event)" title="Events & Exhibitions"
                             class="nav-group-toggle w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-slate-800/60 transition-all group">
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="calendar-check" class="w-5 h-5 text-cyan-400"></i>
-                                <span class="font-medium text-sm">Events & Exhibitions</span>
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <i data-lucide="calendar-check" class="w-5 h-5 text-cyan-400 shrink-0"></i>
+                                <span class="font-medium text-sm sidebar-text truncate">Events & Exhibitions</span>
                             </div>
-                            <i id="chevron-events" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200"></i>
+                            <i id="chevron-events" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200 sidebar-chevron shrink-0"></i>
                         </button>
-                        <div id="nav-events-menu" class="hidden mt-1 ml-4 pl-3 border-l border-cyan-500/20 space-y-0.5 pb-1">
-                            <a href="#idex-overview" onclick="showSection('idex-overview', event)"
+                        <div id="nav-events-menu" class="hidden sidebar-submenu mt-1 ml-4 pl-3 border-l border-cyan-500/20 space-y-0.5 pb-1">
+                            <a href="#idex-overview" onclick="showSection('idex-overview', event)" title="IDEX Overview"
                                 class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-cyan-300 transition-all">
-                                <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-cyan-400"></i>
-                                IDEX Overview
+                                <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i>
+                                <span class="sidebar-text">IDEX Overview</span>
                             </a>
-                            <a href="#idex-leads" onclick="showSection('idex-leads', event)"
+                            <a href="#idex-leads" onclick="showSection('idex-leads', event)" title="Exhibitor Leads"
                                 class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-cyan-300 transition-all">
-                                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-400"></i>
-                                Exhibitor Leads
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i>
+                                <span class="sidebar-text">Exhibitor Leads</span>
                             </a>
-                            <a href="#idex-audits" onclick="showSection('idex-audits', event)"
+                            <a href="#idex-audits" onclick="showSection('idex-audits', event)" title="Exhibitor Audits"
                                 class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-cyan-300 transition-all">
-                                <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-cyan-400"></i>
-                                Exhibitor Audits
+                                <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i>
+                                <span class="sidebar-text">Exhibitor Audits</span>
                             </a>
-                            <a href="#idex-calendar" onclick="showSection('idex-calendar', event)"
+                            <a href="#idex-calendar" onclick="showSection('idex-calendar', event)" title="Meeting Slots"
                                 class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-cyan-300 transition-all">
-                                <i data-lucide="calendar" class="w-3.5 h-3.5 text-cyan-400"></i>
-                                Meeting Slots
+                                <i data-lucide="calendar" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i>
+                                <span class="sidebar-text">Meeting Slots</span>
                             </a>
-                            <a href="#idex-packages" onclick="showSection('idex-packages', event)"
+                            <a href="#idex-packages" onclick="showSection('idex-packages', event)" title="Growth Packages"
                                 class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-cyan-300 transition-all">
-                                <i data-lucide="package" class="w-3.5 h-3.5 text-cyan-400"></i>
-                                Growth Packages
+                                <i data-lucide="package" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i>
+                                <span class="sidebar-text">Growth Packages</span>
                             </a>
-                            <a href="#idex-screens" onclick="showSection('idex-screens', event)"
+                            <a href="#idex-screens" onclick="showSection('idex-screens', event)" title="Public Screens"
                                 class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-cyan-300 transition-all">
-                                <i data-lucide="monitor" class="w-3.5 h-3.5 text-cyan-400"></i>
-                                Public Screens
+                                <i data-lucide="monitor" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i>
+                                <span class="sidebar-text">Public Screens</span>
                             </a>
                         </div>
                     </li>
 
                     <li>
-                        <a href="#showcase" onclick="showSection('showcase', event)"
+                        <a href="#showcase" onclick="showSection('showcase', event)" title="Showcase Marquee"
                             class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="image" class="w-5 h-5"></i>
-                            Showcase Marquee
+                            <i data-lucide="image" class="w-5 h-5 shrink-0"></i>
+                            <span class="sidebar-text">Showcase Marquee</span>
                         </a>
                     </li>
 
                     <!-- Unified Agency Accounts & Workspaces (IAMS) Suite -->
-                    <li class="pt-3 pb-1 border-t border-slate-800">
+                    <li class="pt-3 pb-1 border-t border-slate-800 sidebar-section-header">
                         <div class="px-4 flex items-center justify-between">
-                            <span class="text-[10px] font-extrabold uppercase tracking-widest text-cyan-400">Agency Accounts & Workspaces</span>
-                            <span class="text-[9px] px-1.5 py-0.2 bg-cyan-500/10 text-cyan-300 rounded font-semibold border border-cyan-500/20">IAMS</span>
+                            <span class="text-[10px] font-extrabold uppercase tracking-widest text-cyan-400 sidebar-text">Agency Accounts & Workspaces</span>
+                            <span class="text-[9px] px-1.5 py-0.2 bg-cyan-500/10 text-cyan-300 rounded font-semibold border border-cyan-500/20 sidebar-badge">IAMS</span>
                         </div>
                     </li>
 
                     <!-- Clients, Retainers & Ledger (Collapsible / Minimized) -->
                     <li>
-                        <button type="button" onclick="toggleNavGroup('nav-clients-retainers-menu', 'chevron-clients-retainers', event, 'iams-overview')"
+                        <button type="button" onclick="toggleNavGroup('nav-clients-retainers-menu', 'chevron-clients-retainers', event, 'iams-overview')" title="Clients & Retainers"
                             class="nav-group-toggle w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-slate-800/60 transition-all group">
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="briefcase" class="w-4 h-4 text-cyan-400"></i>
-                                <span class="font-medium text-sm">Clients & Retainers</span>
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <i data-lucide="briefcase" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+                                <span class="font-medium text-sm sidebar-text truncate">Clients & Retainers</span>
                             </div>
-                            <i id="chevron-clients-retainers" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200"></i>
+                            <i id="chevron-clients-retainers" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200 sidebar-chevron shrink-0"></i>
                         </button>
-                        <div id="nav-clients-retainers-menu" class="hidden mt-1 ml-4 pl-3 border-l border-cyan-500/20 space-y-0.5 pb-1">
-                            <a href="#iams-overview" onclick="showSection('iams-overview', event)"
+                        <div id="nav-clients-retainers-menu" class="hidden sidebar-submenu mt-1 ml-4 pl-3 border-l border-cyan-500/20 space-y-0.5 pb-1">
+                            <a href="#iams-overview" onclick="showSection('iams-overview', event)" title="Clients & Retainers"
                                 class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-cyan-300 transition-all">
-                                <i data-lucide="briefcase" class="w-3.5 h-3.5 text-cyan-400"></i>
-                                Clients & Retainers
+                                <i data-lucide="briefcase" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i>
+                                <span class="sidebar-text">Clients & Retainers</span>
                             </a>
-                            <a href="#iams-billing" onclick="showSection('iams-billing', event)" data-rbac-feature="viewBilling"
+                            <a href="#iams-billing" onclick="showSection('iams-billing', event)" data-rbac-feature="viewBilling" title="Invoices & Tax Ledger"
                                 class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-cyan-300 transition-all">
-                                <i data-lucide="receipt" class="w-3.5 h-3.5 text-cyan-400"></i>
-                                Invoices & Tax Ledger
+                                <i data-lucide="receipt" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i>
+                                <span class="sidebar-text">Invoices & Tax Ledger</span>
                             </a>
                         </div>
                     </li>
 
                     <li>
-                        <a href="#workspaces" onclick="showSection('upbase-workspaces', event)"
+                        <a href="#workspaces" onclick="showSection('upbase-workspaces', event)" title="Projects & Workspaces"
                             class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="folders" class="w-4 h-4 text-cyan-400"></i>
-                            Projects & Workspaces
+                            <i data-lucide="folders" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+                            <span class="sidebar-text">Projects & Workspaces</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#iams-kanban" onclick="showSection('iams-kanban', event)"
+                        <a href="#iams-kanban" onclick="showSection('iams-kanban', event)" title="Sprint Kanban Board"
                             class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="kanban" class="w-4 h-4 text-cyan-400"></i>
-                            Sprint Kanban Board
+                            <i data-lucide="kanban" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+                            <span class="sidebar-text">Sprint Kanban Board</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#planner" onclick="showSection('upbase-planner', event)"
+                        <a href="#planner" onclick="showSection('upbase-planner', event)" title="Daily Planner & Grid"
                             class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="sun" class="w-4 h-4 text-emerald-400"></i>
-                            Daily Planner & Grid
+                            <i data-lucide="sun" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                            <span class="sidebar-text">Daily Planner & Grid</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#upbase-focus" onclick="showSection('upbase-focus', event)"
+                        <a href="#upbase-focus" onclick="showSection('upbase-focus', event)" title="Focus & Ambient Studio"
                             class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="timer" class="w-4 h-4 text-emerald-400"></i>
-                            Focus & Ambient Studio
+                            <i data-lucide="timer" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                            <span class="sidebar-text">Focus & Ambient Studio</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#opportunities" onclick="showSection('opportunities', event)"
+                        <a href="#opportunities" onclick="showSection('opportunities', event)" title="Opportunities Pipeline"
                             class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="target" class="w-4 h-4 text-emerald-400"></i>
-                            Opportunities Pipeline
+                            <i data-lucide="target" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                            <span class="sidebar-text">Opportunities Pipeline</span>
                         </a>
                     </li>
                     <li class="pt-2">
-                        <a href="#" onclick="showSection('clients')" 
+                        <a href="#" onclick="showSection('clients')" title="Client Logos"
                             class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white transition-all">
-                            <i data-lucide="users" class="w-5 h-5"></i>
-                            Client Logos
+                            <i data-lucide="users" class="w-5 h-5 shrink-0"></i>
+                            <span class="sidebar-text">Client Logos</span>
                         </a>
                     </li>
 
                     <!-- Development Tools (Audit Center, Database Toolkit, User Behavior) -->
-                    <li class="pt-3 pb-1 border-t border-slate-800">
+                    <li class="pt-3 pb-1 border-t border-slate-800 sidebar-section-header">
                         <div class="px-4 flex items-center justify-between mb-1">
-                            <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400">Development Tools</span>
-                            <span class="text-[9px] px-1.5 py-0.2 bg-amber-500/10 text-amber-300 rounded font-semibold border border-amber-500/20">DEV</span>
+                            <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 sidebar-text">Development Tools</span>
+                            <span class="text-[9px] px-1.5 py-0.2 bg-amber-500/10 text-amber-300 rounded font-semibold border border-amber-500/20 sidebar-badge">DEV</span>
                         </div>
-                        <button type="button" onclick="toggleNavGroup('nav-dev-tools-menu', 'chevron-dev-tools', event, 'audit-center')"
+                        <button type="button" onclick="toggleNavGroup('nav-dev-tools-menu', 'chevron-dev-tools', event, 'audit-center')" title="Development Tools"
                             class="nav-group-toggle w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-slate-800/60 transition-all group">
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="terminal" class="w-4 h-4 text-amber-400"></i>
-                                <span class="font-medium text-sm">Development Tools</span>
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <i data-lucide="terminal" class="w-4 h-4 text-amber-400 shrink-0"></i>
+                                <span class="font-medium text-sm sidebar-text truncate">Development Tools</span>
                             </div>
-                            <i id="chevron-dev-tools" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200"></i>
+                            <i id="chevron-dev-tools" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-white transition-transform duration-200 sidebar-chevron shrink-0"></i>
                         </button>
-                        <div id="nav-dev-tools-menu" class="hidden mt-1 ml-4 pl-3 border-l border-amber-500/20 space-y-0.5 pb-1">
-                            <a href="#audit-center" onclick="showSection('audit-center', event)"
+                        <div id="nav-dev-tools-menu" class="hidden sidebar-submenu mt-1 ml-4 pl-3 border-l border-amber-500/20 space-y-0.5 pb-1">
+                            <a href="#audit-center" onclick="showSection('audit-center', event)" title="Audit Center"
                                 class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-rose-300 transition-all">
-                                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-rose-400"></i>
-                                Audit Center
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i>
+                                <span class="sidebar-text">Audit Center</span>
                             </a>
-                            <a href="#db-center" onclick="showSection('db-center', event)"
+                            <a href="#db-center" onclick="showSection('db-center', event)" title="Database Toolkit"
                                 class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-amber-300 transition-all">
-                                <i data-lucide="database" class="w-3.5 h-3.5 text-amber-400"></i>
-                                Database Toolkit
+                                <i data-lucide="database" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
+                                <span class="sidebar-text">Database Toolkit</span>
                             </a>
-                            <a href="#user-behavior" onclick="showSection('user-behavior', event)"
+                            <a href="#user-behavior" onclick="showSection('user-behavior', event)" title="User Behavior"
                                 class="nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-cyan-300 transition-all">
-                                <i data-lucide="activity" class="w-3.5 h-3.5 text-cyan-400"></i>
-                                User Behavior
+                                <i data-lucide="activity" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i>
+                                <span class="sidebar-text">User Behavior</span>
                             </a>
                         </div>
                     </li>

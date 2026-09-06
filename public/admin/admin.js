@@ -271,6 +271,58 @@ function syncNavSubmenus(sectionId) {
 window.toggleNavGroup = toggleNavGroup;
 window.syncNavSubmenus = syncNavSubmenus;
 
+/* ==========================================================================
+   SIDEBAR COLLAPSE / MINIMIZE (ICON-ONLY RAIL) SYSTEM
+   ========================================================================== */
+let sidebarAutoCollapsedForWorkspace = false;
+let sidebarManuallyOverridden = false;
+
+function minimizeSidebar(isAuto = false) {
+    const sidebar = document.getElementById('admin-sidebar');
+    if (!sidebar) return;
+    sidebar.classList.add('sidebar-minimized');
+    if (isAuto) {
+        sidebarAutoCollapsedForWorkspace = true;
+    }
+    updateSidebarToggleIcon(true);
+}
+
+function expandSidebar() {
+    const sidebar = document.getElementById('admin-sidebar');
+    if (!sidebar) return;
+    sidebar.classList.remove('sidebar-minimized');
+    sidebarAutoCollapsedForWorkspace = false;
+    sidebarManuallyOverridden = false;
+    updateSidebarToggleIcon(false);
+}
+
+function toggleSidebarCollapse() {
+    const sidebar = document.getElementById('admin-sidebar');
+    if (!sidebar) return;
+    const isMinimized = sidebar.classList.contains('sidebar-minimized');
+    if (isMinimized) {
+        expandSidebar();
+        sidebarManuallyOverridden = true;
+    } else {
+        minimizeSidebar(false);
+        sidebarManuallyOverridden = true;
+    }
+}
+
+function updateSidebarToggleIcon(isMinimized) {
+    const btn = document.getElementById('sidebar-collapse-btn');
+    if (!btn) return;
+    btn.setAttribute('title', isMinimized ? 'Expand Sidebar' : 'Minimize Sidebar');
+    btn.innerHTML = `<i data-lucide="${isMinimized ? 'panel-left-open' : 'panel-left-close'}" class="w-4 h-4 sidebar-toggle-icon"></i>`;
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+    }
+}
+
+window.minimizeSidebar = minimizeSidebar;
+window.expandSidebar = expandSidebar;
+window.toggleSidebarCollapse = toggleSidebarCollapse;
+
 function showSection(sectionId, eventOrUpdateHash = true) {
     if (eventOrUpdateHash && typeof eventOrUpdateHash === 'object' && typeof eventOrUpdateHash.preventDefault === 'function') {
         eventOrUpdateHash.preventDefault();
@@ -283,6 +335,18 @@ function showSection(sectionId, eventOrUpdateHash = true) {
     // Fold back navigation panel on mobile when showing the screen of each panel
     if (window.innerWidth < 768) {
         closeMobileSidebar();
+    }
+
+    // Automatically minimize side menu panel in workspace screen for maximum canvas spacing
+    if (sectionId === 'upbase-workspaces') {
+        if (!sidebarManuallyOverridden) {
+            minimizeSidebar(true);
+        }
+    } else {
+        sidebarManuallyOverridden = false;
+        if (sidebarAutoCollapsedForWorkspace) {
+            expandSidebar();
+        }
     }
 
     // Update URL hash for unique deep-linking across every panel
