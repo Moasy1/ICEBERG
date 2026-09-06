@@ -99,6 +99,13 @@ const connectToDatabase = async () => {
       connectTimeoutMS: 5000
     });
     console.log('Connected to MongoDB');
+    // Pre-warm DB collections cache in background so first user click is instant
+    setImmediate(() => {
+      try {
+        const dbRoute = require('../lib/routes/iams/database');
+        if (typeof dbRoute.warmupCache === 'function') dbRoute.warmupCache();
+      } catch (e) {}
+    });
     return cachedConnection;
   } catch (err) {
     console.warn('[MongoDB Connection Warning]:', err.message);
@@ -110,7 +117,7 @@ const connectToDatabase = async () => {
 app.use(async (req, res, next) => {
   const isApi = req.path.startsWith('/api') || req.path.startsWith('/iams') || req.path.startsWith('/leads') || req.path.startsWith('/projects') || req.path.startsWith('/content') || req.path.startsWith('/services') || req.path.startsWith('/calendar') || req.path.startsWith('/contact') || req.path.startsWith('/notifications') || req.path.startsWith('/analytics') || req.path.startsWith('/meta');
   if (!isApi) return next();
-  if (req.path.includes('/health') || req.path.includes('/status') || req.path.includes('/idex/data')) return next();
+  if (req.path === '/health' || req.path === '/api/health' || req.path === '/status' || req.path.includes('/idex/data')) return next();
   try {
     await connectToDatabase();
   } catch (err) {

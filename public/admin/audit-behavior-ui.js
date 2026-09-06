@@ -5,7 +5,7 @@
 
 // Helper API Fetcher for Admin
 async function adminFetch(endpoint, options = {}) {
-  const token = sessionStorage.getItem('iceberg_admin_token') || 'demo_token';
+  const token = sessionStorage.getItem('iceberg_jwt') || sessionStorage.getItem('iceberg_admin_token') || localStorage.getItem('token') || 'demo_token';
   const headers = {
     'Content-Type': 'application/json',
     'x-demo-admin': 'true',
@@ -13,8 +13,14 @@ async function adminFetch(endpoint, options = {}) {
   };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
+  const host = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000')
+    ? 'http://localhost:3001'
+    : '';
+
+  const url = endpoint.startsWith('http') ? endpoint : (host + endpoint);
+
   try {
-    const res = await fetch(endpoint, { ...options, headers });
+    const res = await fetch(url, { ...options, headers });
     const data = await res.json();
     return data;
   } catch (err) {
@@ -22,6 +28,7 @@ async function adminFetch(endpoint, options = {}) {
     return { success: false, error: err.message };
   }
 }
+window.adminFetch = adminFetch;
 
 function showAdminToast(msg, type = 'success') {
   if (window.IAMS && typeof window.IAMS.showToast === 'function') {
@@ -703,8 +710,9 @@ window.DatabaseCenter = (function () {
   }
 
   function exportCollection(name, format = 'csv') {
-    const token = sessionStorage.getItem('iceberg_admin_token') || 'demo_token';
-    const url = `/api/iams/database/export/${name}?format=${format}`;
+    const token = sessionStorage.getItem('iceberg_jwt') || sessionStorage.getItem('iceberg_admin_token') || 'demo_token';
+    const host = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000') ? 'http://localhost:3001' : '';
+    const url = host + `/api/iams/database/export/${name}?format=${format}`;
 
     fetch(url, {
       headers: {
@@ -726,10 +734,11 @@ window.DatabaseCenter = (function () {
   }
 
   async function exportAll() {
-    const token = sessionStorage.getItem('iceberg_admin_token') || 'demo_token';
+    const token = sessionStorage.getItem('iceberg_jwt') || sessionStorage.getItem('iceberg_admin_token') || 'demo_token';
+    const host = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000') ? 'http://localhost:3001' : '';
     showAdminToast('Compiling full database backup...');
 
-    fetch('/api/iams/database/export/all', {
+    fetch(host + '/api/iams/database/export/all', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

@@ -12,7 +12,7 @@ window.IAMS = (function() {
 
   // Helper for API calls with token
   async function apiFetch(endpoint, options = {}) {
-    const token = sessionStorage.getItem('iceberg_admin_token') || 'demo_token';
+    const token = sessionStorage.getItem('iceberg_jwt') || sessionStorage.getItem('iceberg_admin_token') || localStorage.getItem('token') || 'demo_token';
     const headers = {
       'Content-Type': 'application/json',
       'x-demo-admin': 'true',
@@ -20,8 +20,14 @@ window.IAMS = (function() {
     };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
+    const host = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000')
+      ? 'http://localhost:3001'
+      : '';
+
+    const url = endpoint.startsWith('http') ? endpoint : (host + endpoint);
+
     try {
-      const res = await fetch(endpoint, { ...options, headers });
+      const res = await fetch(url, { ...options, headers });
       const data = await res.json();
       return data;
     } catch (err) {

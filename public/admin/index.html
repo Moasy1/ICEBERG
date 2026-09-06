@@ -241,8 +241,9 @@
         var username = (userEl ? userEl.value : '').trim() || 'admin';
         var password = (passEl ? passEl.value : '').trim() || 'iceberg-dev';
 
+        var host = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000') ? 'http://localhost:3001' : '';
         try {
-          var res = await fetch('/api/iams/auth/login', {
+          var res = await fetch(host + '/api/iams/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: username, password: password })
@@ -4194,13 +4195,13 @@
         </div>
     </div>
 
-    <script src="./iams.js"></script>
-    <script src="./workspaces-ui.js"></script>
-    <script src="./daily-planner.js"></script>
-    <script src="./focus-mode.js"></script>
-    <script src="./audit-behavior-ui.js"></script>
-    <script src="./opportunities-ui.js"></script>
-    <script src="./admin.js"></script>
+    <script src="/admin/iams.js"></script>
+    <script src="/admin/workspaces-ui.js"></script>
+    <script src="/admin/daily-planner.js"></script>
+    <script src="/admin/focus-mode.js"></script>
+    <script src="/admin/audit-behavior-ui.js"></script>
+    <script src="/admin/opportunities-ui.js"></script>
+    <script src="/admin/admin.js"></script>
 </body>
 
 </html>
