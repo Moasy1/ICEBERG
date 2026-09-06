@@ -84,8 +84,12 @@ app.use(express.static(path.join(__dirname, '../public'), {
 // Disable Mongoose command buffering so serverless requests never hang for 10s if DB is cold/offline
 mongoose.set('bufferCommands', false);
 
-// MongoDB connection helper
-const MONGO_URI = process.env.MONGODB_URI || 'mongodb+srv://hmanmahmed_db_user:V4lKIpvmjTI7nn3K@iceberg.4dboitw.mongodb.net/iceberg_cms?retryWrites=true&w=majority';
+// MongoDB connection helper with sanitization
+let rawMongoUri = (process.env.MONGODB_URI || '').trim().replace(/[\r\n]/g, '');
+if (rawMongoUri.includes('V41kIpvmjTI7nn3K')) {
+  rawMongoUri = rawMongoUri.replace('V41kIpvmjTI7nn3K', 'V4lKIpvmjTI7nn3K');
+}
+const MONGO_URI = rawMongoUri || 'mongodb+srv://hmanmahmed_db_user:V4lKIpvmjTI7nn3K@iceberg.4dboitw.mongodb.net/iceberg_cms?retryWrites=true&w=majority';
 let cachedConnection = null;
 
 const connectToDatabase = async () => {

@@ -102,6 +102,12 @@ function handleInitialRouting() {
         }
     } else if (searchParams.get('task') || searchParams.get('project')) {
         routeKey = 'workspaces';
+    } else {
+        // If hash is empty (e.g. # or no hash) and user is already on an active section, do not reset to dashboard
+        const currentVisible = document.querySelector('.content-section:not(.hidden)');
+        if (currentVisible && currentVisible.id && currentVisible.id !== 'dashboard') {
+            return;
+        }
     }
 
     const targetSection = HASH_TO_SECTION_MAP[routeKey] || 'dashboard';
@@ -204,7 +210,15 @@ function setupEventListeners() {
 }
 
 // Navigation
-function showSection(sectionId, updateHash = true) {
+function showSection(sectionId, eventOrUpdateHash = true) {
+    if (eventOrUpdateHash && typeof eventOrUpdateHash === 'object' && typeof eventOrUpdateHash.preventDefault === 'function') {
+        eventOrUpdateHash.preventDefault();
+    }
+    if (typeof window !== 'undefined' && window.event && typeof window.event.preventDefault === 'function') {
+        window.event.preventDefault();
+    }
+
+    const updateHash = typeof eventOrUpdateHash === 'boolean' ? eventOrUpdateHash : true;
     // Fold back navigation panel on mobile when showing the screen of each panel
     if (window.innerWidth < 768) {
         closeMobileSidebar();

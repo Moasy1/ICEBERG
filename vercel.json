@@ -4,8 +4,9 @@
   "buildCommand": "npm run build",
   "outputDirectory": "public",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.js" },
-    { "source": "/iams/(.*)", "destination": "/api/index.js" },
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/api", "destination": "/api" },
+    { "source": "/iams/(.*)", "destination": "/api" },
     { "source": "/parallax", "destination": "/parallax/index.html" },
     { "source": "/birthday-campaign", "destination": "/birthday-campaign.html" },
     { "source": "/admin", "destination": "/admin/index.html" },
