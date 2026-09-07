@@ -243,7 +243,10 @@ const DEFAULT_FALLBACK_TASKS = {
       tags: ['Development', 'Mobile', 'UI/UX'],
       created_by: 'Mohamed Asy',
       created_at: '2026-09-01T14:20:00Z',
-      assignees: [{ user_id: 'usr_asy', full_name: 'Mohamed Asy', title: 'Dev', avatar_url: '' }],
+      assignees: [
+        { user_id: 'usr_asy', full_name: 'Mohamed Asy', title: 'Dev (Full-stack & Architecture)', avatar_url: '' },
+        { user_id: 'usr_fady', full_name: 'Fady', title: 'CEO (Roadmaps & Approvals)', avatar_url: '' }
+      ],
       subtasks: [
         { subtask_id: 'st_4', title: 'Figma high-fidelity mobile wireframes', completed: true },
         { subtask_id: 'st_5', title: 'Internal technical review with dev architecture', completed: true },
@@ -1609,7 +1612,11 @@ function renderDrawerAssignees(task) {
   const allMembers = window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS || [];
 
   if (assignees.length === 0) {
-    container.innerHTML = `<span class="text-xs text-slate-500 italic py-1">No assignees assigned yet</span>`;
+    container.innerHTML = `
+      <div class="p-2.5 rounded-xl border border-dashed border-slate-800 bg-slate-900/40 text-center">
+        <span class="text-xs text-slate-500 italic">No team member assigned yet</span>
+      </div>
+    `;
     return;
   }
 
@@ -1619,24 +1626,42 @@ function renderDrawerAssignees(task) {
     const initials = member?.initials || (a.full_name ? a.full_name.substring(0, 2).toUpperCase() : '??');
     const emoji = member?.emoji || '👤';
     const title = member?.title || a.title || 'Member';
+    const role = member?.role || 'Team Member';
+    const badgeClass = member?.badgeClass || 'bg-slate-800 text-slate-300';
+    const ownership = member?.ownership || '';
 
     return `
-      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-900/90 border border-slate-700 hover:border-slate-600 text-slate-200 text-xs shadow-sm transition-all group/assignee">
-        <span class="w-5 h-5 rounded-full ${bgClass} text-white font-bold text-[10px] flex items-center justify-center shrink-0 shadow-sm">
-          ${initials}
-        </span>
-        <span class="font-semibold text-slate-100 flex items-center gap-1">
-          <span>${emoji}</span>
-          <span>${escapeHtml(a.full_name)}</span>
-        </span>
-        <span class="text-[10px] text-slate-400 font-mono hidden sm:inline">(${escapeHtml(title)})</span>
+      <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition-all group/membercard shadow-sm">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="relative shrink-0">
+            <div class="w-9 h-9 rounded-xl ${bgClass} text-white font-black text-xs flex items-center justify-center shadow-md border border-white/10">
+              ${initials}
+            </div>
+            <span class="absolute -bottom-1 -right-1 text-xs leading-none select-none drop-shadow">${emoji}</span>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-100 group-hover/membercard:text-cyan-300 transition-colors truncate">
+                ${escapeHtml(a.full_name)}
+              </span>
+              <span class="text-[9px] px-1.5 py-0.2 rounded ${badgeClass} font-semibold shrink-0">
+                ${escapeHtml(role)}
+              </span>
+            </div>
+            <p class="text-[10px] text-slate-400 truncate" title="${escapeHtml(ownership || title)}">${escapeHtml(title)}</p>
+          </div>
+        </div>
         <button type="button" 
                 onclick="removeDrawerAssignee('${escapeHtml(a.user_id)}')" 
-                class="text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 p-0.5 rounded transition-all font-bold text-sm leading-none ml-1" 
-                title="Remove ${escapeHtml(a.full_name)}">&times;</button>
-      </span>
+                class="opacity-60 group-hover/membercard:opacity-100 hover:bg-rose-500/20 hover:text-rose-400 text-slate-400 p-1.5 rounded-lg transition-all" 
+                title="Remove ${escapeHtml(a.full_name)} from task">
+          <i data-lucide="x" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
     `;
   }).join('');
+
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function onDrawerAddAssignee(userId) {

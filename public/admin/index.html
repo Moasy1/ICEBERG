@@ -4317,13 +4317,13 @@
                         <span>Assignees</span>
                     </div>
                     <div class="col-span-8 space-y-2">
-                        <!-- Badges for all assigned team members -->
-                        <div id="task-drawer-assignees-container" class="flex flex-wrap items-center gap-1.5 min-h-[28px]">
+                        <!-- Cards for all assigned team members -->
+                        <div id="task-drawer-assignees-container" class="space-y-1.5">
                             <!-- Populated dynamically by workspaces-ui.js -->
                         </div>
-                        <div class="flex items-center gap-2">
-                            <select id="task-drawer-assignee-select" onchange="onDrawerAddAssignee(this.value)" class="bg-slate-900 border border-slate-800 hover:border-cyan-500/50 text-slate-300 text-xs rounded-xl px-2.5 py-1 focus:outline-none focus:border-cyan-500 transition-all cursor-pointer">
-                                <option value="">+ Assign Team Member...</option>
+                        <div class="flex items-center gap-2 pt-0.5">
+                            <select id="task-drawer-assignee-select" onchange="onDrawerAddAssignee(this.value)" class="w-full bg-slate-900 border border-slate-800 hover:border-cyan-500/50 text-slate-300 text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-cyan-500 transition-all cursor-pointer">
+                                <option value="">+ Add Team Member...</option>
                                 <option value="usr_fady">👑 Fady — CEO (Roadmaps & Approvals)</option>
                                 <option value="usr_asy">💻 Mohamed Asy — Dev (Full-stack & Architecture)</option>
                                 <option value="usr_abanoub">📈 Abanoub — Marketing Manager & Media Buyer</option>
