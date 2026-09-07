@@ -662,45 +662,77 @@
                             <span id="notif-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-rose-600 text-white font-bold text-[10px] rounded-full flex items-center justify-center border-2 border-slate-900 shadow-md">3</span>
                         </button>
 
-                        <!-- Notification Center Dropdown Panel -->
-                        <div id="notification-center-dropdown" class="hidden absolute right-0 mt-3 w-80 sm:w-96 glass-card bg-slate-900/95 border border-slate-700/80 rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl transition-all">
+                        <!-- Notification Center Dropdown Panel (Ticketing & Dispatch Center) -->
+                        <div id="notification-center-dropdown" class="hidden absolute right-0 mt-3 w-96 sm:w-[500px] glass-card bg-slate-900/95 border border-slate-700/80 rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl transition-all">
                             <!-- Header -->
-                            <div class="p-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
-                                <div class="flex items-center gap-2">
-                                    <i data-lucide="bell-ring" class="w-4 h-4 text-cyan-400"></i>
-                                    <h3 class="text-sm font-bold text-white tracking-wide">Notification Center</h3>
-                                    <span id="notif-count-pill" class="px-2 py-0.5 text-[10px] font-extrabold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-full">3 New</span>
+                            <div class="p-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-950/90">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                                        <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <h3 class="text-sm font-bold text-white tracking-wide">Dispatch & Tickets</h3>
+                                            <span id="notif-count-pill" class="px-2 py-0.2 text-[10px] font-extrabold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-full">3 New</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
+                                            <span class="flex items-center gap-1 text-emerald-400 font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Live Sync</span>
+                                            <span>•</span>
+                                            <span id="notif-open-stats-text">0 Open Tickets</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <button onclick="markAllNotificationsAsRead()" class="text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 hover:underline">Mark all read</button>
-                                    <button onclick="toggleNotificationCenter()" class="text-slate-400 hover:text-white p-1">
+                                <div class="flex items-center gap-1.5">
+                                    <button type="button" onclick="openKpiReportsModal()" class="px-2.5 py-1 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/30 text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-sm" title="View KPI Overview Reports">
+                                        <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>
+                                        <span>KPIs</span>
+                                    </button>
+                                    <button type="button" id="notif-sound-toggle-btn" onclick="toggleNotificationSound()" class="p-1.5 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-slate-800 transition-colors" title="Toggle audio chime alert">
+                                        <i data-lucide="volume-2" class="w-4 h-4"></i>
+                                    </button>
+                                    <button type="button" onclick="toggleNotificationCenter()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors">
                                         <i data-lucide="x" class="w-4 h-4"></i>
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- Notification Filters -->
-                            <div class="px-3 py-2 bg-slate-950/40 border-b border-slate-800/80 flex items-center gap-1.5 overflow-x-auto text-[11px]">
-                                <button onclick="filterNotifications('all')" id="notif-filter-all" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">All</button>
-                                <button onclick="filterNotifications('unread')" id="notif-filter-unread" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Unread</button>
-                                <button onclick="filterNotifications('mention')" id="notif-filter-mention" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Mentions</button>
-                                <button onclick="filterNotifications('assignment')" id="notif-filter-assignment" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Tasks</button>
-                                <button onclick="filterNotifications('leads')" id="notif-filter-leads" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Leads</button>
-                                <button onclick="filterNotifications('audits')" id="notif-filter-audits" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Audits</button>
+                            <!-- Search Input Filter -->
+                            <div class="px-3 py-2 bg-slate-950/50 border-b border-slate-800/80 flex items-center gap-2">
+                                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400"></i>
+                                <input type="text" id="notif-search-input" oninput="handleNotifSearchInput(event)" placeholder="Search tickets, #id, task titles, or assignees..." class="w-full bg-transparent text-xs text-slate-200 placeholder-slate-500 focus:outline-none">
+                                <span id="notif-search-count" class="text-[10px] font-mono text-slate-400 shrink-0"></span>
+                            </div>
+
+                            <!-- Notification & Ticket Filters -->
+                            <div class="px-3 py-2 bg-slate-950/40 border-b border-slate-800/80 flex items-center gap-1.5 overflow-x-auto text-[11px] no-scrollbar">
+                                <button onclick="filterNotifications('all')" id="notif-filter-all" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 shrink-0">All</button>
+                                <button onclick="filterNotifications('open')" id="notif-filter-open" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white shrink-0 flex items-center gap-1">
+                                    <span>Open</span>
+                                    <span id="notif-filter-open-count" class="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 text-[9px] font-bold">0</span>
+                                </button>
+                                <button onclick="filterNotifications('mention')" id="notif-filter-mention" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white shrink-0">Mentions</button>
+                                <button onclick="filterNotifications('assignment')" id="notif-filter-assignment" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white shrink-0">Tasks</button>
+                                <button onclick="filterNotifications('urgent')" id="notif-filter-urgent" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white shrink-0 text-rose-400">🔥 Urgent</button>
+                                <button onclick="filterNotifications('resolved')" id="notif-filter-resolved" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white shrink-0 text-emerald-400">Resolved</button>
                             </div>
 
                             <!-- Notification List -->
-                            <div id="notification-list" class="max-h-80 overflow-y-auto divide-y divide-slate-800/60">
+                            <div id="notification-list" class="max-h-96 overflow-y-auto divide-y divide-slate-800/60">
                                 <!-- Rendered dynamically by admin.js -->
                             </div>
 
                             <!-- Footer -->
-                            <div class="p-3 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between text-xs">
-                                <button onclick="clearAllNotifications()" class="text-slate-400 hover:text-rose-400 transition-colors flex items-center gap-1">
-                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear Notifications
-                                </button>
-                                <button onclick="showSection('idex-leads'); toggleNotificationCenter();" class="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1">
-                                    View Leads <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                            <div class="p-3 border-t border-slate-800 bg-slate-950/90 flex items-center justify-between text-xs">
+                                <div class="flex items-center gap-3">
+                                    <button onclick="markAllNotificationsAsRead()" class="text-slate-400 hover:text-cyan-300 text-[11px] font-semibold transition-colors">
+                                        Mark all read
+                                    </button>
+                                    <button onclick="clearAllNotifications()" class="text-slate-500 hover:text-rose-400 text-[11px] transition-colors flex items-center gap-1">
+                                        <i data-lucide="trash-2" class="w-3 h-3"></i> Clear
+                                    </button>
+                                </div>
+                                <button onclick="showSection('kpi-reports'); toggleNotificationCenter();" class="text-purple-400 hover:text-purple-300 font-bold flex items-center gap-1.5 transition-colors">
+                                    <span>Full KPI Analytics</span> <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
                                 </button>
                             </div>
                         </div>
@@ -927,6 +959,14 @@
                             class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
                             <i data-lucide="target" class="w-4 h-4 text-emerald-400 shrink-0"></i>
                             <span class="sidebar-text">Opportunities Pipeline</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#kpi-reports" onclick="showSection('kpi-reports', event)" title="KPI & SLA Overview Reports"
+                            class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-300 hover:text-white transition-all">
+                            <i data-lucide="bar-chart-3" class="w-4 h-4 text-purple-400 shrink-0"></i>
+                            <span class="sidebar-text">KPI & SLA Reports</span>
+                            <span class="px-1.5 py-0.2 text-[9px] font-extrabold bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full ml-auto">KPI</span>
                         </a>
                     </li>
                     <li class="pt-2">
@@ -3048,9 +3088,322 @@
                     </div>
                 </div>
             </section>
+
+            <!-- ========================================== -->
+            <!-- AGENCY KPI & SLA OVERVIEW REPORTS SCREEN   -->
+            <!-- ========================================== -->
+            <section id="kpi-reports" class="content-section hidden space-y-6">
+                <!-- Header Banner -->
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <div class="w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                                <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-white tracking-tight">Agency Dispatch, Ticketing & SLA / KPI Overview</h2>
+                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold flex items-center gap-1.5 font-mono">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Live SLA Engine
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-400">Live operational responsiveness metrics, team accountability matrix, and ticket resolution turnarounds.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <button type="button" onclick="loadKpiReports()" class="px-3 py-2 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-cyan-400"></i> Refresh KPIs
+                        </button>
+                        <button type="button" onclick="exportKpiReportCsv()" class="px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-purple-900/30">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i> Export CSV Report
+                        </button>
+                        <button type="button" onclick="toggleNotificationCenter()" class="px-3 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-md">
+                            <i data-lucide="bell" class="w-3.5 h-3.5"></i> Open Dispatch Center
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 1. Top-Level KPI Scorecards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Card 1: Total Tickets -->
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800 relative overflow-hidden group hover:border-purple-500/40 transition-all">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Total Action Items</span>
+                            <div class="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                                <i data-lucide="inbox" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                        <div id="kpi-total-tickets" class="text-3xl font-extrabold text-white font-mono">0</div>
+                        <div class="text-[11px] text-slate-400 mt-2 flex items-center gap-2">
+                            <span class="text-amber-400 font-bold"><span id="kpi-open-tickets">0</span> Open</span>
+                            <span>•</span>
+                            <span class="text-blue-400 font-bold"><span id="kpi-in-progress-tickets">0</span> Active</span>
+                            <span>•</span>
+                            <span class="text-emerald-400 font-bold"><span id="kpi-resolved-tickets">0</span> Done</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: SLA Compliance -->
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800 relative overflow-hidden group hover:border-emerald-500/40 transition-all">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">SLA Adherence</span>
+                            <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-baseline gap-2">
+                            <div id="kpi-sla-compliance" class="text-3xl font-extrabold text-emerald-400 font-mono">96.8%</div>
+                            <span class="text-[10px] text-emerald-400 font-bold">Target >90%</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2.5 overflow-hidden">
+                            <div id="kpi-sla-bar" class="bg-gradient-to-r from-cyan-500 to-emerald-400 h-full rounded-full transition-all duration-700" style="width: 96%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Avg Resolution Turnaround -->
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800 relative overflow-hidden group hover:border-cyan-500/40 transition-all">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Avg Turnaround</span>
+                            <div class="w-7 h-7 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
+                                <i data-lucide="clock" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                        <div id="kpi-avg-response" class="text-3xl font-extrabold text-cyan-400 font-mono">14m</div>
+                        <div id="kpi-response-sub" class="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5">
+                            <span class="text-emerald-400 font-semibold">4.2x faster</span> than standard 60m SLA
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Team Capacity -->
+                    <div class="glass-card p-5 rounded-2xl border border-slate-800 relative overflow-hidden group hover:border-amber-500/40 transition-all">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider">Agency Readiness</span>
+                            <div class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                                <i data-lucide="users" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-extrabold text-amber-300 font-mono">5 Agents</div>
+                        <div class="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> 100% On-Duty • 0 Escalations
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Middle Row: Team Performance Matrix & Channel Distribution -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Team Accountability Matrix Table -->
+                    <div class="lg:col-span-8 glass-card p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="award" class="w-4 h-4 text-cyan-400"></i>
+                                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Team Member Accountability & SLA Performance</h3>
+                                </div>
+                                <span class="text-xs text-slate-500 font-mono">Real-time Performance Metrics</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs text-slate-300">
+                                    <thead class="border-b border-slate-800 text-[11px] text-slate-400 font-mono uppercase bg-slate-950/40">
+                                        <tr>
+                                            <th class="py-2.5 px-3">Team Member</th>
+                                            <th class="py-2.5 px-3">Assigned</th>
+                                            <th class="py-2.5 px-3">Active</th>
+                                            <th class="py-2.5 px-3">Resolved</th>
+                                            <th class="py-2.5 px-3">Avg Response</th>
+                                            <th class="py-2.5 px-3">SLA Compliance</th>
+                                            <th class="py-2.5 px-3">Rating</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="kpi-team-table-body" class="divide-y divide-slate-800/60 font-sans">
+                                        <!-- Populated dynamically by admin.js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Breakdown & SLA Policy Card -->
+                    <div class="lg:col-span-4 space-y-4">
+                        <!-- Breakdown Progress Bars -->
+                        <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                                    <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-purple-400"></i> Category Distribution
+                                </h3>
+                                <span class="text-[10px] text-slate-500 font-mono">All Channels</span>
+                            </div>
+                            <div id="kpi-categories-container" class="space-y-3 pt-1">
+                                <!-- Populated dynamically by admin.js -->
+                            </div>
+                        </div>
+
+                        <!-- SLA Policy Standards Card -->
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-purple-950/40 via-slate-900/60 to-slate-900 border border-purple-800/40 text-xs">
+                            <div class="flex items-center gap-2 text-purple-300 font-bold mb-2">
+                                <i data-lucide="zap" class="w-4 h-4 text-purple-400"></i> Agency SLA Standards
+                            </div>
+                            <ul class="space-y-1.5 text-slate-400 text-[11px]">
+                                <li class="flex items-center justify-between">
+                                    <span class="text-rose-400 font-semibold">🔥 Urgent / Blocker</span>
+                                    <span class="font-mono text-slate-200">< 30 mins</span>
+                                </li>
+                                <li class="flex items-center justify-between">
+                                    <span class="text-amber-400 font-semibold">⚡ High / Task Assign</span>
+                                    <span class="font-mono text-slate-200">< 60 mins</span>
+                                </li>
+                                <li class="flex items-center justify-between">
+                                    <span class="text-cyan-400 font-semibold">💬 Mentions & Approvals</span>
+                                    <span class="font-mono text-slate-200">< 2 hours</span>
+                                </li>
+                                <li class="flex items-center justify-between">
+                                    <span class="text-slate-400 font-semibold">📋 Routine System Items</span>
+                                    <span class="font-mono text-slate-200">< 4 hours</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Bottom Row: Live Ticket Log & Audit Stream -->
+                <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="list-checks" class="w-4 h-4 text-cyan-400"></i>
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Live Action Items & Ticket Audit Trail</h3>
+                            <span id="kpi-table-count" class="px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 text-[10px] font-mono">0 Items</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <select id="kpi-filter-member" onchange="filterKpiTicketTable()" class="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-cyan-500">
+                                <option value="">All Assignees</option>
+                                <option value="Mohamed Asy">Mohamed Asy</option>
+                                <option value="Fady">Fady</option>
+                                <option value="Abanoub">Abanoub</option>
+                                <option value="Steven">Steven</option>
+                                <option value="Baher">Baher</option>
+                            </select>
+                            <select id="kpi-filter-status" onchange="filterKpiTicketTable()" class="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-cyan-500">
+                                <option value="">All Statuses</option>
+                                <option value="open">Open</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="resolved">Resolved</option>
+                            </select>
+                            <select id="kpi-filter-priority" onchange="filterKpiTicketTable()" class="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-cyan-500">
+                                <option value="">All Priorities</option>
+                                <option value="urgent">Urgent</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium / Normal</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="border-b border-slate-800 text-[11px] text-slate-400 font-mono uppercase bg-slate-950/50">
+                                <tr>
+                                    <th class="py-2.5 px-3">Ticket ID</th>
+                                    <th class="py-2.5 px-3">Title & Summary</th>
+                                    <th class="py-2.5 px-3">Assignee</th>
+                                    <th class="py-2.5 px-3">Priority</th>
+                                    <th class="py-2.5 px-3">Status</th>
+                                    <th class="py-2.5 px-3">Created / Time</th>
+                                    <th class="py-2.5 px-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kpi-live-ticket-stream" class="divide-y divide-slate-800/60 font-sans">
+                                <!-- Populated dynamically by admin.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
         </main>
     <!-- Global Modal Overlay Backdrop -->
     <div id="modal-overlay" onclick="closeAllModals()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+
+    <!-- Dedicated Floating Modal: KPI & SLA Reports Overview -->
+    <div id="kpi-reports-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden p-3 sm:p-6 backdrop-blur-md bg-slate-950/80">
+        <div class="glass-card rounded-2xl border border-slate-700/80 bg-slate-900/95 w-full max-w-5xl max-h-[90vh] overflow-y-auto relative shadow-2xl p-5 sm:p-6 space-y-6">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white tracking-wide">Agency Dispatch & SLA / KPI Overview</h3>
+                        <p class="text-xs text-slate-400">Live operational scorecard and member accountability matrix</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="showSection('kpi-reports'); closeKpiReportsModal();" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1 transition-all">
+                        <span>Full Page Screen</span> <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <button type="button" onclick="closeKpiReportsModal()" class="text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800 hover:bg-slate-700 transition-colors">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scorecards in Modal -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
+                    <span class="text-[10px] text-slate-400 uppercase font-mono tracking-wider">Total Dispatches</span>
+                    <div id="modal-kpi-total" class="text-2xl font-extrabold text-white font-mono mt-1">0</div>
+                    <span id="modal-kpi-open" class="text-[10px] text-amber-400">0 Open</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
+                    <span class="text-[10px] text-slate-400 uppercase font-mono tracking-wider">SLA Adherence</span>
+                    <div id="modal-kpi-sla" class="text-2xl font-extrabold text-emerald-400 font-mono mt-1">96%</div>
+                    <span class="text-[10px] text-emerald-400">Target >90%</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
+                    <span class="text-[10px] text-slate-400 uppercase font-mono tracking-wider">Avg Turnaround</span>
+                    <div id="modal-kpi-response" class="text-2xl font-extrabold text-cyan-400 font-mono mt-1">14m</div>
+                    <span class="text-[10px] text-slate-400">4.2x faster</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
+                    <span class="text-[10px] text-slate-400 uppercase font-mono tracking-wider">Accountability</span>
+                    <div class="text-2xl font-extrabold text-purple-300 font-mono mt-1">5 Agents</div>
+                    <span class="text-[10px] text-emerald-400">100% Active</span>
+                </div>
+            </div>
+
+            <!-- Team Member Performance Table in Modal -->
+            <div class="rounded-xl border border-slate-800 overflow-hidden bg-slate-950/40">
+                <div class="px-4 py-2.5 bg-slate-950/70 border-b border-slate-800 flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-200 uppercase tracking-wider">Team Member Performance & SLA</span>
+                    <span class="text-[10px] font-mono text-slate-400">Live Updates</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="border-b border-slate-800 text-[10px] text-slate-400 font-mono uppercase bg-slate-950/60">
+                            <tr>
+                                <th class="py-2 px-3">Member</th>
+                                <th class="py-2 px-3">Assigned</th>
+                                <th class="py-2 px-3">Resolved</th>
+                                <th class="py-2 px-3">Avg Response</th>
+                                <th class="py-2 px-3">SLA Compliance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-kpi-team-body" class="divide-y divide-slate-800/60">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
+                <button type="button" onclick="loadKpiReports()" class="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh Data
+                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="exportKpiReportCsv()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-semibold">
+                        Export CSV
+                    </button>
+                    <button type="button" onclick="closeKpiReportsModal()" class="px-4 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition-all">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Content Modal -->
     <div id="content-modal" class="fixed inset-0 flex items-start sm:items-center justify-center z-50 hidden overflow-y-auto p-4">
