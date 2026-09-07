@@ -683,6 +683,8 @@
                             <div class="px-3 py-2 bg-slate-950/40 border-b border-slate-800/80 flex items-center gap-1.5 overflow-x-auto text-[11px]">
                                 <button onclick="filterNotifications('all')" id="notif-filter-all" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">All</button>
                                 <button onclick="filterNotifications('unread')" id="notif-filter-unread" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Unread</button>
+                                <button onclick="filterNotifications('mention')" id="notif-filter-mention" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Mentions</button>
+                                <button onclick="filterNotifications('assignment')" id="notif-filter-assignment" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Tasks</button>
                                 <button onclick="filterNotifications('leads')" id="notif-filter-leads" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Leads</button>
                                 <button onclick="filterNotifications('audits')" id="notif-filter-audits" class="notif-filter-btn px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Audits</button>
                             </div>
@@ -4308,18 +4310,22 @@
                     </div>
                 </div>
 
-                <!-- Assignee Row -->
-                <div class="grid grid-cols-12 items-center gap-2">
-                    <div class="col-span-4 flex items-center gap-2 text-slate-400 font-medium">
-                        <i data-lucide="user" class="w-4 h-4 text-slate-500"></i>
-                        <span>Assignee</span>
+                <!-- Assignee Row (Multiple Assignees) -->
+                <div class="grid grid-cols-12 items-start gap-2">
+                    <div class="col-span-4 flex items-center gap-2 text-slate-400 font-medium pt-1.5">
+                        <i data-lucide="users" class="w-4 h-4 text-slate-500"></i>
+                        <span>Assignees</span>
                     </div>
-                    <div class="col-span-8">
+                    <div class="col-span-8 space-y-2">
+                        <!-- Badges for all assigned team members -->
+                        <div id="task-drawer-assignees-container" class="flex flex-wrap items-center gap-1.5 min-h-[28px]">
+                            <!-- Populated dynamically by workspaces-ui.js -->
+                        </div>
                         <div class="flex items-center gap-2">
-                            <select id="task-drawer-assignee-select" onchange="onDrawerAssigneeChange(this.value)" class="bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-lg px-2.5 py-1 focus:outline-none focus:border-cyan-500">
-                                <option value="">No Assignee</option>
+                            <select id="task-drawer-assignee-select" onchange="onDrawerAddAssignee(this.value)" class="bg-slate-900 border border-slate-800 hover:border-cyan-500/50 text-slate-300 text-xs rounded-xl px-2.5 py-1 focus:outline-none focus:border-cyan-500 transition-all cursor-pointer">
+                                <option value="">+ Assign Team Member...</option>
                                 <option value="usr_fady">👑 Fady — CEO (Roadmaps & Approvals)</option>
-                                <option value="usr_asy" selected>💻 Mohamed Asy — Dev (Full-stack & Architecture)</option>
+                                <option value="usr_asy">💻 Mohamed Asy — Dev (Full-stack & Architecture)</option>
                                 <option value="usr_abanoub">📈 Abanoub — Marketing Manager & Media Buyer</option>
                                 <option value="usr_steven">🎬 Steven — Video Editor (Assets & Reels)</option>
                                 <option value="usr_baher">🎨 Baher — Creative Intern (Visuals & Staging)</option>
@@ -4465,11 +4471,11 @@
             <div id="task-drawer-pending-comment-attachments" class="hidden flex flex-wrap gap-2 mb-2 p-2 bg-slate-900/90 rounded-xl border border-slate-800"></div>
 
             <form onsubmit="handleDrawerAddComment(event)" class="flex items-end gap-3">
-                <div class="w-8 h-8 rounded-full bg-cyan-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
+                <div id="task-drawer-current-user-avatar" class="w-8 h-8 rounded-full bg-cyan-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
                     MA
                 </div>
                 <div class="flex-1 bg-slate-900 border border-slate-800 rounded-xl p-2 focus-within:border-cyan-500/50 transition-colors">
-                    <textarea id="task-drawer-comment-input" rows="1" placeholder="Write a comment or paste links (Figma, Loom, YouTube, Drive)..." onkeydown="handleCommentKeyDown(event)" class="w-full bg-transparent text-xs text-slate-100 placeholder-slate-500 focus:outline-none resize-none p-1"></textarea>
+                    <textarea id="task-drawer-comment-input" rows="1" placeholder="Write a comment or paste links (Figma, Loom, YouTube, Drive)..." oninput="handleCommentInput(event)" onkeydown="handleCommentKeyDown(event)" class="w-full bg-transparent text-xs text-slate-100 placeholder-slate-500 focus:outline-none resize-none p-1"></textarea>
                     
                     <input type="file" id="task-drawer-comment-file-input" class="hidden" multiple onchange="handleCommentFileInputChange(event)">
 

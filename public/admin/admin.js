@@ -3342,6 +3342,15 @@ async function handleNotificationClick(notifId, sectionId) {
     const dropdown = document.getElementById('notification-center-dropdown');
     if (dropdown) dropdown.classList.add('hidden');
 
+    // Deep link directly to URL if present (e.g. #workspaces?project=...&task=...)
+    if (notif && notif.url) {
+        window.location.hash = notif.url;
+        if (typeof handleInitialRouting === 'function') {
+            handleInitialRouting();
+        }
+        return;
+    }
+
     if (sectionId && typeof showSection === 'function') {
         showSection(sectionId);
     }
@@ -3377,9 +3386,9 @@ async function clearAllNotifications() {
     } catch (e) {}
 }
 
-async function addAdminNotification({ type, title, message, section, icon, color }) {
+async function addAdminNotification({ type, title, message, section, icon, color, url, target_user_id }) {
     const newNotif = {
-        id: 'notif-' + Date.now(),
+        id: 'notif-' + Date.now() + Math.random().toString(36).substring(2, 5),
         type: type || 'system',
         icon: icon || 'sparkles',
         color: color || 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
@@ -3387,7 +3396,9 @@ async function addAdminNotification({ type, title, message, section, icon, color
         message: message || '',
         time: 'Just now',
         read: false,
-        section: section || 'idex-leads'
+        section: section || 'workspaces',
+        url: url || '',
+        target_user_id: target_user_id || ''
     };
     adminNotifications.unshift(newNotif);
     saveNotifications();

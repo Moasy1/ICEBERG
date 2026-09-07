@@ -1272,15 +1272,21 @@ function renderTaskListView() {
             const completedSubtasks = (t.subtasks || []).filter(st => st.completed).length;
             const totalSubtasks = (t.subtasks || []).length;
             
-            const firstAssignee = (t.assignees && t.assignees[0]) ? t.assignees[0] : null;
-            const member = firstAssignee ? (window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS).find(m => m.user_id === firstAssignee.user_id || m.full_name === firstAssignee.full_name) : null;
-            const assigneeBadge = member ? `
-              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg ${member.badgeClass} text-[11px] font-semibold" title="${escapeHtml(`${member.full_name} (${member.title}) — ${member.ownership}`)}">
-                <span class="w-2 h-2 rounded-full ${member.bgClass}"></span>
-                <span>${escapeHtml(member.full_name)}</span>
-                <span class="opacity-70 text-[10px]">(${escapeHtml(member.title)})</span>
-              </span>
-            ` : (firstAssignee ? `<span class="text-slate-400">${escapeHtml(firstAssignee.full_name)}</span>` : '<span class="text-slate-500 italic">Unassigned</span>');
+            const allAssignees = t.assignees || [];
+            const allMembers = window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS || [];
+            const assigneeBadge = (allAssignees.length > 0) ? `
+              <div class="flex flex-wrap items-center gap-1">
+                ${allAssignees.map(a => {
+                  const m = allMembers.find(mem => mem.user_id === a.user_id || mem.full_name.toLowerCase() === (a.full_name || '').toLowerCase());
+                  return m ? `
+                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md ${m.badgeClass} text-[10px] font-semibold" title="${escapeHtml(`${m.full_name} (${m.title}) — ${m.ownership}`)}">
+                      <span class="w-1.5 h-1.5 rounded-full ${m.bgClass}"></span>
+                      <span>${escapeHtml(m.full_name)}</span>
+                    </span>
+                  ` : `<span class="text-xs text-slate-400 font-medium">${escapeHtml(a.full_name)}</span>`;
+                }).join('')}
+              </div>
+            ` : '<span class="text-slate-500 italic text-xs">Unassigned</span>';
 
             return `
               <tr onclick="openTaskDetailsModal('${t.task_id}')" class="hover:bg-slate-800/50 cursor-pointer transition-colors group">
@@ -1392,11 +1398,21 @@ function openTaskDetailsModal(taskId, updateUrl = true) {
   const dueInput = document.getElementById('task-drawer-due-input');
   if (dueInput) dueInput.value = task.due_date || '';
 
-  // Assignee Select
+  // Multi-Assignees Rendering
+  renderDrawerAssignees(task);
   const assigneeSelect = document.getElementById('task-drawer-assignee-select');
-  if (assigneeSelect) {
-    const mainAssigneeId = task.assignees && task.assignees[0] ? task.assignees[0].user_id : '';
-    assigneeSelect.value = mainAssigneeId;
+  if (assigneeSelect) assigneeSelect.value = '';
+
+  // Current logged in user avatar in comment input
+  const commentAvatarEl = document.getElementById('task-drawer-current-user-avatar');
+  if (commentAvatarEl) {
+    try {
+      const stored = JSON.parse(localStorage.getItem('iceberg_admin_user') || localStorage.getItem('currentUser') || '{}');
+      if (stored.full_name) {
+        const inits = stored.full_name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+        commentAvatarEl.textContent = inits;
+      }
+    } catch (e) {}
   }
 
   // Priority Select
@@ -1581,30 +1597,129 @@ function quickSetDrawerDue(when) {
   syncTaskUpdateToServer(task);
 }
 
-function onDrawerAssigneeChange(userId) {
-  const task = getActiveDrawerTask();
-  if (!task) return;
+// ==========================================
+// MULTI-ASSIGNEE ENGINE
+// ==========================================
 
-  const member = (window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS).find(m => m.user_id === userId);
+function renderDrawerAssignees(task) {
+  const container = document.getElementById('task-drawer-assignees-container');
+  if (!container) return;
 
-  if (!userId || !member) {
-    task.assignees = [];
-  } else {
-    task.assignees = [{
-      user_id: member.user_id,
-      full_name: member.full_name,
-      title: member.title,
-      role: member.role,
-      ownership: member.ownership,
-      avatar_url: ''
-    }];
+  const assignees = task.assignees || [];
+  const allMembers = window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS || [];
+
+  if (assignees.length === 0) {
+    container.innerHTML = `<span class="text-xs text-slate-500 italic py-1">No assignees assigned yet</span>`;
+    return;
   }
 
+  container.innerHTML = assignees.map(a => {
+    const member = allMembers.find(m => m.user_id === a.user_id || m.full_name.toLowerCase() === (a.full_name || '').toLowerCase());
+    const bgClass = member?.bgClass || 'bg-cyan-600';
+    const initials = member?.initials || (a.full_name ? a.full_name.substring(0, 2).toUpperCase() : '??');
+    const emoji = member?.emoji || '👤';
+    const title = member?.title || a.title || 'Member';
+
+    return `
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-900/90 border border-slate-700 hover:border-slate-600 text-slate-200 text-xs shadow-sm transition-all group/assignee">
+        <span class="w-5 h-5 rounded-full ${bgClass} text-white font-bold text-[10px] flex items-center justify-center shrink-0 shadow-sm">
+          ${initials}
+        </span>
+        <span class="font-semibold text-slate-100 flex items-center gap-1">
+          <span>${emoji}</span>
+          <span>${escapeHtml(a.full_name)}</span>
+        </span>
+        <span class="text-[10px] text-slate-400 font-mono hidden sm:inline">(${escapeHtml(title)})</span>
+        <button type="button" 
+                onclick="removeDrawerAssignee('${escapeHtml(a.user_id)}')" 
+                class="text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 p-0.5 rounded transition-all font-bold text-sm leading-none ml-1" 
+                title="Remove ${escapeHtml(a.full_name)}">&times;</button>
+      </span>
+    `;
+  }).join('');
+}
+
+function onDrawerAddAssignee(userId) {
+  const select = document.getElementById('task-drawer-assignee-select');
+  if (select) select.value = '';
+
+  if (!userId) return;
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  if (!task.assignees) task.assignees = [];
+
+  const allMembers = window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS || [];
+  const member = allMembers.find(m => m.user_id === userId);
+  if (!member) return;
+
+  // Prevent duplicate assignees
+  if (task.assignees.some(a => a.user_id === userId || a.full_name.toLowerCase() === member.full_name.toLowerCase())) {
+    if (typeof showNotification === 'function') {
+      showNotification(`${member.full_name} is already assigned to this task`, 'info');
+    }
+    return;
+  }
+
+  task.assignees.push({
+    user_id: member.user_id,
+    full_name: member.full_name,
+    title: member.title,
+    role: member.role,
+    ownership: member.ownership,
+    avatar_url: ''
+  });
+
+  renderDrawerAssignees(task);
+
   if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
-  else renderTaskListView();
+  else if (window.WorkspacesState.activeTool === 'tasks') renderTaskListView();
 
   renderTeamRosterSidebar();
+
+  // Send assignment alert
+  if (typeof addAdminNotification === 'function') {
+    addAdminNotification({
+      type: 'assignment',
+      icon: 'user-check',
+      color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+      title: `Assigned: ${member.full_name}`,
+      message: `Assigned to task "${task.title}" in ${task.project_id}`,
+      section: 'workspaces',
+      url: `#workspaces?project=${task.project_id}&tool=kanban&task=${task.task_id}`,
+      target_user_id: member.user_id
+    });
+  }
+
+  if (typeof showNotification === 'function') {
+    showNotification(`Assigned ${member.full_name} to this task`, 'success');
+  }
+
   syncTaskUpdateToServer(task);
+}
+
+function removeDrawerAssignee(userId) {
+  const task = getActiveDrawerTask();
+  if (!task || !task.assignees) return;
+
+  const removed = task.assignees.find(a => a.user_id === userId);
+  task.assignees = task.assignees.filter(a => a.user_id !== userId);
+
+  renderDrawerAssignees(task);
+
+  if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
+  else if (window.WorkspacesState.activeTool === 'tasks') renderTaskListView();
+
+  renderTeamRosterSidebar();
+
+  if (removed && typeof showNotification === 'function') {
+    showNotification(`Removed ${removed.full_name} from assignees`, 'info');
+  }
+
+  syncTaskUpdateToServer(task);
+}
+
+function onDrawerAssigneeChange(userId) {
+  onDrawerAddAssignee(userId);
 }
 
 // Render Team Roles & Ownership Roster Card in Left Sidebar
@@ -1701,7 +1816,91 @@ function clearAssigneeFilter() {
   renderTeamRosterSidebar();
 }
 
-// Comment Mention Dropdown for @ button
+// ==========================================
+// REAL-TIME TEAM MENTION ENGINE
+// ==========================================
+
+function renderCommentMentionDropdown(filterQuery = '') {
+  const dropdown = document.getElementById('comment-mention-dropdown');
+  if (!dropdown) return;
+
+  const members = window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS || [];
+  const q = (filterQuery || '').trim().toLowerCase();
+
+  const filteredMembers = q
+    ? members.filter(m => 
+        m.full_name.toLowerCase().includes(q) || 
+        m.title.toLowerCase().includes(q) || 
+        (m.role && m.role.toLowerCase().includes(q))
+      )
+    : members;
+
+  const showAllOption = !q || 'everyone'.includes(q) || 'all'.includes(q) || 'team'.includes(q);
+
+  if (filteredMembers.length === 0 && !showAllOption) {
+    dropdown.innerHTML = `
+      <div class="p-3 text-center text-slate-500 text-xs italic">
+        No team member found matching "@${escapeHtml(filterQuery)}"
+      </div>
+    `;
+    dropdown.classList.remove('hidden');
+    return;
+  }
+
+  dropdown.innerHTML = `
+    <div class="px-2.5 py-1.5 text-[10px] uppercase font-bold tracking-wider text-slate-400 border-b border-slate-800/80 mb-1 flex items-center justify-between">
+      <span class="flex items-center gap-1.5 text-cyan-400 font-semibold">
+        <i data-lucide="at-sign" class="w-3.5 h-3.5"></i> Mention Team Member
+      </span>
+      <span class="text-slate-500 font-mono text-[9px]">Notify Instantly</span>
+    </div>
+    <div class="space-y-1 max-h-56 overflow-y-auto">
+      ${showAllOption ? `
+        <button type="button" 
+                onclick="insertCommentMention('team')" 
+                class="w-full text-left p-1.5 rounded-xl hover:bg-slate-800/90 transition-all flex items-center gap-2.5 group">
+          <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-amber-600 to-amber-500 text-white font-bold text-[10px] flex items-center justify-center shrink-0 shadow-sm">
+            👥
+          </span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-300 group-hover:text-amber-200 transition-colors">
+                @team (Everyone)
+              </span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950/70 text-amber-300 border border-amber-800/50">
+                All Agency
+              </span>
+            </div>
+            <p class="text-[10px] text-slate-400 truncate">Notify all 5 agency team members</p>
+          </div>
+        </button>
+      ` : ''}
+      ${filteredMembers.map(m => `
+        <button type="button" 
+                onclick="insertCommentMention('${escapeHtml(m.full_name)}')" 
+                class="w-full text-left p-1.5 rounded-xl hover:bg-slate-800/90 transition-all flex items-center gap-2.5 group">
+          <span class="w-6 h-6 rounded-lg ${m.bgClass} text-white font-bold text-[10px] flex items-center justify-center shrink-0 shadow-sm">
+            ${m.initials}
+          </span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-200 group-hover:text-cyan-300 transition-colors truncate">
+                ${m.emoji} ${escapeHtml(m.full_name)}
+              </span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded ${m.badgeClass}">
+                ${escapeHtml(m.title)}
+              </span>
+            </div>
+            <p class="text-[10px] text-slate-400 truncate">${escapeHtml(m.ownership)}</p>
+          </div>
+        </button>
+      `).join('')}
+    </div>
+  `;
+  dropdown.classList.remove('hidden');
+  if (window.lucide) window.lucide.createIcons();
+}
+
 function toggleCommentMentionDropdown(e) {
   if (e) e.stopPropagation();
   const dropdown = document.getElementById('comment-mention-dropdown');
@@ -1709,38 +1908,7 @@ function toggleCommentMentionDropdown(e) {
 
   const isHidden = dropdown.classList.contains('hidden');
   if (isHidden) {
-    const members = window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS;
-    dropdown.innerHTML = `
-      <div class="px-2 py-1 text-[10px] uppercase font-bold tracking-wider text-slate-400 border-b border-slate-800/80 mb-1 flex items-center justify-between">
-        <span>Mention Team Member</span>
-        <span class="text-cyan-400 font-mono">Team Roles</span>
-      </div>
-      <div class="space-y-1 max-h-56 overflow-y-auto">
-        ${members.map(m => `
-          <button type="button" 
-                  onclick="insertCommentMention('${escapeHtml(m.full_name)}')" 
-                  class="w-full text-left p-1.5 rounded-lg hover:bg-slate-800/80 transition-colors flex items-center gap-2 group">
-            <span class="w-6 h-6 rounded-md ${m.bgClass} text-white font-bold text-[10px] flex items-center justify-center shrink-0">
-              ${m.initials}
-            </span>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-slate-200 group-hover:text-cyan-300 transition-colors truncate">
-                  ${m.emoji} ${escapeHtml(m.full_name)}
-                </span>
-                <span class="text-[9px] px-1 py-0.2 rounded ${m.badgeClass}">
-                  ${escapeHtml(m.title)}
-                </span>
-              </div>
-              <p class="text-[10px] text-slate-400 truncate">${escapeHtml(m.ownership)}</p>
-            </div>
-          </button>
-        `).join('')}
-      </div>
-    `;
-    dropdown.classList.remove('hidden');
-
-    // Auto-close on click outside
+    renderCommentMentionDropdown('');
     const closeListener = (evt) => {
       if (!dropdown.contains(evt.target) && evt.target.id !== 'task-comment-mention-btn') {
         dropdown.classList.add('hidden');
@@ -1753,22 +1921,48 @@ function toggleCommentMentionDropdown(e) {
   }
 }
 
-// Insert @Name into comment input
+function handleCommentInput(e) {
+  const commentInput = e.target;
+  const dropdown = document.getElementById('comment-mention-dropdown');
+  if (!commentInput || !dropdown) return;
+
+  const cursorPos = commentInput.selectionStart || 0;
+  const textBefore = commentInput.value.substring(0, cursorPos);
+
+  // Match @word right before the cursor
+  const match = /(?:^|\s)@([a-zA-Z0-9_]*)$/.exec(textBefore);
+  if (match) {
+    const query = match[1];
+    renderCommentMentionDropdown(query);
+  } else {
+    dropdown.classList.add('hidden');
+  }
+}
+
 function insertCommentMention(fullName) {
   const commentInput = document.getElementById('task-drawer-comment-input');
   const dropdown = document.getElementById('comment-mention-dropdown');
   if (dropdown) dropdown.classList.add('hidden');
-
   if (!commentInput) return;
-  const mentionText = `@${fullName} `;
+
   const currentVal = commentInput.value;
   const selStart = commentInput.selectionStart || currentVal.length;
-  const selEnd = commentInput.selectionEnd || currentVal.length;
+  const textBefore = currentVal.substring(0, selStart);
+  const textAfter = currentVal.substring(selStart);
 
-  commentInput.value = currentVal.substring(0, selStart) + mentionText + currentVal.substring(selEnd);
+  // Replace active @token before cursor with @FullName 
+  const lastAt = textBefore.lastIndexOf('@');
+  let newBefore;
+  if (lastAt !== -1 && lastAt >= textBefore.length - 25) {
+    newBefore = textBefore.substring(0, lastAt) + `@${fullName} `;
+  } else {
+    newBefore = textBefore + `@${fullName} `;
+  }
+
+  commentInput.value = newBefore + textAfter;
   commentInput.focus();
-  const nextCursor = selStart + mentionText.length;
-  commentInput.setSelectionRange(nextCursor, nextCursor);
+  const nextPos = newBefore.length;
+  commentInput.setSelectionRange(nextPos, nextPos);
 }
 
 function renderDrawerTags(task) {
@@ -2078,6 +2272,32 @@ function generateSmartLinkCardHtml(url) {
   }
 }
 
+function formatMentionsInHtml(escapedHtmlText) {
+  if (!escapedHtmlText) return '';
+  let res = escapedHtmlText;
+  const members = window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS || [];
+
+  // Sort descending by name length so "Mohamed Asy" matches before "Mohamed"
+  const sorted = [...members].sort((a, b) => b.full_name.length - a.full_name.length);
+
+  sorted.forEach(m => {
+    const escFullName = escapeHtml(m.full_name);
+    const firstName = m.full_name.split(' ')[0];
+    const escFirstName = escapeHtml(firstName);
+
+    // Matches @Mohamed Asy or @Mohamed followed by space, punctuation, or end of string
+    const regex = new RegExp(`@(${escFullName}|${escFirstName})(?=[\\s.,!?:;)\\]<]|$)`, 'gi');
+    res = res.replace(regex, (match, p1) => {
+      return `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-cyan-950/80 text-cyan-300 font-semibold border border-cyan-500/40 text-[11px] shadow-sm hover:bg-cyan-900/60 transition-colors align-baseline cursor-pointer" title="${escapeHtml(m.title)} • ${escapeHtml(m.ownership)}"><span class="w-3.5 h-3.5 rounded-full ${m.bgClass} text-white font-bold text-[8px] inline-flex items-center justify-center shrink-0 shadow-xs">${m.initials}</span>@${p1}</span>`;
+    });
+  });
+
+  // Support @team / @all
+  res = res.replace(/@(team|all|everyone)\b/gi, '<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-amber-950/80 text-amber-300 font-semibold border border-amber-500/40 text-[11px] shadow-sm align-baseline cursor-pointer" title="All Agency Team Members"><span>👥</span>@team</span>');
+
+  return res;
+}
+
 function parseAndEmbedLinks(rawText) {
   if (!rawText) return '';
   const urlRegex = /(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/gi;
@@ -2089,7 +2309,8 @@ function parseAndEmbedLinks(rawText) {
     const url = match[0];
     const offset = match.index;
     if (offset > lastIndex) {
-      parts.push(escapeHtml(rawText.substring(lastIndex, offset)).replace(/\n/g, '<br>'));
+      const textSeg = escapeHtml(rawText.substring(lastIndex, offset)).replace(/\n/g, '<br>');
+      parts.push(formatMentionsInHtml(textSeg));
     }
 
     parts.push(generateSmartLinkCardHtml(url));
@@ -2097,7 +2318,8 @@ function parseAndEmbedLinks(rawText) {
   }
 
   if (lastIndex < rawText.length) {
-    parts.push(escapeHtml(rawText.substring(lastIndex)).replace(/\n/g, '<br>'));
+    const textSeg = escapeHtml(rawText.substring(lastIndex)).replace(/\n/g, '<br>');
+    parts.push(formatMentionsInHtml(textSeg));
   }
 
   return parts.join('');
@@ -2758,6 +2980,10 @@ function handleDrawerAddComment(e) {
   if (!input) return;
   const text = input.value.trim();
 
+  // Close mention popup if open
+  const dropdown = document.getElementById('comment-mention-dropdown');
+  if (dropdown) dropdown.classList.add('hidden');
+
   if (!text && window.pendingCommentAttachments.length === 0) return;
 
   const task = getActiveDrawerTask();
@@ -2775,10 +3001,21 @@ function handleDrawerAddComment(e) {
     renderDrawerAttachments(task);
   }
 
+  // Determine current user
+  let authorName = 'Mohamed Asy';
+  let authorInitials = 'MA';
+  try {
+    const stored = JSON.parse(localStorage.getItem('iceberg_admin_user') || localStorage.getItem('currentUser') || '{}');
+    if (stored.full_name) {
+      authorName = stored.full_name;
+      authorInitials = stored.full_name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    }
+  } catch (err) {}
+
   const newComment = {
     comment_id: 'c_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
-    author_name: 'Mohamed Asy',
-    author_initials: 'MA',
+    author_name: authorName,
+    author_initials: authorInitials,
     text: text || '(Attached files)',
     attachments: attachedCopy,
     created_at: new Date().toISOString()
@@ -2792,6 +3029,46 @@ function handleDrawerAddComment(e) {
 
   if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
   else renderTaskListView();
+
+  // ==========================================
+  // REAL-TIME TEAM MENTION NOTIFICATIONS
+  // ==========================================
+  const allMembers = window.ICEBERG_TEAM_MEMBERS || ICEBERG_TEAM_MEMBERS || [];
+  const textLower = (text || '').toLowerCase();
+  const isMentionAll = /@(all|team|everyone)\b/i.test(text || '');
+  const mentionedMembers = [];
+
+  allMembers.forEach(m => {
+    const fullNameLower = m.full_name.toLowerCase();
+    const firstNameLower = fullNameLower.split(' ')[0];
+    if (isMentionAll || textLower.includes('@' + fullNameLower) || textLower.includes('@' + firstNameLower)) {
+      if (!mentionedMembers.some(existing => existing.user_id === m.user_id)) {
+        mentionedMembers.push(m);
+      }
+    }
+  });
+
+  if (mentionedMembers.length > 0) {
+    mentionedMembers.forEach(m => {
+      if (typeof addAdminNotification === 'function') {
+        addAdminNotification({
+          type: 'mention',
+          icon: 'at-sign',
+          color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
+          title: `@Mention by ${authorName}`,
+          message: `Mentioned you in task "${task.title}": "${text.substring(0, 90)}${text.length > 90 ? '...' : ''}"`,
+          section: 'workspaces',
+          url: `#workspaces?project=${task.project_id}&tool=kanban&task=${task.task_id}`,
+          target_user_id: m.user_id
+        });
+      }
+    });
+
+    const nameList = mentionedMembers.map(m => m.full_name).join(', ');
+    if (typeof showNotification === 'function') {
+      showNotification(`🔔 Notified ${nameList} of your mention!`, 'info');
+    }
+  }
 
   syncTaskUpdateToServer(task);
 }
@@ -4008,6 +4285,11 @@ window.filterTasksByAssignee = filterTasksByAssignee;
 window.clearAssigneeFilter = clearAssigneeFilter;
 window.toggleCommentMentionDropdown = toggleCommentMentionDropdown;
 window.insertCommentMention = insertCommentMention;
+window.renderDrawerAssignees = renderDrawerAssignees;
+window.onDrawerAddAssignee = onDrawerAddAssignee;
+window.removeDrawerAssignee = removeDrawerAssignee;
+window.handleCommentInput = handleCommentInput;
+window.renderCommentMentionDropdown = renderCommentMentionDropdown;
 
 // Keyboard shortcuts (Esc to close drawer)
 if (typeof document !== 'undefined') {
