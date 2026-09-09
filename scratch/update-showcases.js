@@ -1,11 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+const fs = require('fs');
+const path = require('path');
+
+const showcaseDir = path.join(__dirname, '..', 'public', 'showcase');
+const files = fs.readdirSync(showcaseDir).filter(f => f.endsWith('.html'));
+
+const formatClientName = (filename) => {
+    const slug = filename.replace('.html', '');
+    return slug.split('-').map(word => {
+        if (word.toLowerCase() === 'fms') return 'FMS';
+        if (word.toLowerCase() === 'scs') return 'SCS';
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+};
+
+files.forEach(file => {
+    const filePath = path.join(showcaseDir, file);
+    let content = fs.readFileSync(filePath, 'utf8');
+    const clientName = formatClientName(file);
+    const slug = file.replace('.html', '');
+    const canonicalUrl = `https://icebergma.com/showcase/${file}`;
+
+    // Extract H1 content if available
+    const h1Match = content.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+    const h1Text = h1Match ? h1Match[1].replace(/<[^>]+>/g, '').trim() : clientName.toUpperCase();
+
+    // Generate new Head block
+    const newHead = `<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acro Stone Case Study & Design Showcase | Iceberg Marketing Agency</title>
-    <meta name="description" content="Explore Iceberg Marketing Agency's brand identity, creative execution, and digital growth showcase for Acro Stone.">
-    <link rel="canonical" href="https://icebergma.com/showcase/acro-stone.html">
+    <title>${clientName} Case Study & Design Showcase | Iceberg Marketing Agency</title>
+    <meta name="description" content="Explore Iceberg Marketing Agency's brand identity, creative execution, and digital growth showcase for ${clientName}.">
+    <link rel="canonical" href="${canonicalUrl}">
 
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -17,13 +42,13 @@
 
     <!-- Open Graph / Social -->
     <meta property="og:type" content="article">
-    <meta property="og:url" content="https://icebergma.com/showcase/acro-stone.html">
-    <meta property="og:title" content="Acro Stone Case Study & Design Showcase | Iceberg Marketing Agency">
-    <meta property="og:description" content="Explore Iceberg Marketing Agency's brand identity and digital showcase for Acro Stone.">
+    <meta property="og:url" content="${canonicalUrl}">
+    <meta property="og:title" content="${clientName} Case Study & Design Showcase | Iceberg Marketing Agency">
+    <meta property="og:description" content="Explore Iceberg Marketing Agency's brand identity and digital showcase for ${clientName}.">
     <meta property="og:image" content="https://icebergma.com/assets/og-iceberg-preview.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Acro Stone Case Study & Showcase | Iceberg Marketing Agency">
-    <meta name="twitter:description" content="Brand identity and creative execution for Acro Stone.">
+    <meta name="twitter:title" content="${clientName} Case Study & Showcase | Iceberg Marketing Agency">
+    <meta name="twitter:description" content="Brand identity and creative execution for ${clientName}.">
     <meta name="twitter:image" content="https://icebergma.com/assets/og-iceberg-preview.png">
 
     <!-- Structured Data -->
@@ -33,15 +58,15 @@
       "@graph": [
         {
           "@type": "CreativeWork",
-          "name": "Acro Stone Brand Showcase",
-          "headline": "Acro Stone Case Study & Brand Identity Showcase",
-          "description": "Brand identity and design assets produced by Iceberg Marketing Agency for Acro Stone.",
+          "name": "${clientName} Brand Showcase",
+          "headline": "${clientName} Case Study & Brand Identity Showcase",
+          "description": "Brand identity and design assets produced by Iceberg Marketing Agency for ${clientName}.",
           "author": {
             "@type": "Organization",
             "name": "Iceberg Marketing Agency",
             "url": "https://icebergma.com"
           },
-          "url": "https://icebergma.com/showcase/acro-stone.html"
+          "url": "${canonicalUrl}"
         },
         {
           "@type": "BreadcrumbList",
@@ -61,8 +86,8 @@
             {
               "@type": "ListItem",
               "position": 3,
-              "name": "Acro Stone",
-              "item": "https://icebergma.com/showcase/acro-stone.html"
+              "name": "${clientName}",
+              "item": "${canonicalUrl}"
             }
           ]
         }
@@ -98,9 +123,13 @@
     src="https://www.facebook.com/tr?id=2557716128012185&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
-</head>
-<body class="antialiased">
-    <!-- Nav -->
+</head>`;
+
+    // Replace the entire head
+    content = content.replace(/<head>[\s\S]*?<\/head>/i, newHead);
+
+    // Update the Nav bar
+    const newNav = `<!-- Nav -->
     <nav class="fixed top-0 w-full z-50 glass-nav px-6 py-4 flex justify-between items-center">
         <a href="/projects.html" class="flex items-center gap-2 group text-slate-300 hover:text-cyan-400 transition-colors">
             <i data-lucide="arrow-left" class="text-cyan-400 group-hover:-translate-x-1 transition-transform w-4 h-4"></i>
@@ -118,44 +147,22 @@
         <span class="text-slate-600">/</span>
         <a href="/projects.html" class="hover:text-cyan-400 transition-colors">Case Studies</a>
         <span class="text-slate-600">/</span>
-        <span class="text-white font-medium">Acro Stone</span>
-    </nav>
+        <span class="text-white font-medium">${clientName}</span>
+    </nav>`;
 
-    <!-- Hero -->
-    <header class="relative pt-32 pb-12 px-6 container mx-auto text-center">
-        <span class="text-cyan-500 font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Showcase</span>
-        <h1 class="text-5xl md:text-8xl font-black italic tracking-tighter uppercase mb-6">ACRO STONE</h1>
-        <p class="text-gray-400 max-w-2xl mx-auto text-lg">Exploring the depth of brand identity and digital presence.</p>
-    </header>
+    // Replace nav
+    content = content.replace(/<!-- Nav -->[\s\S]*?<\/nav>/i, newNav);
 
-    <!-- Gallery -->
-    <main class="container mx-auto px-6 py-12">
-        <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
-            
-        <div class="group relative overflow-hidden rounded-3xl cursor-pointer" onclick="openLightbox('/assets/showcases/acro-stone/65.png')">
-            <img src="/assets/showcases/acro-stone/65.png" alt="Acro Stone Brand Identity Design Showcase Asset 1" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
-            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
-        </div>
-    
-        <div class="group relative overflow-hidden rounded-3xl cursor-pointer" onclick="openLightbox('/assets/showcases/acro-stone/66.png')">
-            <img src="/assets/showcases/acro-stone/66.png" alt="Acro Stone Brand Identity Design Showcase Asset 2" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
-            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
-        </div>
-    
-        <div class="group relative overflow-hidden rounded-3xl cursor-pointer" onclick="openLightbox('/assets/showcases/acro-stone/67.png')">
-            <img src="/assets/showcases/acro-stone/67.png" alt="Acro Stone Brand Identity Design Showcase Asset 3" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
-            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
-        </div>
-    
-        <div class="group relative overflow-hidden rounded-3xl cursor-pointer" onclick="openLightbox('/assets/showcases/acro-stone/68.png')">
-            <img src="/assets/showcases/acro-stone/68.png" alt="Acro Stone Brand Identity Design Showcase Asset 4" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
-            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
-        </div>
-    
-        </div>
-    </main>
+    // Improve image alt attributes: alt="..." -> alt="${clientName} Creative Work Asset ..."
+    content = content.replace(/alt="([^"]*)"/g, (match, p1) => {
+        if (p1.includes('Logo') || p1.includes('Pixel')) return match;
+        const num = p1.match(/\d+/);
+        const suffix = num ? ` ${num[0]}` : '';
+        return `alt="${clientName} Brand Identity Design Showcase Asset${suffix}"`;
+    });
 
-    <!-- Footer -->
+    // Update footer with rich internal links
+    const newFooter = `<!-- Footer -->
     <footer class="py-12 border-t border-white/10 text-center text-slate-400 text-xs space-y-4">
         <div class="flex items-center justify-center gap-6 font-semibold uppercase tracking-wider">
             <a href="/" class="hover:text-cyan-400 transition-colors">Home</a>
@@ -164,32 +171,10 @@
             <a href="/#contact" class="hover:text-cyan-400 transition-colors">Contact</a>
         </div>
         <p>&copy; 2026 Iceberg Marketing Agency. All rights reserved.</p>
-    </footer>
+    </footer>`;
 
-    <!-- Lightbox Script -->
-    <div id="lightbox" class="fixed inset-0 z-[60] bg-black/95 hidden flex items-center justify-center p-4" onclick="closeLightbox()">
-        <img id="lightbox-img" src="" class="max-w-full max-h-full rounded-lg shadow-2xl">
-    </div>
+    content = content.replace(/<!-- Footer -->[\s\S]*?<\/footer>/i, newFooter);
 
-    <script>
-        lucide.createIcons();
-        
-        function openLightbox(src) {
-            const lightbox = document.getElementById('lightbox');
-            const img = document.getElementById('lightbox-img');
-            img.src = src;
-            lightbox.classList.remove('hidden');
-            gsap.fromTo(img, {scale: 0.9, opacity: 0}, {scale: 1, opacity: 1, duration: 0.3});
-        }
-
-        function closeLightbox() {
-            const lightbox = document.getElementById('lightbox');
-            lightbox.classList.add('hidden');
-        }
-
-        // Entrance Anim
-        gsap.from("h1", {y: 50, opacity: 0, duration: 1, ease: "power3.out"});
-        gsap.from(".columns-1 > div", {y: 30, opacity: 0, duration: 0.8, stagger: 0.1, delay: 0.3});
-    </script>
-</body>
-</html>
+    fs.writeFileSync(filePath, content, 'utf8');
+    console.log(`Updated showcase: ${file}`);
+});

@@ -3,15 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ghost Note | Iceberg Showcase</title>
+    <title>Ghost Note Case Study & Design Showcase | Iceberg Marketing Agency</title>
+    <meta name="description" content="Explore Iceberg Marketing Agency's brand identity, creative execution, and digital growth showcase for Ghost Note.">
+    <link rel="canonical" href="https://icebergma.com/showcase/ghost-note.html">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://icebergma.com/showcase/ghost-note.html">
+    <meta property="og:title" content="Ghost Note Case Study & Design Showcase | Iceberg Marketing Agency">
+    <meta property="og:description" content="Explore Iceberg Marketing Agency's brand identity and digital showcase for Ghost Note.">
+    <meta property="og:image" content="https://icebergma.com/assets/og-iceberg-preview.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ghost Note Case Study & Showcase | Iceberg Marketing Agency">
+    <meta name="twitter:description" content="Brand identity and creative execution for Ghost Note.">
+    <meta name="twitter:image" content="https://icebergma.com/assets/og-iceberg-preview.png">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "CreativeWork",
+          "name": "Ghost Note Brand Showcase",
+          "headline": "Ghost Note Case Study & Brand Identity Showcase",
+          "description": "Brand identity and design assets produced by Iceberg Marketing Agency for Ghost Note.",
+          "author": {
+            "@type": "Organization",
+            "name": "Iceberg Marketing Agency",
+            "url": "https://icebergma.com"
+          },
+          "url": "https://icebergma.com/showcase/ghost-note.html"
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://icebergma.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Case Studies",
+              "item": "https://icebergma.com/projects.html"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Ghost Note",
+              "item": "https://icebergma.com/showcase/ghost-note.html"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
     <script src="/meta-pixel.js" defer></script>
     <style>
         body { font-family: 'Outfit', sans-serif; background-color: #020617; color: white; }
-        .glass-nav { background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .glass-nav { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,0.08); }
     </style>
     <!-- Meta Pixel Code -->
     <script>
@@ -34,11 +102,23 @@
 <body class="antialiased">
     <!-- Nav -->
     <nav class="fixed top-0 w-full z-50 glass-nav px-6 py-4 flex justify-between items-center">
-        <a href="/parallax/index.html" class="flex items-center gap-2 group">
-            <i data-lucide="arrow-left" class="text-cyan-400 group-hover:-translate-x-1 transition-transform"></i>
-            <span class="font-bold tracking-widest uppercase text-sm">Back to Home</span>
+        <a href="/projects.html" class="flex items-center gap-2 group text-slate-300 hover:text-cyan-400 transition-colors">
+            <i data-lucide="arrow-left" class="text-cyan-400 group-hover:-translate-x-1 transition-transform w-4 h-4"></i>
+            <span class="font-bold tracking-widest uppercase text-xs">All Case Studies</span>
         </a>
-        <div class="text-xl font-black italic tracking-tighter">ICEBERG</div>
+        <a href="/" class="flex items-center gap-2 group">
+            <img src="/LOGO%20(2).png" alt="Iceberg Marketing Agency Logo" class="h-6 w-auto">
+            <span class="text-xl font-black italic tracking-tighter text-cyan-400">ICEBERG</span>
+        </a>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" class="container mx-auto px-6 pt-24 -mb-16 relative z-20 flex items-center gap-2 text-xs text-slate-400">
+        <a href="/" class="hover:text-cyan-400 transition-colors flex items-center gap-1"><i data-lucide="home" class="w-3.5 h-3.5"></i> Home</a>
+        <span class="text-slate-600">/</span>
+        <a href="/projects.html" class="hover:text-cyan-400 transition-colors">Case Studies</a>
+        <span class="text-slate-600">/</span>
+        <span class="text-white font-medium">Ghost Note</span>
     </nav>
 
     <!-- Hero -->
@@ -53,22 +133,22 @@
         <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
             
         <div class="group relative overflow-hidden rounded-3xl cursor-pointer" onclick="openLightbox('/assets/showcases/ghost-note/18.png')">
-            <img src="/assets/showcases/ghost-note/18.png" alt="Ghost Note 1" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
+            <img src="/assets/showcases/ghost-note/18.png" alt="Ghost Note Brand Identity Design Showcase Asset 1" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
             <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
         </div>
     
         <div class="group relative overflow-hidden rounded-3xl cursor-pointer" onclick="openLightbox('/assets/showcases/ghost-note/19.png')">
-            <img src="/assets/showcases/ghost-note/19.png" alt="Ghost Note 2" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
+            <img src="/assets/showcases/ghost-note/19.png" alt="Ghost Note Brand Identity Design Showcase Asset 2" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
             <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
         </div>
     
         <div class="group relative overflow-hidden rounded-3xl cursor-pointer" onclick="openLightbox('/assets/showcases/ghost-note/20.png')">
-            <img src="/assets/showcases/ghost-note/20.png" alt="Ghost Note 3" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
+            <img src="/assets/showcases/ghost-note/20.png" alt="Ghost Note Brand Identity Design Showcase Asset 3" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
             <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
         </div>
     
         <div class="group relative overflow-hidden rounded-3xl cursor-pointer" onclick="openLightbox('/assets/showcases/ghost-note/21.png')">
-            <img src="/assets/showcases/ghost-note/21.png" alt="Ghost Note 4" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
+            <img src="/assets/showcases/ghost-note/21.png" alt="Ghost Note Brand Identity Design Showcase Asset 4" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110">
             <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
         </div>
     
@@ -76,8 +156,14 @@
     </main>
 
     <!-- Footer -->
-    <footer class="py-12 border-t border-white/5 text-center text-gray-600 text-sm">
-        &copy; 2026 Iceberg Agency. All rights reserved.
+    <footer class="py-12 border-t border-white/10 text-center text-slate-400 text-xs space-y-4">
+        <div class="flex items-center justify-center gap-6 font-semibold uppercase tracking-wider">
+            <a href="/" class="hover:text-cyan-400 transition-colors">Home</a>
+            <a href="/projects.html" class="hover:text-cyan-400 transition-colors">Case Studies</a>
+            <a href="/#services" class="hover:text-cyan-400 transition-colors">Services</a>
+            <a href="/#contact" class="hover:text-cyan-400 transition-colors">Contact</a>
+        </div>
+        <p>&copy; 2026 Iceberg Marketing Agency. All rights reserved.</p>
     </footer>
 
     <!-- Lightbox Script -->

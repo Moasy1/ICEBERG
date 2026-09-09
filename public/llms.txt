@@ -1,0 +1,38 @@
+# Iceberg Marketing Agency
+
+> Depth Drives Growth. Uncovering the 90% hidden potential of brands across Egypt, the Middle East, and worldwide.
+
+## Overview
+Iceberg Marketing Agency is a premier digital marketing, custom web engineering, and brand acceleration agency based in Cairo, Egypt, serving regional and international clients across MENA, the GCC, North America, and Europe. We combine high-performance software engineering, search engine optimization (SEO), data-driven paid media buying (Meta, Google, TikTok), viral video and reel production, and brand architecture.
+
+- **Website**: https://icebergma.com
+- **Custom Domain**: https://icebergma.com
+- **Contact Email**: hello@icebergma.com
+- **HQ Location**: Cairo, Egypt (Serving MENA & Global)
+- **Primary Languages**: English, Arabic
+
+## Core Capabilities
+- **Web Development & Engineering**: Fast, secure, custom web applications and conversion-optimized websites built on modern architectures. https://icebergma.com/parallax/services/web-dev.html
+- **SEO & Search Visibility**: Technical SEO, local search dominance, semantic architecture, and content authority strategies. https://icebergma.com/parallax/services/seo.html
+- **Performance Marketing & Paid Acquisition**: High-ROAS media buying campaigns across Meta (Facebook/Instagram), Google Ads, and TikTok Ads. https://icebergma.com/parallax/services/performance.html
+- **Social Media Management**: Community engagement, viral creative campaigns, and content calendars. https://icebergma.com/parallax/services/social-media.html
+- **Brand Identity & Strategy**: Visual identities, brand positioning, logos, design systems, and guidelines. https://icebergma.com/parallax/services/branding.html
+- **Videography & Reel Creation**: High-impact commercial video production, viral short-form reels, and motion design. https://icebergma.com/parallax/services/videography-reel-creation.html
+- **IDEX Exhibition Lead Funnels**: Dedicated B2B lead capture, automated WhatsApp/CRM flows, and VIP booth pre-booking for medical and dental conferences. https://icebergma.com/idex
+
+## Featured Client Case Studies
+- **Crown Eterna**: Premium brand identity, packaging, and commercial videography. https://icebergma.com/showcase/crown-eterna.html
+- **Dentaquick**: Specialized dental supply eCommerce and marketing engine. https://icebergma.com/showcase/dentaquick.html
+- **The Drum Shop Egypt**: Niche musical instrument eCommerce and social engagement. https://icebergma.com/showcase/drum-shop-egypt.html
+- **FMS Coffee**: Specialty coffee branding, packaging, and digital foot-traffic campaigns. https://icebergma.com/showcase/fms.html
+- **Ghost Note**: Music academy and recording studio identity and student recruitment funnels. https://icebergma.com/showcase/ghost-note.html
+- **Lazy Pajama**: Apparel eCommerce social media and performance marketing scaling. https://icebergma.com/showcase/lazy-pajama.html
+- **Penates Developments**: Real estate brand architecture and premium lead acquisition. https://icebergma.com/showcase/penates-real-estate-devlopment.html
+- **Waterpik**: Medical device distribution visibility and paid acquisition. https://icebergma.com/showcase/waterpik.html
+
+## Key URLs
+- Home: https://icebergma.com/
+- Case Studies & Portfolio: https://icebergma.com/projects.html
+- Birthday Special Offers: https://icebergma.com/birthday-campaign
+- IDEX Event Plan: https://icebergma.com/idex
+- Sitemap: https://icebergma.com/sitemap.xml

@@ -3,16 +3,35 @@
   "cleanUrls": true,
   "buildCommand": "npm run build",
   "outputDirectory": "public",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
+      "source": "/(robots.txt|sitemap.xml|llms.txt|favicon.svg|site.webmanifest)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400" }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/api", "destination": "/api" },
     { "source": "/iams/(.*)", "destination": "/api" },
+    { "source": "/projects", "destination": "/projects.html" },
     { "source": "/parallax", "destination": "/parallax/index.html" },
     { "source": "/birthday-campaign", "destination": "/birthday-campaign.html" },
     { "source": "/admin", "destination": "/admin/index.html" },
     { "source": "/idex/thank-you", "destination": "/idex-thank-you.html" },
     { "source": "/idex", "destination": "/idex.html" },
     { "source": "/idex/audit", "destination": "/idex.html" },
-    { "source": "/idex/book", "destination": "/idex.html" }
+    { "source": "/idex/book", "destination": "/idex.html" },
+    { "source": "/404", "destination": "/404.html" }
   ]
 }

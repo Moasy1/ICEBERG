@@ -1,0 +1,22 @@
+# robots.txt for Iceberg Marketing Agency (https://icebergma.com)
+User-agent: *
+Allow: /
+Allow: /projects.html
+Allow: /birthday-campaign
+Allow: /idex
+Allow: /parallax/services/
+Allow: /showcase/
+Allow: /sitemap.xml
+Allow: /llms.txt
+
+# Disallow administrative and internal endpoints
+Disallow: /admin/
+Disallow: /api/
+Disallow: /iams/
+Disallow: /scratch/
+
+# Crawl delay
+Crawl-delay: 1
+
+# Sitemap declaration
+Sitemap: https://icebergma.com/sitemap.xml

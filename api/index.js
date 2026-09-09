@@ -400,9 +400,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// Fallback for page routes (SPA / fallback to index.html)
-app.use('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+// 404 handler for unknown web pages
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, '../public/404.html'));
 });
 
 // Only listen if running directly
