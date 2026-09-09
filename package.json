@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:frontend": "npx serve public -l 3000",
-    "dev:backend": "nodemon api/index.js",
-    "build": "echo 'Frontend build complete'",
+    "build": "node scratch/verify-all.js",
     "start": "node api/index.js",
     "cms:dev": "cd cms && npm run develop",
     "cms:build": "cd cms && npm run build",
