@@ -125,7 +125,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M12 8V4H8"/></svg>
                 </div>
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl px-4.5 py-3 text-gray-200 leading-relaxed shadow-lg">
-                    Hello! I'm the Iceberg AI Strategist. 🧊 Let's help your business scale! Would you like to check out our services, or explore our limited-time **Birthday Campaign** deals?
+                    Hello! I'm the Iceberg AI Strategist. 🧊 Let's help your business scale! Would you like to explore our core services, review case studies, or book a 1-on-1 strategy call?
                 </div>
             </div>
         </div>
@@ -137,14 +137,11 @@
                 <button data-val="Schedule a strategy meeting" class="chip-btn text-[10px] bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 px-3 py-1.5 rounded-full text-cyan-200 font-bold transition-all">
                     📅 Schedule Strategy Call
                 </button>
-                <button data-val="Tell me about the Birthday Bundle!" class="chip-btn text-[10px] bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 px-3 py-1.5 rounded-full text-cyan-300 font-bold transition-all">
-                    🎉 Purchase 3 + 1 Deal
+                <button data-val="What services do you offer?" class="chip-btn text-[10px] bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 px-3 py-1.5 rounded-full text-cyan-300 font-bold transition-all">
+                    🔍 Explore Solutions
                 </button>
-                <button data-val="Claim August Born Service" class="chip-btn text-[10px] bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 px-3 py-1.5 rounded-full text-purple-300 font-bold transition-all">
-                    👑 August Kings Freebie
-                </button>
-                <button data-val="What services do you offer?" class="chip-btn text-[10px] bg-slate-800 hover:bg-slate-700 border border-white/10 px-3 py-1.5 rounded-full text-slate-300 font-bold transition-all">
-                    Explore Solutions
+                <button data-val="Show me case studies and work" class="chip-btn text-[10px] bg-slate-800 hover:bg-slate-700 border border-white/10 px-3 py-1.5 rounded-full text-slate-300 font-bold transition-all">
+                    🏆 View Case Studies
                 </button>
             </div>
             <!-- Input Row -->
@@ -270,11 +267,8 @@
                 leadData.isBooking = true;
                 leadData.topic = text;
                 appendBotMsg(`I would be thrilled to schedule a strategy meeting with our team! 📅 To lock in your session, what is your full name?`);
-            } else if (input.includes('birthday') || input.includes('bundle') || input.includes('claim') || input.includes('3+1') || input.includes('kings') || input.includes('august')) {
-                chatState = 'expecting_name';
-                leadData.isBooking = false;
-                leadData.topic = text;
-                appendBotMsg(`I'd love to help you secure our Special Birthday Campaign offer! To get you qualified and registered, what is your full name?`);
+            } else if (input.includes('case') || input.includes('study') || input.includes('portfolio') || input.includes('work') || input.includes('showcase')) {
+                appendBotMsg(`Check out our featured client showcases on our <a href="/projects.html" class="text-cyan-400 underline font-semibold">Case Studies page</a>, including Crown Eterna, Dentaquick, Lazy Pajama, and more! Type **'schedule'** to discuss a custom build.`);
             } else if (input.includes('services') || input.includes('offer') || input.includes('solutions')) {
                 appendBotMsg(`We provide state-of-the-art marketing services:<br>
                 - 🖥️ <strong>Web Development</strong> (custom corporate platforms)<br>
@@ -283,9 +277,9 @@
                 - 🎯 <strong>Performance Marketing</strong> (high ROI paid advertising)<br>
                 - 🎨 <strong>Branding & Design</strong> (consistent identity layouts)<br>
                 - 🎥 <strong>Content Creation</strong> (scroll-stopping videography)<br><br>
-                Type **'schedule'** to book a strategy call, or **'bundle'** to claim our Birthday Deal!`);
+                Type **'schedule'** to book a strategy call!`);
             } else {
-                appendBotMsg(`I'm an automated strategic assistant. I can guide you through our services or book 1-on-1 strategy calls! Type **'schedule'** to book a meeting or **'bundle'** to claim our current promotion.`);
+                appendBotMsg(`I'm an automated strategic assistant. I can guide you through our services or book 1-on-1 strategy calls! Type **'schedule'** to book a meeting or ask about any of our services.`);
             }
         }, 1000);
     }

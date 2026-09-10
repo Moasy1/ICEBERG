@@ -33,6 +33,5 @@ Iceberg Marketing Agency is a premier digital marketing, custom web engineering,
 ## Key URLs
 - Home: https://icebergma.com/
 - Case Studies & Portfolio: https://icebergma.com/projects.html
-- Birthday Special Offers: https://icebergma.com/birthday-campaign
 - IDEX Event Plan: https://icebergma.com/idex
 - Sitemap: https://icebergma.com/sitemap.xml

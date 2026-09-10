@@ -20,13 +20,15 @@
       ]
     }
   ],
+  "redirects": [
+    { "source": "/birthday-campaign(.*)", "destination": "/", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/api", "destination": "/api" },
     { "source": "/iams/(.*)", "destination": "/api" },
     { "source": "/projects", "destination": "/projects.html" },
     { "source": "/parallax", "destination": "/parallax/index.html" },
-    { "source": "/birthday-campaign", "destination": "/birthday-campaign.html" },
     { "source": "/admin", "destination": "/admin/index.html" },
     { "source": "/idex/thank-you", "destination": "/idex-thank-you.html" },
     { "source": "/idex", "destination": "/idex.html" },

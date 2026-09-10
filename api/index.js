@@ -74,8 +74,13 @@ app.get(['/api/debug-routes', '/debug-routes'], (req, res) => {
   });
 });
 
+// Redirect retired campaign URLs to home
+app.get(['/birthday-campaign', '/birthday-campaign.html'], (req, res) => {
+  res.redirect(302, '/');
+});
+
 // Serve static files before API database middleware so the site can load even if
-// the database is temporarily unavailable. Supports clean HTML URLs (e.g. /birthday-campaign -> birthday-campaign.html).
+// the database is temporarily unavailable.
 app.use(express.static(path.join(__dirname, '../public'), {
   extensions: ['html', 'htm'],
   index: 'index.html'

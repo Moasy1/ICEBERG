@@ -2,7 +2,6 @@
 User-agent: *
 Allow: /
 Allow: /projects.html
-Allow: /birthday-campaign
 Allow: /idex
 Allow: /parallax/services/
 Allow: /showcase/
