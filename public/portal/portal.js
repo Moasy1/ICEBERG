@@ -13,6 +13,7 @@ const PortalApp = (() => {
   let activeReviewTaskId = null;
   let activeAddonSlug = null;
   let cachedAddons = [];
+  let chatPollTimer = null;
 
   // ── API HELPER ─────────────────────────────────────────────────────────────
   async function apiFetch(endpoint, options = {}) {
@@ -162,6 +163,10 @@ const PortalApp = (() => {
   }
 
   function logout(showNotice = true) {
+    if (chatPollTimer) {
+      clearInterval(chatPollTimer);
+      chatPollTimer = null;
+    }
     authToken = null;
     localStorage.removeItem('iceberg_client_token');
     currentProject = null;
@@ -189,6 +194,12 @@ const PortalApp = (() => {
   // ── TAB NAVIGATION ─────────────────────────────────────────────────────────
   function switchTab(tabName) {
     activeTab = tabName;
+
+    // Clear background chat polling if leaving chat
+    if (chatPollTimer) {
+      clearInterval(chatPollTimer);
+      chatPollTimer = null;
+    }
 
     // Update active tab button styles
     document.querySelectorAll('.nav-tab-btn').forEach(btn => {
@@ -219,7 +230,11 @@ const PortalApp = (() => {
     if (tabName === 'brief') loadBrief();
     if (tabName === 'checklists') loadChecklists();
     if (tabName === 'addons') loadAddons();
-    if (tabName === 'messages') loadMessages();
+    if (tabName === 'messages') {
+      loadMessages();
+      // Auto-poll every 3.5 seconds while viewing Team Stream
+      chatPollTimer = setInterval(loadMessages, 3500);
+    }
 
     if (window.lucide) window.lucide.createIcons();
   }
@@ -567,7 +582,13 @@ const PortalApp = (() => {
   }
 
   function escapeHtml(str) {
-    return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
   // ── DELIVERABLE REVIEW MODALS ──────────────────────────────────────────────
@@ -765,7 +786,9 @@ const PortalApp = (() => {
     const container = document.getElementById('project-chat-stream');
     if (!container) return;
 
-    if (!res.success || !res.messages || res.messages.length === 0) {
+    const msgs = res.messages || res.data || [];
+
+    if (!res.success || !Array.isArray(msgs) || msgs.length === 0) {
       container.innerHTML = `
         <div class="text-center py-12 text-slate-500 text-xs">
           <i data-lucide="message-square" class="w-8 h-8 text-slate-600 mx-auto mb-2"></i>
@@ -776,31 +799,36 @@ const PortalApp = (() => {
       return;
     }
 
-    container.innerHTML = res.messages.map(m => {
+    const isFirstLoad = container.children.length <= 1;
+    const wasNearBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 80;
+
+    container.innerHTML = msgs.map(m => {
       const isClientSender = m.sender?.role === 'ClientGuest' || m.sender?.user_id === currentUser?.user_id;
 
       return `
         <div class="flex flex-col ${isClientSender ? 'items-end' : 'items-start'}">
           <div class="flex items-center gap-2 mb-1">
             <span class="text-[11px] font-bold ${isClientSender ? 'text-cyan-400' : 'text-purple-400'}">
-              ${m.sender?.full_name || 'Team Member'}
+              ${escapeHtml(m.sender?.full_name || 'Team Member')}
             </span>
             <span class="text-[10px] text-slate-500">
-              ${new Date(m.created_at || m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              ${new Date(m.created_at || m.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
-          <div class="max-w-md p-3 rounded-2xl text-xs ${
+          <div class="max-w-md p-3 rounded-2xl text-xs leading-relaxed ${
             isClientSender 
-              ? 'bg-cyan-500/15 border border-cyan-500/30 text-cyan-100 rounded-tr-none' 
-              : 'bg-slate-900 border border-slate-700/80 text-slate-200 rounded-tl-none'
+              ? 'bg-cyan-500/15 border border-cyan-500/30 text-cyan-100 rounded-tr-none shadow-sm shadow-cyan-950/20' 
+              : 'bg-slate-900 border border-slate-700/80 text-slate-200 rounded-tl-none shadow-sm'
           }">
-            ${m.text}
+            ${escapeHtml(m.text)}
           </div>
         </div>
       `;
     }).join('');
 
-    container.scrollTop = container.scrollHeight;
+    if (isFirstLoad || wasNearBottom) {
+      container.scrollTop = container.scrollHeight;
+    }
     if (window.lucide) window.lucide.createIcons();
   }
 

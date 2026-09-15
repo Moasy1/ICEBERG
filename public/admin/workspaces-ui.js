@@ -989,6 +989,11 @@ async function loadCurrentToolContent() {
   const activePanel = document.getElementById(`upbase-panel-${tool}`);
   if (activePanel) activePanel.classList.remove('hidden');
 
+  if (window._adminChatPollTimer) {
+    clearInterval(window._adminChatPollTimer);
+    window._adminChatPollTimer = null;
+  }
+
   if (tool === 'kanban' || tool === 'tasks') {
     await loadWorkspaceTasks();
   } else if (tool === 'messages') {
@@ -999,6 +1004,8 @@ async function loadCurrentToolContent() {
     await loadProjectBookmarks();
   } else if (tool === 'chat') {
     await loadProjectChat();
+    // Auto-poll project chat stream every 3.5s for real-time sync with client portal
+    window._adminChatPollTimer = setInterval(loadProjectChat, 3500);
   }
 }
 
@@ -3758,6 +3765,7 @@ async function addProjectBookmark(e) {
 async function loadProjectChat() {
   const wsId = window.WorkspacesState.currentWorkspaceId;
   const prjId = window.WorkspacesState.currentProjectId;
+  if (!prjId) return;
 
   try {
     const res = await fetch(`/api/iams/chat/messages?project_id=${prjId}`, {
@@ -3768,17 +3776,24 @@ async function loadProjectChat() {
     });
     if (res.ok) {
       const result = await res.json();
-      if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-        window.WorkspacesState.chatMessages = result.data;
+      const msgs = result.data || result.messages || [];
+      if (result.success && Array.isArray(msgs) && msgs.length > 0) {
+        window.WorkspacesState.chatMessages = msgs;
       } else {
-        window.WorkspacesState.chatMessages = [...DEFAULT_FALLBACK_CHAT];
+        if (!window.WorkspacesState.chatMessages || window.WorkspacesState.chatMessages.length === 0) {
+          window.WorkspacesState.chatMessages = [...DEFAULT_FALLBACK_CHAT];
+        }
       }
     } else {
-      window.WorkspacesState.chatMessages = [...DEFAULT_FALLBACK_CHAT];
+      if (!window.WorkspacesState.chatMessages || window.WorkspacesState.chatMessages.length === 0) {
+        window.WorkspacesState.chatMessages = [...DEFAULT_FALLBACK_CHAT];
+      }
     }
   } catch (e) {
     console.warn('Using offline fallback chat messages:', e);
-    window.WorkspacesState.chatMessages = [...DEFAULT_FALLBACK_CHAT];
+    if (!window.WorkspacesState.chatMessages || window.WorkspacesState.chatMessages.length === 0) {
+      window.WorkspacesState.chatMessages = [...DEFAULT_FALLBACK_CHAT];
+    }
   }
   renderChatStream();
 }
@@ -3787,23 +3802,31 @@ function renderChatStream() {
   const container = document.getElementById('upbase-chat-stream');
   if (!container) return;
 
-  const msgs = window.WorkspacesState.chatMessages;
+  const msgs = window.WorkspacesState.chatMessages || [];
   if (msgs.length === 0) {
     container.innerHTML = `<div class="text-xs text-slate-500 py-6 text-center">No chat messages yet in this project channel.</div>`;
     return;
   }
 
-  container.innerHTML = msgs.map(m => `
+  const wasNearBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 80;
+
+  container.innerHTML = msgs.map(m => {
+    const isClient = m.sender?.role === 'ClientGuest' || (m.sender?.full_name || '').toLowerCase().includes('client');
+    const senderName = m.sender?.full_name || 'Team Member';
+    const initials = senderName.substring(0, 2).toUpperCase();
+
+    return `
     <div class="flex items-start gap-3 group">
-      <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-xs text-white shrink-0 shadow-sm">
-        ${escapeHtml(m.sender?.full_name ? m.sender.full_name.substring(0, 2).toUpperCase() : 'US')}
+      <div class="w-8 h-8 rounded-xl ${isClient ? 'bg-gradient-to-br from-emerald-400 to-cyan-500' : 'bg-gradient-to-br from-cyan-500 to-blue-600'} flex items-center justify-center font-bold text-xs text-slate-950 font-display shrink-0 shadow-sm">
+        ${escapeHtml(initials)}
       </div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-1">
-          <span class="text-xs font-bold text-slate-200">${escapeHtml(m.sender?.full_name || 'Team Member')}</span>
-          <span class="text-[10px] text-slate-500 font-mono">${new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+          <span class="text-xs font-bold text-slate-200">${escapeHtml(senderName)}</span>
+          ${isClient ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">Client</span>` : ''}
+          <span class="text-[10px] text-slate-500 font-mono">${new Date(m.created_at || m.createdAt || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
         </div>
-        <div class="text-xs text-slate-300 bg-slate-900/80 p-3 rounded-2xl border border-slate-800/80 inline-block max-w-xl">
+        <div class="text-xs ${isClient ? 'text-cyan-100 bg-cyan-950/40 border border-cyan-500/30' : 'text-slate-300 bg-slate-900/80 border border-slate-800/80'} p-3 rounded-2xl inline-block max-w-xl shadow-sm">
           ${escapeHtml(m.text)}
         </div>
         <div class="flex items-center gap-1.5 mt-1.5">
@@ -3818,9 +3841,12 @@ function renderChatStream() {
         </div>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 
-  container.scrollTop = container.scrollHeight;
+  if (wasNearBottom || msgs.length <= 2) {
+    container.scrollTop = container.scrollHeight;
+  }
 }
 
 // Send chat message
@@ -3848,6 +3874,11 @@ async function sendChatMessage(e) {
     const result = await res.json();
     if (result.success) {
       input.value = '';
+      if (window.WorkspacesState.chatMessages && 
+          window.WorkspacesState.chatMessages.length === 1 && 
+          window.WorkspacesState.chatMessages[0].message_id === 'msg_1') {
+        window.WorkspacesState.chatMessages = [];
+      }
       window.WorkspacesState.chatMessages.push(result.data);
       renderChatStream();
     }

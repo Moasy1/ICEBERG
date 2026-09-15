@@ -447,16 +447,37 @@ window.IAMS = (function() {
     if (window.lucide) window.lucide.createIcons();
 
     // Fetch existing users and client projects
-    const [usersRes, projectsRes] = await Promise.all([
+    // Fetch existing users, account projects, and workspace projects
+    const [usersRes, projectsRes, wsProjectsRes] = await Promise.all([
       apiFetch('/api/iams/client-portal/admin/users'),
-      apiFetch(`/api/iams/projects?client_id=${clientId}`)
+      apiFetch(`/api/iams/projects?client_id=${clientId}`),
+      apiFetch('/api/iams/workspaces/ws_iceberg_master/projects')
     ]);
 
     const users = usersRes.success ? (usersRes.users || []).filter(u => u.assigned_client_id === clientId) : [];
-    const projects = projectsRes.success ? (projectsRes.projects || []) : [];
+    const accountProjects = projectsRes.success ? (projectsRes.projects || []) : [];
+    const wsProjects = wsProjectsRes.success ? (wsProjectsRes.data || []) : [];
 
     const defaultSlug = (companyName || 'client').toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 15);
     const suggestedUsername = `client_${defaultSlug}`;
+
+    // Combine projects list
+    const combinedProjects = [];
+    accountProjects.forEach(p => combinedProjects.push({ project_id: p.project_id, title: p.title || p.name, source: 'Account Project' }));
+    wsProjects.forEach(p => {
+      // Check if already in list
+      if (!combinedProjects.some(cp => cp.project_id === p.project_id)) {
+        combinedProjects.push({ project_id: p.project_id, title: p.name, source: 'Workspace Sprint' });
+      }
+    });
+
+    // Auto-detect matching project for this client
+    const cleanCompany = (companyName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const matchedPrj = combinedProjects.find(p => {
+      const cleanTitle = p.title.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const cleanId = p.project_id.toLowerCase().replace(/[^a-z0-9]/g, '');
+      return cleanCompany.includes(cleanId.replace('prj', '')) || cleanTitle.includes(cleanCompany.substring(0, 5));
+    });
 
     const bodyContent = document.getElementById('cam-body-content');
     if (!bodyContent) return;
@@ -472,7 +493,7 @@ window.IAMS = (function() {
               <div>
                 <span class="font-bold text-white">@${u.username}</span>
                 <span class="text-slate-500 text-[11px]">(${u.email})</span>
-                <div class="text-[10px] text-slate-400 mt-0.5">Project ID: <span class="font-mono text-cyan-300">${u.assigned_project_id || 'Global'}</span></div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Assigned Project: <span class="font-mono text-cyan-300 font-bold">${u.assigned_project_id || 'Global'}</span></div>
               </div>
               <div class="flex items-center gap-2 shrink-0">
                 <a href="/portal" target="_blank" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-semibold transition flex items-center gap-1">
@@ -508,11 +529,12 @@ window.IAMS = (function() {
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-slate-400 mb-1">Assigned Operational Project</label>
+          <label class="block text-[11px] font-semibold text-slate-400 mb-1">Assigned Operational Project (Chat & Deliverables Link)</label>
           <select id="cam-project-id" required class="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white">
-            ${projects.length > 0 ? projects.map(p => `
-              <option value="${p.project_id}">${p.title} (${p.service_category || 'Active'})</option>
-            `).join('') : `
+            ${combinedProjects.length > 0 ? combinedProjects.map(p => {
+              const isSelected = matchedPrj && matchedPrj.project_id === p.project_id;
+              return `<option value="${p.project_id}" ${isSelected ? 'selected' : ''}>${p.title} [${p.source}] (${p.project_id})</option>`;
+            }).join('') : `
               <option value="prj_${defaultSlug}_main">Main Retainer Project (${defaultSlug})</option>
             `}
           </select>
