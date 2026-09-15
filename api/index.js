@@ -164,6 +164,7 @@ const iamsAuditRoutes = require('../lib/routes/iams/audit');
 const iamsBehaviorRoutes = require('../lib/routes/iams/behavior');
 const iamsDatabaseRoutes = require('../lib/routes/iams/database');
 const iamsOpportunitiesRoutes = require('../lib/routes/iams/opportunities');
+const iamsClientPortalRoutes = require('../lib/routes/iams/clientPortal');
 
 // Helper to mount routes on both /api/path and /path (handles Vercel rewrite variations)
 const mountRoute = (routePath, handler) => {
@@ -200,6 +201,7 @@ mountRoute('/iams/audit', iamsAuditRoutes);
 mountRoute('/iams/behavior', iamsBehaviorRoutes);
 mountRoute('/iams/database', iamsDatabaseRoutes);
 mountRoute('/iams/opportunities', iamsOpportunitiesRoutes);
+mountRoute('/iams/client-portal', iamsClientPortalRoutes);
 
 // IAMS Health Check Handlers
 const iamsHealthHandler = (req, res) => {
@@ -341,6 +343,9 @@ app.get(['/api/idex/data', '/idex/data'], (req, res) => {
 });
 
 // Page Route Clean Rewrites
+app.get(['/portal*', '/client*'], (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/portal/index.html'));
+});
 app.get('/admin*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/index.html'));
 });

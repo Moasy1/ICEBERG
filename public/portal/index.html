@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ICEBERG Agency — Client Project Suite & Portal</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            space: {
+              950: '#070b14',
+              900: '#0a0f1d',
+              800: '#0f172a',
+              700: '#1e293b'
+            },
+            iceberg: {
+              50: '#f0fdfa',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/portal/portal.css">
+</head>
+<body class="bg-space-950 text-slate-100 min-h-screen flex flex-col selection:bg-cyan-500 selection:text-slate-950">
+
+  <!-- ======================================================================== -->
+  <!-- 1. AUTHENTICATION VIEW (Visible when not logged in)                       -->
+  <!-- ======================================================================== -->
+  <div id="auth-view" class="flex-1 flex items-center justify-center p-4 sm:p-6 my-auto">
+    <div class="w-full max-w-md">
+      <!-- Logo & Welcome -->
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center p-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 mb-4 shadow-lg shadow-cyan-500/10">
+          <i data-lucide="layers" class="w-8 h-8 text-cyan-400"></i>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-display">
+          ICEBERG <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">CLIENT SUITE</span>
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-400 mt-2">
+          Secure, authenticated project workspace and deliverable command center.
+        </p>
+      </div>
+
+      <!-- Login Card -->
+      <div class="glass-panel p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute -top-16 -right-16 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+        <form id="client-login-form" onsubmit="PortalApp.handleLogin(event)" class="space-y-5">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5" for="login-username">
+              Client Username / Account ID
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500 pointer-events-none">
+                <i data-lucide="user" class="w-4 h-4"></i>
+              </span>
+              <input type="text" id="login-username" required autocomplete="username"
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition"
+                placeholder="e.g. brand_alpha">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5" for="login-password">
+              Secure Project Password
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500 pointer-events-none">
+                <i data-lucide="lock" class="w-4 h-4"></i>
+              </span>
+              <input type="password" id="login-password" required autocomplete="current-password"
+                class="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition"
+                placeholder="••••••••••••">
+              <button type="button" onclick="PortalApp.togglePasswordVisibility()" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-500 hover:text-slate-300 transition">
+                <i data-lucide="eye" id="pwd-toggle-icon" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <div id="login-error-msg" class="hidden p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+            <span id="login-error-text">Invalid username or password.</span>
+          </div>
+
+          <button type="submit" id="login-submit-btn" class="w-full py-3 rounded-xl btn-cyan text-slate-950 font-bold text-sm flex items-center justify-center gap-2">
+            <span>Sign In to Project</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </form>
+
+        <div class="mt-6 pt-5 border-t border-slate-800 text-center">
+          <p class="text-xs text-slate-400">
+            Assigned project credentials are provided by your Iceberg Account Director. Need access?
+            <a href="mailto:accounts@icebergma.com" class="text-cyan-400 hover:underline">Contact Desk</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================== -->
+  <!-- 2. PORTAL MAIN APPLICATION (Visible after login)                         -->
+  <!-- ======================================================================== -->
+  <div id="portal-main-view" class="hidden flex-1 flex flex-col min-h-screen">
+    
+    <!-- Top Global Header -->
+    <header class="sticky top-0 z-40 bg-space-950/85 backdrop-blur-xl border-b border-slate-800/80 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-4 sm:gap-6">
+        <!-- Logo -->
+        <a href="/portal" class="flex items-center gap-2.5">
+          <div class="p-2 rounded-xl bg-cyan-500/15 border border-cyan-500/40">
+            <i data-lucide="layers" class="w-5 h-5 text-cyan-400"></i>
+          </div>
+          <div>
+            <div class="text-sm font-extrabold tracking-wider font-display text-white flex items-center gap-1.5">
+              ICEBERG <span class="text-cyan-400 text-xs px-1.5 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/30">CLIENT SUITE</span>
+            </div>
+            <div id="hdr-company-name" class="text-xs text-slate-400 font-medium truncate max-w-[160px] sm:max-w-xs">
+              Loading client...
+            </div>
+          </div>
+        </a>
+
+        <!-- Project Badge -->
+        <div class="hidden md:flex items-center gap-2 pl-4 border-l border-slate-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+          <span id="hdr-project-title" class="text-xs font-semibold text-slate-200">
+            Active Project
+          </span>
+          <span id="hdr-project-category" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full badge-cyan">
+            Category
+          </span>
+        </div>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Client User Pill -->
+        <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800">
+          <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-xs text-slate-950 font-display">
+            <span id="hdr-avatar-init">C</span>
+          </div>
+          <div class="hidden sm:block text-left">
+            <div id="hdr-user-fullname" class="text-xs font-bold text-slate-200 leading-tight">Client</div>
+            <div id="hdr-user-username" class="text-[10px] text-slate-400">@user</div>
+          </div>
+        </div>
+
+        <!-- Logout Button -->
+        <button onclick="PortalApp.logout()" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-rose-400 transition" title="Sign Out">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Sub-Header Navigation Tabs -->
+    <nav class="bg-space-900/60 border-b border-slate-800/60 px-4 sm:px-8 overflow-x-auto scrollbar-none">
+      <div class="flex items-center gap-2 min-w-max">
+        <button onclick="PortalApp.switchTab('overview')" id="tab-btn-overview" class="nav-tab-btn active px-4 py-3 text-xs sm:text-sm font-semibold flex items-center gap-2 transition rounded-t-lg">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Overview</span>
+        </button>
+        <button onclick="PortalApp.switchTab('brief')" id="tab-btn-brief" class="nav-tab-btn px-4 py-3 text-xs sm:text-sm font-semibold flex items-center gap-2 transition rounded-t-lg text-slate-400 hover:text-slate-200">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Onboarding Brief</span>
+          <span id="tab-brief-badge" class="px-1.5 py-0.2 rounded-full text-[10px] badge-cyan">0%</span>
+        </button>
+        <button onclick="PortalApp.switchTab('checklists')" id="tab-btn-checklists" class="nav-tab-btn px-4 py-3 text-xs sm:text-sm font-semibold flex items-center gap-2 transition rounded-t-lg text-slate-400 hover:text-slate-200">
+          <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+          <span>Checklists & Approvals</span>
+          <span id="tab-pending-badge" class="hidden px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30">0</span>
+        </button>
+        <button onclick="PortalApp.switchTab('addons')" id="tab-btn-addons" class="nav-tab-btn px-4 py-3 text-xs sm:text-sm font-semibold flex items-center gap-2 transition rounded-t-lg text-slate-400 hover:text-slate-200">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>Add-on Services</span>
+          <span class="px-1.5 py-0.2 rounded-full text-[10px] badge-purple">Catalog</span>
+        </button>
+        <button onclick="PortalApp.switchTab('messages')" id="tab-btn-messages" class="nav-tab-btn px-4 py-3 text-xs sm:text-sm font-semibold flex items-center gap-2 transition rounded-t-lg text-slate-400 hover:text-slate-200">
+          <i data-lucide="message-square" class="w-4 h-4"></i>
+          <span>Team Stream</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8">
+
+      <!-- ==================================================================== -->
+      <!-- TAB 1: OVERVIEW DASHBOARD                                            -->
+      <!-- ==================================================================== -->
+      <section id="tab-view-overview" class="space-y-6">
+        
+        <!-- Hero Project Banner -->
+        <div class="glass-panel p-6 sm:p-8 relative overflow-hidden border-cyan-500/30">
+          <div class="absolute -right-20 -top-20 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+            <div class="space-y-2 max-w-2xl">
+              <div class="flex flex-wrap items-center gap-2.5">
+                <span id="ov-category-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold badge-cyan">BRANDING & GROWTH</span>
+                <span id="ov-status-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold badge-emerald">ACTIVE SPRINT</span>
+                <span id="ov-days-left" class="text-xs text-slate-400 flex items-center gap-1">
+                  <i data-lucide="clock" class="w-3.5 h-3.5 text-cyan-400"></i>
+                  <span>14 Days to Target Launch</span>
+                </span>
+              </div>
+              <h2 id="ov-project-title" class="text-2xl sm:text-3xl font-extrabold font-display text-white tracking-tight">
+                Project Dashboard
+              </h2>
+              <p id="ov-project-desc" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Welcome to your dedicated Iceberg project command center. Track sprint milestones, approve creative deliverables, review your onboarding brief, and apply for high-velocity add-on services.
+              </p>
+            </div>
+
+            <!-- Overall Progress Widget -->
+            <div class="glass-panel p-5 min-w-[240px] bg-slate-900/90 border-slate-700/60 shrink-0">
+              <div class="flex items-center justify-between text-xs mb-2">
+                <span class="text-slate-400 font-semibold uppercase tracking-wider">Overall Velocity</span>
+                <span id="ov-progress-pct" class="text-base font-extrabold font-display text-cyan-400">0%</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                <div id="ov-progress-bar" class="progress-bar-glow h-full rounded-full transition-all duration-700" style="width: 0%"></div>
+              </div>
+              <div class="flex items-center justify-between text-[11px] text-slate-400 mt-2">
+                <span id="ov-completed-count">0 of 0 items done</span>
+                <span class="text-emerald-400 font-medium">On Schedule</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project Quick Links Bar -->
+          <div id="ov-links-bar" class="mt-6 pt-5 border-t border-slate-800/80 flex flex-wrap items-center gap-3">
+            <span class="text-xs text-slate-400 font-semibold flex items-center gap-1.5 mr-2">
+              <i data-lucide="link" class="w-3.5 h-3.5 text-slate-500"></i> Project Hubs:
+            </span>
+            <a id="link-staging" href="#" target="_blank" class="hidden px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 text-xs font-medium text-cyan-300 border border-slate-700/60 flex items-center gap-1.5 transition">
+              <i data-lucide="globe" class="w-3.5 h-3.5"></i> Staging Preview
+            </a>
+            <a id="link-figma" href="#" target="_blank" class="hidden px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 text-xs font-medium text-purple-300 border border-slate-700/60 flex items-center gap-1.5 transition">
+              <i data-lucide="figma" class="w-3.5 h-3.5"></i> Figma Workspace
+            </a>
+            <a id="link-drive" href="#" target="_blank" class="hidden px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 text-xs font-medium text-amber-300 border border-slate-700/60 flex items-center gap-1.5 transition">
+              <i data-lucide="folder" class="w-3.5 h-3.5"></i> Shared Drive Assets
+            </a>
+            <button onclick="PortalApp.switchTab('brief')" class="px-3 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-xs font-semibold text-cyan-300 border border-cyan-500/30 flex items-center gap-1.5 transition">
+              <i data-lucide="file-edit" class="w-3.5 h-3.5"></i> Edit Brand Brief
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Metric Cards Grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="glass-panel p-4 flex items-center gap-3.5">
+            <div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+              <i data-lucide="check-square" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div id="stat-completed-num" class="text-xl font-extrabold font-display text-white">0</div>
+              <div class="text-xs text-slate-400 font-medium">Deliverables Signed Off</div>
+            </div>
+          </div>
+
+          <div class="glass-panel p-4 flex items-center gap-3.5">
+            <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+              <i data-lucide="eye" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div id="stat-pending-num" class="text-xl font-extrabold font-display text-amber-400">0</div>
+              <div class="text-xs text-slate-400 font-medium">Awaiting Client Review</div>
+            </div>
+          </div>
+
+          <div class="glass-panel p-4 flex items-center gap-3.5">
+            <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
+              <i data-lucide="file-check-2" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div id="stat-brief-score" class="text-xl font-extrabold font-display text-purple-400">0%</div>
+              <div class="text-xs text-slate-400 font-medium">Onboarding Brief Complete</div>
+            </div>
+          </div>
+
+          <div class="glass-panel p-4 flex items-center gap-3.5">
+            <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+              <i data-lucide="shield-check" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div id="stat-health" class="text-base font-extrabold font-display text-emerald-400">100% HEALTHY</div>
+              <div class="text-xs text-slate-400 font-medium">Agency SLA Guaranteed</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-Column Split: Assigned Team & Recent Deliverable Assets -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- Column A: Assigned Agency Team -->
+          <div class="glass-panel p-6 space-y-5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 font-display flex items-center gap-2">
+                <i data-lucide="users" class="w-4 h-4 text-cyan-400"></i> Dedicated Agency Team
+              </h3>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full badge-cyan">Iceberg Core</span>
+            </div>
+
+            <!-- Account Manager Card -->
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center font-bold text-cyan-400 font-display">
+                  AM
+                </div>
+                <div>
+                  <div id="team-am-name" class="text-sm font-bold text-white">Iceberg Account Director</div>
+                  <div class="text-xs text-cyan-400 font-medium">Strategic Account Manager</div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 pt-2 border-t border-slate-800/80">
+                <a id="btn-am-whatsapp" href="#" target="_blank" class="flex-1 py-1.5 px-3 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition">
+                  <i data-lucide="phone" class="w-3.5 h-3.5"></i> WhatsApp
+                </a>
+                <a id="btn-am-email" href="mailto:accounts@icebergma.com" class="flex-1 py-1.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition">
+                  <i data-lucide="mail" class="w-3.5 h-3.5"></i> Direct Email
+                </a>
+              </div>
+            </div>
+
+            <!-- Specialist Lead Card -->
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center font-bold text-purple-400 font-display">
+                  LEAD
+                </div>
+                <div>
+                  <div id="team-lead-name" class="text-sm font-bold text-white">Lead Specialist</div>
+                  <div id="team-lead-dept" class="text-xs text-purple-400 font-medium">Performance / Web Architecture</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fast Action Banner -->
+            <div class="p-4 rounded-xl bg-gradient-to-r from-cyan-950/40 to-slate-900/60 border border-cyan-500/20 text-center">
+              <p class="text-xs text-slate-300 mb-3">Looking to accelerate delivery or launch new marketing campaigns?</p>
+              <button onclick="PortalApp.switchTab('addons')" class="w-full py-2 rounded-lg btn-cyan text-xs font-bold text-slate-950 flex items-center justify-center gap-1.5">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Explore Add-on Sprints
+              </button>
+            </div>
+          </div>
+
+          <!-- Column B: Sprint Deliverables & Action Queue -->
+          <div class="glass-panel p-6 lg:col-span-2 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 font-display flex items-center gap-2">
+                <i data-lucide="layout-list" class="w-4 h-4 text-cyan-400"></i> Deliverables & Sprint Milestones
+              </h3>
+              <button onclick="PortalApp.switchTab('checklists')" class="text-xs text-cyan-400 hover:underline flex items-center gap-1 font-semibold">
+                View Full Checklist <i data-lucide="arrow-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+
+            <!-- Recent deliverables list -->
+            <div id="ov-deliverables-list" class="space-y-3">
+              <div class="text-center py-8 text-slate-500 text-xs">
+                <i data-lucide="loader" class="w-6 h-6 animate-spin mx-auto mb-2 text-cyan-500"></i>
+                Loading project deliverables...
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================== -->
+      <!-- TAB 2: ONBOARDING BRIEF STUDIO                                       -->
+      <!-- ==================================================================== -->
+      <section id="tab-view-brief" class="hidden space-y-6">
+        
+        <!-- Header & Instructions -->
+        <div class="glass-panel p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-xs font-bold px-2 py-0.5 rounded-full badge-purple">Onboarding Studio</span>
+              <span id="brief-status-tag" class="text-xs font-bold px-2 py-0.5 rounded-full badge-amber">DRAFT</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold font-display text-white">Client Vision & Strategic Brief</h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">
+              Provide thorough details regarding your brand identity, audience, and creative expectations so our teams can execute with surgical precision.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2.5 shrink-0">
+            <button type="button" onclick="PortalApp.saveBrief(false)" class="px-4 py-2 rounded-xl btn-ghost text-xs font-semibold flex items-center gap-1.5">
+              <i data-lucide="save" class="w-4 h-4"></i> Save Draft
+            </button>
+            <button type="button" onclick="PortalApp.saveBrief(true)" class="px-5 py-2 rounded-xl btn-cyan text-xs font-bold text-slate-950 flex items-center gap-1.5">
+              <i data-lucide="send" class="w-4 h-4"></i> Submit for Review
+            </button>
+          </div>
+        </div>
+
+        <!-- Brief Form -->
+        <form id="client-brief-form" onsubmit="event.preventDefault(); PortalApp.saveBrief(true);" class="space-y-6">
+          
+          <!-- Step 1: Brand & Core Identity -->
+          <div class="glass-panel p-6 space-y-4">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-cyan-400 font-display flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 text-xs flex items-center justify-center font-bold">1</span>
+              Brand Core & Value Proposition
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Brand Story & Mission</label>
+                <textarea id="bf-brand-story" rows="3" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition" placeholder="Briefly describe what your company does, your founding story, and core mission..."></textarea>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Unique Value Proposition (USP)</label>
+                <input type="text" id="bf-value-prop" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition" placeholder="Why do clients choose you over competitors?">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Industry & Specialized Niche</label>
+                <input type="text" id="bf-industry" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition" placeholder="e.g. Luxury Real Estate, B2B SaaS, HealthTech">
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Target Audience -->
+          <div class="glass-panel p-6 space-y-4">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400 font-display flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-300 text-xs flex items-center justify-center font-bold">2</span>
+              Target Audience & Customer Personas
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Primary Customer Persona</label>
+                <input type="text" id="bf-target-persona" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition" placeholder="e.g. Mid-size e-commerce founders, high-net-worth investors">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Customer Pain Points They Seek to Solve</label>
+                <input type="text" id="bf-pain-points" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition" placeholder="What keeps them up at night? What frustrations do they face?">
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Project Goals & KPIs -->
+          <div class="glass-panel p-6 space-y-4">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-amber-400 font-display flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 text-xs flex items-center justify-center font-bold">3</span>
+              Project Scope & Primary KPIs
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Primary Project Goal</label>
+                <select id="bf-primary-goal" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition">
+                  <option value="LEAD_GENERATION">High-Velocity Lead Generation</option>
+                  <option value="BRAND_AWARENESS">Brand Awareness & Category Dominance</option>
+                  <option value="ECOMMERCE_SALES">Direct E-commerce Conversion & Scale</option>
+                  <option value="REBRANDING">Complete Visual & Digital Rebranding</option>
+                  <option value="CONVERSION_OPTIMIZATION">Conversion Rate & Funnel Optimization</option>
+                  <option value="CUSTOM">Custom Enterprise Solution</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Quantitative Target KPIs</label>
+                <input type="text" id="bf-target-kpis" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition" placeholder="e.g. 150 qualified leads/mo, 3.5x ROAS on Meta ads, <1s page load">
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4: Creative & Visual Aesthetic Preferences -->
+          <div class="glass-panel p-6 space-y-4">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-purple-400 font-display flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-300 text-xs flex items-center justify-center font-bold">4</span>
+              Design, Aesthetics & Creative Tone
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Preferred Visual Aesthetic Style</label>
+                <select id="bf-visual-style" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition">
+                  <option value="MINIMAL_LUXURY">Minimal & Luxury (High contrast, refined typography, obsidian)</option>
+                  <option value="TECH_FUTURISTIC">Tech & Futuristic (Neon accents, glassmorphism, 3D elements)</option>
+                  <option value="WARM_EDITORIAL">Warm & Editorial (Elegant serif, lifestyle photography, neutral tones)</option>
+                  <option value="BOLD_HIGH_ENERGY">Bold & High-Energy (Vibrant gradients, punchy copy, dynamic motion)</option>
+                  <option value="CLEAN_CORPORATE">Clean Corporate (Authoritative blue/slate, executive clarity)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Primary Brand Colors (Hex codes)</label>
+                <input type="text" id="bf-brand-colors" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition" placeholder="e.g. #06b6d4, #0f172a, #10b981">
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Benchmark / Competitor Websites You Admire (URLs)</label>
+                <input type="text" id="bf-benchmarks" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition" placeholder="e.g. apple.com, stripe.com, linear.app">
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5: Brand Assets & Access -->
+          <div class="glass-panel p-6 space-y-4">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-cyan-400 font-display flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 text-xs flex items-center justify-center font-bold">5</span>
+              Brand Assets & Domain Handover
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Shared Google Drive / Dropbox Asset Folder URL</label>
+                <input type="url" id="bf-drive-url" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition" placeholder="https://drive.google.com/drive/folders/...">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Brand Guidelines Document URL</label>
+                <input type="url" id="bf-guidelines-url" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition" placeholder="https://www.figma.com/... or cloud PDF link">
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Technical Access Notes (Domain registrar, DNS, Google Tag Manager IDs)</label>
+                <textarea id="bf-access-notes" rows="2" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition" placeholder="Any credentials or access parameters relevant to deployment..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Buttons -->
+          <div class="flex items-center justify-end gap-3 pt-4">
+            <button type="button" onclick="PortalApp.saveBrief(false)" class="px-6 py-2.5 rounded-xl btn-ghost text-xs font-semibold">
+              Save Progress
+            </button>
+            <button type="button" onclick="PortalApp.saveBrief(true)" class="px-8 py-2.5 rounded-xl btn-cyan text-xs font-bold text-slate-950 flex items-center gap-2">
+              <i data-lucide="check-circle" class="w-4 h-4"></i> Submit Final Onboarding Brief
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ==================================================================== -->
+      <!-- TAB 3: CHECKLISTS & DELIVERABLE APPROVALS                             -->
+      <!-- ==================================================================== -->
+      <section id="tab-view-checklists" class="hidden space-y-8">
+        
+        <!-- Section A: Onboarding Roadmap Checklist -->
+        <div class="glass-panel p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-extrabold font-display text-white flex items-center gap-2">
+                <i data-lucide="list-checks" class="w-5 h-5 text-cyan-400"></i>
+                Project Onboarding Milestones
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">Foundational steps required to kick off project execution.</p>
+            </div>
+          </div>
+
+          <div id="onboarding-checklist-items" class="space-y-2.5 pt-2">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Section B: Sprint Deliverables & Creative Review Queue -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-extrabold font-display text-white flex items-center gap-2">
+                <i data-lucide="layers" class="w-5 h-5 text-emerald-400"></i>
+                Sprint Deliverables & Client Approvals
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">Review creative assets, sign off on milestones, or submit clear revision notes.</p>
+            </div>
+          </div>
+
+          <div id="sprint-deliverables-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================== -->
+      <!-- TAB 4: ADD-ON SERVICES MARKETPLACE                                   -->
+      <!-- ==================================================================== -->
+      <section id="tab-view-addons" class="hidden space-y-6">
+        
+        <!-- Marketplace Header Banner -->
+        <div class="glass-panel p-6 sm:p-8 relative overflow-hidden border-purple-500/30">
+          <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div class="max-w-2xl space-y-2 relative z-10">
+            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full badge-purple">AGENCY ACCELERATORS</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold font-display text-white tracking-tight">
+              Scale Your Project With On-Demand Services
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Expand your campaign footprint or engineering capabilities with turnkey add-on packages. All requests seamlessly integrate into your active project roadmap.
+            </p>
+          </div>
+
+          <!-- Currency Selector Toggle -->
+          <div class="mt-6 flex items-center gap-3">
+            <span class="text-xs text-slate-400 font-semibold">Display Pricing In:</span>
+            <div class="inline-flex rounded-xl bg-slate-900 p-1 border border-slate-800">
+              <button onclick="PortalApp.setAddonCurrency('USD')" id="cur-btn-usd" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-cyan-500/20 text-cyan-300">USD ($)</button>
+              <button onclick="PortalApp.setAddonCurrency('EGP')" id="cur-btn-egp" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">EGP (E£)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Catalog Grid -->
+        <div id="addons-catalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- My Applied Requests Section -->
+        <div class="glass-panel p-6 mt-8 space-y-4">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 font-display flex items-center gap-2">
+            <i data-lucide="history" class="w-4 h-4 text-cyan-400"></i> My Service Applications
+          </h3>
+
+          <div id="my-requests-list" class="space-y-2.5">
+            <div class="text-center py-6 text-slate-500 text-xs">
+              No add-on requests submitted yet.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================== -->
+      <!-- TAB 5: TEAM STREAM (Direct Project Messaging)                         -->
+      <!-- ==================================================================== -->
+      <section id="tab-view-messages" class="hidden space-y-4">
+        <div class="glass-panel p-6 flex flex-col h-[650px]">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+              <h3 class="text-base font-bold font-display text-white flex items-center gap-2">
+                <i data-lucide="message-square" class="w-5 h-5 text-cyan-400"></i> Project Communication Channel
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">Direct line to your Account Manager, Creative Director, and Lead Specialist.</p>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full badge-emerald">Live Stream</span>
+          </div>
+
+          <!-- Message History -->
+          <div id="project-chat-stream" class="flex-1 overflow-y-auto py-4 space-y-4 pr-2">
+            <div class="text-center py-12 text-slate-500 text-xs">
+              Loading communication stream...
+            </div>
+          </div>
+
+          <!-- Message Composer -->
+          <form onsubmit="PortalApp.sendChatMessage(event)" class="pt-4 border-t border-slate-800 flex items-center gap-3">
+            <input type="text" id="chat-input-text" required
+              class="flex-1 p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition"
+              placeholder="Ask a question or leave notes for the team...">
+            <button type="submit" class="px-5 py-3 rounded-xl btn-cyan text-slate-950 font-bold text-xs flex items-center gap-1.5 shrink-0">
+              <span>Send</span>
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+            </button>
+          </form>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Global Footer -->
+    <footer class="mt-auto py-6 border-t border-slate-800/80 text-center text-xs text-slate-500">
+      <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div>
+          ICEBERG Digital Marketing Agency — Confidential Client Portal &copy; 2026
+        </div>
+        <div class="flex items-center gap-4 text-slate-400">
+          <a href="https://icebergma.com" target="_blank" class="hover:text-cyan-400 transition">icebergma.com</a>
+          <span>•</span>
+          <span>SLA Priority Support</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ======================================================================== -->
+  <!-- MODALS                                                                   -->
+  <!-- ======================================================================== -->
+
+  <!-- Modal 1: Deliverable Revision Request -->
+  <div id="modal-revision" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+    <div class="glass-panel p-6 max-w-lg w-full bg-slate-900 border-slate-700 shadow-2xl relative space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h4 class="text-base font-bold font-display text-white flex items-center gap-2">
+          <i data-lucide="edit-3" class="w-4 h-4 text-amber-400"></i> Request Deliverable Revision
+        </h4>
+        <button onclick="PortalApp.closeModal('modal-revision')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-300">
+        Item: <strong id="rev-task-title" class="text-cyan-300"></strong>
+      </p>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Detailed Change Instructions</label>
+        <textarea id="rev-feedback-text" rows="4" required
+          class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-amber-400 transition"
+          placeholder="Specify exact adjustments: typography, color tweaks, copy modifications, or layout alterations..."></textarea>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-2">
+        <button type="button" onclick="PortalApp.closeModal('modal-revision')" class="px-4 py-2 rounded-xl btn-ghost text-xs font-semibold">
+          Cancel
+        </button>
+        <button type="button" onclick="PortalApp.submitDeliverableReview('REQUEST_REVISION')" class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition flex items-center gap-1.5">
+          <i data-lucide="send" class="w-3.5 h-3.5"></i> Submit Revision Request
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Deliverable Approval Confirmation -->
+  <div id="modal-approve" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+    <div class="glass-panel p-6 max-w-md w-full bg-slate-900 border-slate-700 shadow-2xl relative space-y-4 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto mb-2">
+        <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+      </div>
+
+      <h4 class="text-lg font-bold font-display text-white">Approve Deliverable Milestone?</h4>
+      <p class="text-xs text-slate-300">
+        You are approving: <br><strong id="app-task-title" class="text-cyan-300"></strong>.<br>
+        This signs off on this milestone and advances our team to next sprint phase.
+      </p>
+
+      <div class="flex items-center justify-center gap-2.5 pt-3">
+        <button type="button" onclick="PortalApp.closeModal('modal-approve')" class="px-4 py-2 rounded-xl btn-ghost text-xs font-semibold">
+          Review More
+        </button>
+        <button type="button" onclick="PortalApp.submitDeliverableReview('APPROVE')" class="px-6 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition flex items-center gap-1.5">
+          <i data-lucide="check" class="w-4 h-4"></i> Confirm Approval
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Add-on Service Application -->
+  <div id="modal-addon-apply" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+    <div class="glass-panel p-6 max-w-lg w-full bg-slate-900 border-slate-700 shadow-2xl relative space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div>
+          <span id="apply-addon-category" class="text-[10px] font-bold px-2 py-0.5 rounded-full badge-purple">ACCELERATOR</span>
+          <h4 id="apply-addon-title" class="text-base font-bold font-display text-white mt-1">Service Title</h4>
+        </div>
+        <button onclick="PortalApp.closeModal('modal-addon-apply')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between text-xs">
+        <span class="text-slate-400">Package Starting Investment:</span>
+        <span id="apply-addon-price" class="text-base font-extrabold text-cyan-400 font-display">$1,450 USD</span>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Custom Scope / Requirements Notes</label>
+        <textarea id="apply-addon-notes" rows="3"
+          class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition"
+          placeholder="Any specific instructions, deadlines, target URLs, or campaigns..."></textarea>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Timeline Urgency</label>
+          <select id="apply-addon-urgency" class="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white">
+            <option value="STANDARD">Standard Turnaround</option>
+            <option value="PRIORITY">Priority (+20% velocity)</option>
+            <option value="EXPEDITED">Urgent Sprint</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Billing Currency</label>
+          <select id="apply-addon-currency" class="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white">
+            <option value="USD">USD ($)</option>
+            <option value="EGP">EGP (E£)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-2">
+        <button type="button" onclick="PortalApp.closeModal('modal-addon-apply')" class="px-4 py-2 rounded-xl btn-ghost text-xs font-semibold">
+          Cancel
+        </button>
+        <button type="button" onclick="PortalApp.submitAddonApplication()" class="px-6 py-2 rounded-xl btn-cyan text-xs font-bold text-slate-950 flex items-center gap-1.5">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Submit Service Application
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Portal Application JS -->
+  <script src="/portal/portal.js"></script>
+</body>
+</html>

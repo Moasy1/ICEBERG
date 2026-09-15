@@ -146,6 +146,9 @@ window.IAMS = (function() {
               <button onclick="IAMS.openClientDetail('${c.client_id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-400 transition-colors" title="View Dossier">
                 <i data-lucide="external-link" class="w-4 h-4"></i>
               </button>
+              <button onclick="IAMS.openClientAccessModal('${c.client_id}', '${(c.company_name || '').replace(/'/g, "\\'")}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-purple-400 transition-colors" title="Manage Client User & Portal">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+              </button>
               <button onclick="IAMS.generatePortalLink('${c.client_id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 transition-colors" title="Generate Magic Link">
                 <i data-lucide="key" class="w-4 h-4"></i>
               </button>
@@ -412,6 +415,157 @@ window.IAMS = (function() {
     }
   }
 
+  // 7. Manage Client User & Portal Modal
+  async function openClientAccessModal(clientId, companyName) {
+    let modal = document.getElementById('admin-client-access-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'admin-client-access-modal';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md';
+      document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+      <div class="p-6 rounded-2xl bg-slate-900 border border-slate-700 max-w-xl w-full text-slate-200 shadow-2xl space-y-5 relative">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div>
+            <div class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 inline-block">CLIENT AUTH & PORTAL ACCESS</div>
+            <h3 class="text-base font-bold text-white mt-1">${companyName || 'Client'}</h3>
+          </div>
+          <button onclick="document.getElementById('admin-client-access-modal').classList.add('hidden')" class="text-slate-400 hover:text-white">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div id="cam-body-content" class="text-xs space-y-4">
+          <div class="text-center py-6 text-slate-400">Loading client user assignments...</div>
+        </div>
+      </div>
+    `;
+
+    modal.classList.remove('hidden');
+    if (window.lucide) window.lucide.createIcons();
+
+    // Fetch existing users and client projects
+    const [usersRes, projectsRes] = await Promise.all([
+      apiFetch('/api/iams/client-portal/admin/users'),
+      apiFetch(`/api/iams/projects?client_id=${clientId}`)
+    ]);
+
+    const users = usersRes.success ? (usersRes.users || []).filter(u => u.assigned_client_id === clientId) : [];
+    const projects = projectsRes.success ? (projectsRes.projects || []) : [];
+
+    const defaultSlug = (companyName || 'client').toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 15);
+    const suggestedUsername = `client_${defaultSlug}`;
+
+    const bodyContent = document.getElementById('cam-body-content');
+    if (!bodyContent) return;
+
+    bodyContent.innerHTML = `
+      ${users.length > 0 ? `
+        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+          <div class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Active Client Account Configured
+          </div>
+          ${users.map(u => `
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-slate-800/80 text-slate-300">
+              <div>
+                <span class="font-bold text-white">@${u.username}</span>
+                <span class="text-slate-500 text-[11px]">(${u.email})</span>
+                <div class="text-[10px] text-slate-400 mt-0.5">Project ID: <span class="font-mono text-cyan-300">${u.assigned_project_id || 'Global'}</span></div>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <a href="/portal" target="_blank" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-semibold transition flex items-center gap-1">
+                  <i data-lucide="external-link" class="w-3 h-3"></i> Open Portal
+                </a>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : `
+        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs">
+          No dedicated username account configured for this client yet. Create one below to grant scoped portal access.
+        </div>
+      `}
+
+      <!-- Form to Set or Update User -->
+      <form onsubmit="IAMS.submitCreateClientUser(event, '${clientId}')" class="space-y-3 pt-2">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">
+          ${users.length > 0 ? 'Update Credentials or Create Additional User' : 'Create Client Username & Credentials'}
+        </h4>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Username (Login ID)</label>
+            <input type="text" id="cam-username" required value="${suggestedUsername}"
+              class="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Password</label>
+            <input type="text" id="cam-password" required value="iceberg2026"
+              class="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 transition font-mono">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-400 mb-1">Assigned Operational Project</label>
+          <select id="cam-project-id" required class="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white">
+            ${projects.length > 0 ? projects.map(p => `
+              <option value="${p.project_id}">${p.title} (${p.service_category || 'Active'})</option>
+            `).join('') : `
+              <option value="prj_${defaultSlug}_main">Main Retainer Project (${defaultSlug})</option>
+            `}
+          </select>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3">
+          <button type="button" onclick="document.getElementById('admin-client-access-modal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition">
+            Close
+          </button>
+          <button type="submit" id="cam-submit-btn" class="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold transition flex items-center gap-1.5 shadow-lg shadow-purple-600/30">
+            <i data-lucide="key" class="w-3.5 h-3.5"></i> Save Client Credentials
+          </button>
+        </div>
+      </form>
+    `;
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  async function submitCreateClientUser(e, clientId) {
+    e.preventDefault();
+    const username = document.getElementById('cam-username')?.value?.trim();
+    const password = document.getElementById('cam-password')?.value?.trim();
+    const projectId = document.getElementById('cam-project-id')?.value;
+    const btn = document.getElementById('cam-submit-btn');
+
+    if (!username || !password || !projectId) {
+      showToast('Please fill all credential fields.', 'error');
+      return;
+    }
+
+    if (btn) { btn.disabled = true; btn.classList.add('opacity-75'); }
+
+    const res = await apiFetch('/api/iams/client-portal/admin/create-client-user', {
+      method: 'POST',
+      body: JSON.stringify({
+        username,
+        password,
+        project_id: projectId,
+        client_id: clientId
+      })
+    });
+
+    if (btn) { btn.disabled = false; btn.classList.remove('opacity-75'); }
+
+    if (res.success) {
+      showToast(res.message);
+      openClientAccessModal(clientId, username);
+    } else {
+      showToast(res.error || 'Failed to save client credentials', 'error');
+    }
+  }
+
   return {
     loadOverview,
     openClientDetail,
@@ -419,6 +573,8 @@ window.IAMS = (function() {
     updateTaskStatus,
     loadInvoices,
     generatePortalLink,
-    convertLeadModal
+    convertLeadModal,
+    openClientAccessModal,
+    submitCreateClientUser
   };
 })();
