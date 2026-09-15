@@ -11,8 +11,8 @@ function getAllHtmlFiles(dir, fileList = []) {
         const filePath = path.join(dir, file);
         const stat = fs.statSync(filePath);
         if (stat.isDirectory()) {
-            // Skip admin and test dirs for consumer SEO checks
-            if (!filePath.includes('admin') && !filePath.includes('scratch') && !filePath.includes('IDEX Event')) {
+            // Skip admin, portal, and test dirs for consumer SEO checks
+            if (!filePath.includes('admin') && !filePath.includes('portal') && !filePath.includes('scratch') && !filePath.includes('IDEX Event')) {
                 getAllHtmlFiles(filePath, fileList);
             }
         } else if (file.endsWith('.html')) {
