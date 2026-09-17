@@ -51,7 +51,9 @@ const SECTION_HASH_MAP = {
     'db-center': 'db-center',
     'user-behavior': 'user-behavior',
     'opportunities': 'opportunities',
-    'kpi-reports': 'kpi-reports'
+    'kpi-reports': 'kpi-reports',
+    'staff-management': 'staff-management',
+    'employees': 'staff-management'
 };
 
 const HASH_TO_SECTION_MAP = {
@@ -85,7 +87,10 @@ const HASH_TO_SECTION_MAP = {
     'opportunities': 'opportunities',
     'pipeline': 'opportunities',
     'kpi-reports': 'kpi-reports',
-    'kpis': 'kpi-reports'
+    'kpis': 'kpi-reports',
+    'staff-management': 'staff-management',
+    'employees': 'staff-management',
+    'staff': 'staff-management'
 };
 
 function handleInitialRouting() {
@@ -467,6 +472,9 @@ function showSection(sectionId, eventOrUpdateHash = true) {
             break;
         case 'kpi-reports':
             loadKpiReports();
+            break;
+        case 'staff-management':
+            if (window.EmployeesUI) window.EmployeesUI.init();
             break;
     }
     lucide.createIcons();
