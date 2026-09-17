@@ -265,9 +265,7 @@ window.IAMS = (function() {
     { id: 'usr_asy', user_id: 'usr_asy', name: 'Mohamed Asy', role: 'Dev Lead', department: 'WEB_DEV', avatar: '', color: 'bg-cyan-600' },
     { id: 'usr_abanoub', user_id: 'usr_abanoub', name: 'Abanoub', role: 'Marketing Lead', department: 'PERFORMANCE_MARKETING', avatar: '', color: 'bg-amber-600' },
     { id: 'usr_steven', user_id: 'usr_steven', name: 'Steven', role: 'Video Editor', department: 'VIDEO_PRODUCTION', avatar: '', color: 'bg-purple-600' },
-    { id: 'usr_baher', user_id: 'usr_baher', name: 'Baher', role: 'Creative Intern', department: 'BRANDING', avatar: '', color: 'bg-emerald-600' },
-    { id: 'usr_tarek', user_id: 'usr_tarek', name: 'Tarek Mansour', role: 'Web Dev Lead', department: 'WEB_DEV', avatar: '', color: 'bg-blue-600' },
-    { id: 'usr_nour', user_id: 'usr_nour', name: 'Nour El-Din', role: 'SEO Lead', department: 'SEO', avatar: '', color: 'bg-teal-600' }
+    { id: 'usr_baher', user_id: 'usr_baher', name: 'Baher', role: 'Creative Intern', department: 'BRANDING', avatar: '', color: 'bg-emerald-600' }
   ];
 
   function getInitials(name) {
@@ -373,16 +371,12 @@ window.IAMS = (function() {
         });
       }
 
-      // Add default roster members if not yet present
-      DEFAULT_TEAM_ROSTER.forEach(def => {
-        const found = Array.from(mergedMap.values()).some(m => 
-          (m.user_id && m.user_id === def.user_id) || 
-          (m.name && m.name.toLowerCase() === def.name.toLowerCase())
-        );
-        if (!found) {
+      // Only fallback to default roster if no staff accounts exist in MongoDB (e.g. offline/network failure)
+      if (mergedMap.size === 0) {
+        DEFAULT_TEAM_ROSTER.forEach(def => {
           mergedMap.set(def.id, def);
-        }
-      });
+        });
+      }
 
       kanbanStaffList = Array.from(mergedMap.values());
     } catch (err) {

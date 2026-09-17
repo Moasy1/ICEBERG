@@ -722,6 +722,68 @@ const DEFAULT_FALLBACK_CHAT = [
   }
 ];
 
+// Dynamically synchronize team members and roles from MongoDB database
+async function syncTeamMembersFromApi() {
+  try {
+    const token = sessionStorage.getItem('iceberg_jwt') || sessionStorage.getItem('iceberg_admin_token') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '';
+    const headers = { 'x-demo-admin': 'true' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const host = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000')
+      ? 'http://localhost:3001'
+      : '';
+
+    const res = await fetch(`${host}/api/iams/auth/staff`, { headers });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.success && Array.isArray(data.staff) && data.staff.length > 0) {
+      const colorMap = {
+        'fady': { bg: 'bg-rose-600', border: 'border-rose-500', text: 'text-rose-400', badge: 'bg-rose-950/70 text-rose-300 border-rose-800/60', emoji: '👑' },
+        'asy': { bg: 'bg-cyan-600', border: 'border-cyan-500', text: 'text-cyan-400', badge: 'bg-cyan-950/70 text-cyan-300 border-cyan-800/60', emoji: '💻' },
+        'abanoub': { bg: 'bg-amber-600', border: 'border-amber-500', text: 'text-amber-400', badge: 'bg-amber-950/70 text-amber-300 border-amber-800/60', emoji: '📈' },
+        'steven': { bg: 'bg-purple-600', border: 'border-purple-500', text: 'text-purple-400', badge: 'bg-purple-950/70 text-purple-300 border-purple-800/60', emoji: '🎬' },
+        'baher': { bg: 'bg-emerald-600', border: 'border-emerald-500', text: 'text-emerald-400', badge: 'bg-emerald-950/70 text-emerald-300 border-emerald-800/60', emoji: '🎨' }
+      };
+
+      window.ICEBERG_TEAM_MEMBERS = data.staff.map(s => {
+        const id = s.user_id || (s._id ? s._id.toString() : s.email);
+        const name = s.full_name || 'Team Member';
+        const role = s.role || 'Specialist';
+        const lower = name.toLowerCase();
+        let styling = null;
+        for (const [key, val] of Object.entries(colorMap)) {
+          if (lower.includes(key)) {
+            styling = val;
+            break;
+          }
+        }
+        if (!styling) {
+          styling = { bg: 'bg-indigo-600', border: 'border-indigo-500', text: 'text-indigo-400', badge: 'bg-indigo-950/70 text-indigo-300 border-indigo-800/60', emoji: '👤' };
+        }
+
+        return {
+          user_id: id,
+          full_name: name,
+          title: s.role || role,
+          role: role,
+          ownership: `${s.department || 'Operations'} Specialist & Deliverables`,
+          initials: name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
+          avatar_color: s.avatar_url || '',
+          bgClass: styling.bg,
+          borderClass: styling.border,
+          textClass: styling.text,
+          badgeClass: styling.badge,
+          emoji: styling.emoji
+        };
+      });
+
+      renderTeamRosterSidebar();
+    }
+  } catch (e) {
+    console.warn('[Workspaces UI]: Staff sync fallback to local roster:', e);
+  }
+}
+
 // Initialize Upbase Workspaces Suite
 async function initUpbaseWorkspaces() {
   // 1. Immediately apply fallback data so user NEVER sees "Loading Workspaces..."
@@ -749,7 +811,8 @@ async function initUpbaseWorkspaces() {
   renderToolTabsUI();
   await loadCurrentToolContent();
 
-  // 3. Asynchronously sync with API (resilient background load)
+  // 3. Asynchronously sync team members & workspaces with API
+  await syncTeamMembersFromApi();
   await loadWorkspacesList();
 }
 
@@ -4710,6 +4773,7 @@ window.promptCreateTaskDiscussion = promptCreateTaskDiscussion;
 window.attachFileToSubtask = attachFileToSubtask;
 window.attachLinkToSubtask = attachLinkToSubtask;
 window.discussSubtask = discussSubtask;
+window.syncTeamMembersFromApi = syncTeamMembersFromApi;
 
 // Keyboard shortcuts (Esc to close drawer)
 if (typeof document !== 'undefined') {
