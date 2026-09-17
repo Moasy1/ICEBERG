@@ -9,6 +9,9 @@ window.IAMS = (function() {
   let activeKanbanBoard = null;
   let invoicesData = [];
   let summaryMetrics = null;
+  let kanbanStaffList = [];
+  let selectedEmployeeIds = [];
+  let employeeSearchQuery = '';
 
   // Helper for API calls with token
   async function apiFetch(endpoint, options = {}) {
@@ -256,13 +259,289 @@ window.IAMS = (function() {
     if (window.lucide) window.lucide.createIcons();
   }
 
-  // 3. Sprint Kanban Board
+  // 3. Sprint Kanban Board & CEO Employee Tracking
+  const DEFAULT_TEAM_ROSTER = [
+    { id: 'usr_fady', user_id: 'usr_fady', name: 'Fady', role: 'CEO', department: 'OPERATIONS', avatar: '', color: 'bg-rose-600' },
+    { id: 'usr_asy', user_id: 'usr_asy', name: 'Mohamed Asy', role: 'Dev Lead', department: 'WEB_DEV', avatar: '', color: 'bg-cyan-600' },
+    { id: 'usr_abanoub', user_id: 'usr_abanoub', name: 'Abanoub', role: 'Marketing Lead', department: 'PERFORMANCE_MARKETING', avatar: '', color: 'bg-amber-600' },
+    { id: 'usr_steven', user_id: 'usr_steven', name: 'Steven', role: 'Video Editor', department: 'VIDEO_PRODUCTION', avatar: '', color: 'bg-purple-600' },
+    { id: 'usr_baher', user_id: 'usr_baher', name: 'Baher', role: 'Creative Intern', department: 'BRANDING', avatar: '', color: 'bg-emerald-600' },
+    { id: 'usr_tarek', user_id: 'usr_tarek', name: 'Tarek Mansour', role: 'Web Dev Lead', department: 'WEB_DEV', avatar: '', color: 'bg-blue-600' },
+    { id: 'usr_nour', user_id: 'usr_nour', name: 'Nour El-Din', role: 'SEO Lead', department: 'SEO', avatar: '', color: 'bg-teal-600' }
+  ];
+
+  function getInitials(name) {
+    if (!name || name === 'Unassigned') return '?';
+    return name.split(' ').map(n => n[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+  }
+
+  function getStaffColor(name, dept) {
+    if (!name) return 'bg-slate-700';
+    const lower = name.toLowerCase();
+    if (lower.includes('fady')) return 'bg-rose-600';
+    if (lower.includes('asy') || lower.includes('tarek')) return 'bg-cyan-600';
+    if (lower.includes('abanoub')) return 'bg-amber-600';
+    if (lower.includes('steven')) return 'bg-purple-600';
+    if (lower.includes('baher')) return 'bg-emerald-600';
+    if (lower.includes('nour')) return 'bg-teal-600';
+    const colors = ['bg-indigo-600', 'bg-blue-600', 'bg-emerald-600', 'bg-violet-600', 'bg-fuchsia-600'];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    return colors[Math.abs(hash) % colors.length];
+  }
+
+  function taskMatchesEmployee(task, empIdentifier) {
+    if (!task || !task.assigned_to_id || !empIdentifier) return false;
+    const a = task.assigned_to_id;
+    if (typeof a === 'string') {
+      return a.toLowerCase() === empIdentifier.toLowerCase();
+    }
+    const id = a._id ? a._id.toString() : '';
+    const userId = a.user_id ? a.user_id.toString() : '';
+    const email = (a.email || '').toLowerCase();
+    const name = (a.full_name || a.name || '').toLowerCase();
+    const target = empIdentifier.toLowerCase();
+
+    return (id && id.toLowerCase() === target) ||
+           (userId && userId.toLowerCase() === target) ||
+           (email && email === target) ||
+           (name && name === target);
+  }
+
+  function getEmployeeTaskCount(emp) {
+    if (!activeKanbanBoard) return 0;
+    let count = 0;
+    const targets = [emp.id, emp.user_id, emp.name, emp.email].filter(Boolean);
+    Object.values(activeKanbanBoard).forEach(colTasks => {
+      if (Array.isArray(colTasks)) {
+        count += colTasks.filter(t => targets.some(tgt => taskMatchesEmployee(t, tgt))).length;
+      }
+    });
+    return count;
+  }
+
   async function loadKanban() {
     const res = await apiFetch('/api/iams/tasks/board');
     if (res.success) {
       activeKanbanBoard = res.board;
-      renderKanbanColumns(res.board);
+    } else {
+      activeKanbanBoard = { BACKLOG: [], TODO: [], IN_PROGRESS: [], IN_REVIEW: [], DONE: [] };
     }
+
+    // Build or refresh staff list
+    try {
+      const staffRes = await apiFetch('/api/iams/auth/staff');
+      const staffFromApi = (staffRes && staffRes.success && Array.isArray(staffRes.staff)) ? staffRes.staff : [];
+      const mergedMap = new Map();
+
+      // Register staff from API
+      staffFromApi.forEach(s => {
+        const id = s._id ? s._id.toString() : (s.user_id || s.email);
+        mergedMap.set(id, {
+          id: id,
+          user_id: s.user_id || id,
+          name: s.full_name || 'Team Member',
+          role: s.role || 'Specialist',
+          department: s.department || 'OPERATIONS',
+          avatar: s.avatar_url || '',
+          color: getStaffColor(s.full_name, s.department)
+        });
+      });
+
+      // Register specialists from board tasks
+      if (activeKanbanBoard) {
+        Object.values(activeKanbanBoard).forEach(colTasks => {
+          if (Array.isArray(colTasks)) {
+            colTasks.forEach(t => {
+              if (t.assigned_to_id && typeof t.assigned_to_id === 'object') {
+                const a = t.assigned_to_id;
+                const id = a._id ? a._id.toString() : (a.user_id || a.email || a.full_name);
+                if (id && !mergedMap.has(id)) {
+                  mergedMap.set(id, {
+                    id: id,
+                    user_id: a.user_id || id,
+                    name: a.full_name || 'Specialist',
+                    role: a.role || 'Specialist',
+                    department: a.department || 'OPERATIONS',
+                    avatar: a.avatar_url || '',
+                    color: getStaffColor(a.full_name, a.department)
+                  });
+                }
+              }
+            });
+          }
+        });
+      }
+
+      // Add default roster members if not yet present
+      DEFAULT_TEAM_ROSTER.forEach(def => {
+        const found = Array.from(mergedMap.values()).some(m => 
+          (m.user_id && m.user_id === def.user_id) || 
+          (m.name && m.name.toLowerCase() === def.name.toLowerCase())
+        );
+        if (!found) {
+          mergedMap.set(def.id, def);
+        }
+      });
+
+      kanbanStaffList = Array.from(mergedMap.values());
+    } catch (err) {
+      console.warn('[IAMS Staff Load Warning]:', err);
+      kanbanStaffList = [...DEFAULT_TEAM_ROSTER];
+    }
+
+    // Sort staff: CEO first, then by assigned task count descending, then by name
+    kanbanStaffList.sort((a, b) => {
+      const aIsCEO = a.role === 'CEO' || a.name.toLowerCase().includes('fady');
+      const bIsCEO = b.role === 'CEO' || b.name.toLowerCase().includes('fady');
+      if (aIsCEO && !bIsCEO) return -1;
+      if (!aIsCEO && bIsCEO) return 1;
+      const countA = getEmployeeTaskCount(a);
+      const countB = getEmployeeTaskCount(b);
+      if (countB !== countA) return countB - countA;
+      return a.name.localeCompare(b.name);
+    });
+
+    renderEmployeeDropdownList();
+    applyKanbanFiltering();
+  }
+
+  function renderEmployeeDropdownList() {
+    const listEl = document.getElementById('kanban-employee-checkbox-list');
+    if (!listEl) return;
+
+    const query = (employeeSearchQuery || '').toLowerCase().trim();
+    const filtered = kanbanStaffList.filter(emp => {
+      if (!query) return true;
+      return emp.name.toLowerCase().includes(query) ||
+             (emp.role && emp.role.toLowerCase().includes(query)) ||
+             (emp.department && emp.department.toLowerCase().includes(query));
+    });
+
+    const badge = document.getElementById('kanban-dropdown-count-badge');
+    if (badge) badge.textContent = kanbanStaffList.length;
+
+    if (!filtered.length) {
+      listEl.innerHTML = `<div class="p-4 text-center text-xs text-gray-500 border border-dashed border-slate-800 rounded-xl">No team members match "${employeeSearchQuery}"</div>`;
+      return;
+    }
+
+    listEl.innerHTML = filtered.map(emp => {
+      const isSelected = selectedEmployeeIds.includes(emp.id) || 
+                         (emp.user_id && selectedEmployeeIds.includes(emp.user_id)) ||
+                         selectedEmployeeIds.includes(emp.name);
+      const taskCount = getEmployeeTaskCount(emp);
+      const isCEO = emp.role === 'CEO' || emp.name.toLowerCase().includes('fady');
+
+      return `
+        <div onclick="IAMS.toggleEmployeeSelection('${emp.id}')" 
+             class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-800/80 cursor-pointer transition-all ${isSelected ? 'bg-cyan-500/10 border border-cyan-500/30 shadow-inner' : 'border border-transparent'}">
+          <div class="flex items-center gap-2.5 truncate">
+            <input type="checkbox" ${isSelected ? 'checked' : ''} 
+                   onclick="event.stopPropagation(); IAMS.toggleEmployeeSelection('${emp.id}')" 
+                   class="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-500/40 bg-slate-900 border-slate-700 cursor-pointer accent-cyan-500">
+            <div class="w-7 h-7 rounded-full ${emp.color || 'bg-slate-700'} text-[11px] font-bold text-white flex items-center justify-center shrink-0 border border-slate-600 shadow-sm">
+              ${emp.avatar ? `<img src="${emp.avatar}" class="w-full h-full rounded-full object-cover">` : getInitials(emp.name)}
+            </div>
+            <div class="truncate">
+              <div class="text-xs font-semibold text-slate-200 truncate flex items-center gap-1.5">
+                <span>${emp.name}</span>
+                ${isCEO ? '<span class="text-[9px] text-amber-400 bg-amber-500/15 px-1.5 py-0.2 rounded border border-amber-500/30 font-bold">CEO</span>' : ''}
+              </div>
+              <div class="text-[10px] text-gray-400 truncate">${emp.department || emp.role || 'Specialist'}</div>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold shrink-0 ml-2 ${taskCount > 0 ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-slate-800 text-gray-500'}">
+            ${taskCount} ${taskCount === 1 ? 'task' : 'tasks'}
+          </span>
+        </div>
+      `;
+    }).join('');
+
+    const statusText = document.getElementById('kanban-dropdown-status-text');
+    if (statusText) {
+      if (!selectedEmployeeIds.length) {
+        statusText.textContent = `Tracking all staff (${kanbanStaffList.length})`;
+      } else {
+        statusText.textContent = `${selectedEmployeeIds.length} employee${selectedEmployeeIds.length > 1 ? 's' : ''} chosen`;
+      }
+    }
+  }
+
+  function applyKanbanFiltering() {
+    if (!activeKanbanBoard) return;
+
+    const btnLabel = document.getElementById('kanban-employee-btn-label');
+    const avatarStack = document.getElementById('kanban-selected-avatar-stack');
+    const clearChip = document.getElementById('kanban-clear-filter-chip');
+    const banner = document.getElementById('kanban-filter-banner');
+    const bannerTags = document.getElementById('kanban-filter-banner-tags');
+    const bannerCount = document.getElementById('kanban-filter-banner-count');
+
+    const columns = ['BACKLOG', 'TODO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE'];
+    const filteredBoard = {};
+
+    if (!selectedEmployeeIds.length) {
+      // Viewing all
+      columns.forEach(col => {
+        filteredBoard[col] = activeKanbanBoard[col] || [];
+      });
+
+      if (btnLabel) btnLabel.textContent = `All Employees (${kanbanStaffList.length})`;
+      if (avatarStack) {
+        avatarStack.innerHTML = `<span class="w-5 h-5 rounded-full bg-cyan-600/30 border border-cyan-500/40 text-[10px] font-bold text-cyan-300 flex items-center justify-center">👥</span>`;
+      }
+      if (clearChip) clearChip.classList.add('hidden');
+      if (banner) banner.classList.add('hidden');
+    } else {
+      // Find selected employee objects
+      const selectedStaff = kanbanStaffList.filter(s => 
+        selectedEmployeeIds.includes(s.id) || 
+        (s.user_id && selectedEmployeeIds.includes(s.user_id)) ||
+        selectedEmployeeIds.includes(s.name)
+      );
+
+      columns.forEach(col => {
+        filteredBoard[col] = (activeKanbanBoard[col] || []).filter(task => {
+          return selectedStaff.some(s => {
+            const targets = [s.id, s.user_id, s.name, s.email].filter(Boolean);
+            return targets.some(tgt => taskMatchesEmployee(task, tgt));
+          });
+        });
+      });
+
+      if (btnLabel) {
+        if (selectedStaff.length === 1) {
+          btnLabel.textContent = `Tracking: ${selectedStaff[0].name}`;
+        } else {
+          btnLabel.textContent = `Tracking: ${selectedStaff.length} Employees`;
+        }
+      }
+
+      if (avatarStack) {
+        avatarStack.innerHTML = selectedStaff.slice(0, 3).map(s => `
+          <div class="w-5 h-5 rounded-full ${s.color || 'bg-slate-700'} border border-slate-900 text-[9px] font-bold text-white flex items-center justify-center shadow-sm" title="${s.name}">
+            ${s.avatar ? `<img src="${s.avatar}" class="w-full h-full rounded-full object-cover">` : getInitials(s.name)}
+          </div>
+        `).join('') + (selectedStaff.length > 3 ? `<span class="w-5 h-5 rounded-full bg-slate-800 border border-slate-900 text-[9px] font-bold text-cyan-300 flex items-center justify-center">+${selectedStaff.length - 3}</span>` : '');
+      }
+
+      if (clearChip) clearChip.classList.remove('hidden');
+      if (banner && bannerTags) {
+        banner.classList.remove('hidden');
+        if (bannerCount) bannerCount.textContent = selectedStaff.length;
+        bannerTags.innerHTML = selectedStaff.map(s => `
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-900/90 text-cyan-300 border border-cyan-500/40">
+            <span class="w-2 h-2 rounded-full ${s.color || 'bg-cyan-400'}"></span>
+            ${s.name}
+            <button type="button" onclick="IAMS.toggleEmployeeSelection('${s.id}')" class="text-gray-400 hover:text-rose-400 ml-0.5 font-bold">✕</button>
+          </span>
+        `).join('');
+      }
+    }
+
+    renderKanbanColumns(filteredBoard);
+    renderEmployeeDropdownList();
   }
 
   function renderKanbanColumns(board) {
@@ -272,10 +551,14 @@ window.IAMS = (function() {
       if (!container) return;
 
       const tasks = board[col] || [];
-      document.getElementById(`kanban-count-${col.toLowerCase().replace('_', '-')}`).textContent = tasks.length;
+      const countEl = document.getElementById(`kanban-count-${col.toLowerCase().replace('_', '-')}`);
+      if (countEl) countEl.textContent = tasks.length;
 
       if (!tasks.length) {
-        container.innerHTML = `<div class="p-4 text-center text-xs text-gray-500 border border-dashed border-slate-800 rounded-xl">No tasks in ${col.replace('_', ' ')}</div>`;
+        const filterMsg = selectedEmployeeIds.length 
+          ? `No tasks for selected employee(s) in ${col.replace('_', ' ')}` 
+          : `No tasks in ${col.replace('_', ' ')}`;
+        container.innerHTML = `<div class="p-4 text-center text-xs text-gray-500 border border-dashed border-slate-800 rounded-xl">${filterMsg}</div>`;
         return;
       }
 
@@ -285,7 +568,10 @@ window.IAMS = (function() {
         else if (t.priority === 'HIGH') priorityColor = 'text-amber-400 bg-amber-500/10 border-amber-500/20';
 
         const clientName = t.client_id?.company_name || 'Client';
-        const specialist = t.assigned_to_id?.full_name || 'Unassigned';
+        const specialist = t.assigned_to_id?.full_name || (typeof t.assigned_to_id === 'string' ? t.assigned_to_id : 'Unassigned');
+        const specialistDept = t.assigned_to_id?.department || '';
+        const specialistInitials = getInitials(specialist);
+        const specialistColor = getStaffColor(specialist, specialistDept);
 
         return `
           <div class="glass-card p-3.5 rounded-xl border border-slate-800/90 shadow-md hover:border-cyan-500/40 transition-all space-y-2.5">
@@ -293,23 +579,33 @@ window.IAMS = (function() {
               <span class="px-2 py-0.5 text-[10px] font-bold rounded-full border ${priorityColor}">
                 ${t.priority}
               </span>
-              <span class="text-[10px] text-gray-400 truncate max-w-[120px] font-medium">${clientName}</span>
+              <span class="text-[10px] text-gray-400 truncate max-w-[120px] font-medium" title="${clientName}">${clientName}</span>
             </div>
             <h4 class="text-xs font-semibold text-white leading-snug">${t.title}</h4>
-            <div class="flex items-center justify-between pt-1 border-t border-slate-800/60 text-[11px] text-gray-400">
-              <div class="flex items-center gap-1.5">
+
+            <!-- Assigned Employee Specialist Badge -->
+            <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800/60">
+              <div class="flex items-center gap-1.5 min-w-0" title="Assigned Specialist: ${specialist}">
+                <div class="w-5 h-5 rounded-full ${specialistColor} text-[9px] font-bold text-white flex items-center justify-center shrink-0 border border-slate-700 shadow-sm">
+                  ${specialistInitials}
+                </div>
+                <span class="text-[11px] font-medium text-slate-300 truncate max-w-[110px]">${specialist}</span>
+              </div>
+              <div class="flex items-center gap-1 text-[11px] text-gray-400 shrink-0">
                 <i data-lucide="clock" class="w-3 h-3 text-cyan-400"></i>
                 <span>${t.time_tracking?.actual_hours || 0}h / ${t.time_tracking?.estimated_hours || 0}h</span>
               </div>
-              <div class="flex items-center gap-1">
-                <select onchange="IAMS.updateTaskStatus('${t.task_id}', this.value)" class="text-[10px] bg-slate-900 border border-slate-700 text-cyan-400 rounded px-1.5 py-0.5">
-                  <option value="BACKLOG" ${t.status === 'BACKLOG' ? 'selected' : ''}>Backlog</option>
-                  <option value="TODO" ${t.status === 'TODO' ? 'selected' : ''}>To Do</option>
-                  <option value="IN_PROGRESS" ${t.status === 'IN_PROGRESS' ? 'selected' : ''}>In Progress</option>
-                  <option value="IN_REVIEW" ${t.status === 'IN_REVIEW' ? 'selected' : ''}>In Review</option>
-                  <option value="DONE" ${t.status === 'DONE' ? 'selected' : ''}>Done</option>
-                </select>
-              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-1 border-t border-slate-800/40 text-[10px] text-gray-400">
+              <span class="text-[10px] text-slate-500 uppercase font-mono tracking-wider">Status</span>
+              <select onchange="IAMS.updateTaskStatus('${t.task_id}', this.value)" class="text-[10px] bg-slate-900 border border-slate-700 text-cyan-400 rounded px-1.5 py-0.5 focus:border-cyan-500 focus:outline-none">
+                <option value="BACKLOG" ${t.status === 'BACKLOG' ? 'selected' : ''}>Backlog</option>
+                <option value="TODO" ${t.status === 'TODO' ? 'selected' : ''}>To Do</option>
+                <option value="IN_PROGRESS" ${t.status === 'IN_PROGRESS' ? 'selected' : ''}>In Progress</option>
+                <option value="IN_REVIEW" ${t.status === 'IN_REVIEW' ? 'selected' : ''}>In Review</option>
+                <option value="DONE" ${t.status === 'DONE' ? 'selected' : ''}>Done</option>
+              </select>
             </div>
           </div>
         `;
@@ -317,6 +613,76 @@ window.IAMS = (function() {
     });
 
     if (window.lucide) window.lucide.createIcons();
+  }
+
+  function toggleEmployeeDropdown(event) {
+    if (event) event.stopPropagation();
+    const menu = document.getElementById('kanban-employee-dropdown-menu');
+    const chevron = document.getElementById('kanban-dropdown-chevron');
+    if (!menu) return;
+    const isHidden = menu.classList.contains('hidden');
+    if (isHidden) {
+      menu.classList.remove('hidden');
+      if (chevron) chevron.classList.add('rotate-180');
+      const searchInput = document.getElementById('kanban-employee-search-input');
+      if (searchInput) searchInput.focus();
+    } else {
+      menu.classList.add('hidden');
+      if (chevron) chevron.classList.remove('rotate-180');
+    }
+  }
+
+  function closeEmployeeDropdown() {
+    const menu = document.getElementById('kanban-employee-dropdown-menu');
+    const chevron = document.getElementById('kanban-dropdown-chevron');
+    if (menu) menu.classList.add('hidden');
+    if (chevron) chevron.classList.remove('rotate-180');
+  }
+
+  function toggleEmployeeSelection(empId) {
+    const idx = selectedEmployeeIds.indexOf(empId);
+    if (idx > -1) {
+      selectedEmployeeIds.splice(idx, 1);
+    } else {
+      selectedEmployeeIds.push(empId);
+    }
+    applyKanbanFiltering();
+  }
+
+  function selectAllEmployees(event) {
+    if (event) event.stopPropagation();
+    selectedEmployeeIds = [];
+    applyKanbanFiltering();
+    showToast('Tracking all team members');
+  }
+
+  function clearEmployeeSelection(event) {
+    if (event) event.stopPropagation();
+    selectedEmployeeIds = [];
+    applyKanbanFiltering();
+  }
+
+  function clearKanbanFilter() {
+    selectedEmployeeIds = [];
+    applyKanbanFiltering();
+    showToast('Reset to all team tasks');
+  }
+
+  function filterEmployeeSearch(query) {
+    employeeSearchQuery = query;
+    renderEmployeeDropdownList();
+  }
+
+  if (typeof document !== 'undefined') {
+    document.addEventListener('click', (e) => {
+      const root = document.getElementById('kanban-employee-dropdown-root');
+      const menu = document.getElementById('kanban-employee-dropdown-menu');
+      if (root && menu && !root.contains(e.target)) {
+        menu.classList.add('hidden');
+        const chevron = document.getElementById('kanban-dropdown-chevron');
+        if (chevron) chevron.classList.remove('rotate-180');
+      }
+    });
   }
 
   async function updateTaskStatus(taskId, newStatus) {
@@ -597,6 +963,13 @@ window.IAMS = (function() {
     generatePortalLink,
     convertLeadModal,
     openClientAccessModal,
-    submitCreateClientUser
+    submitCreateClientUser,
+    toggleEmployeeDropdown,
+    closeEmployeeDropdown,
+    toggleEmployeeSelection,
+    selectAllEmployees,
+    clearEmployeeSelection,
+    clearKanbanFilter,
+    filterEmployeeSearch
   };
 })();
