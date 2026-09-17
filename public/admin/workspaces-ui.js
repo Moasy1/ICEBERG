@@ -1445,6 +1445,9 @@ function openTaskDetailsModal(taskId, updateUrl = true) {
   // Attachments
   renderDrawerAttachments(task);
 
+  // Linked Resources Hub (Docs, Bookmarks & Discussion Topics)
+  renderDrawerLinkedHub(task);
+
   // Comments
   renderDrawerComments(task);
 
@@ -2112,13 +2115,24 @@ function renderDrawerSubtasks(task) {
 
   listEl.innerHTML = subtasks.map(st => `
     <div class="flex items-center justify-between p-2 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 transition-colors group">
-      <label class="flex items-center gap-2.5 text-xs text-slate-200 cursor-pointer flex-1">
+      <label class="flex items-center gap-2.5 text-xs text-slate-200 cursor-pointer flex-1 min-w-0">
         <input type="checkbox" ${st.completed ? 'checked' : ''} onchange="toggleDrawerSubtask('${st.subtask_id}')" class="rounded bg-slate-800 border-slate-700 text-cyan-500 focus:ring-0 w-3.5 h-3.5">
-        <span class="${st.completed ? 'line-through text-slate-500' : 'text-slate-200'}">${escapeHtml(st.title)}</span>
+        <span class="truncate ${st.completed ? 'line-through text-slate-500' : 'text-slate-200'}">${escapeHtml(st.title)}</span>
       </label>
-      <button type="button" onclick="deleteDrawerSubtask('${st.subtask_id}')" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 p-1 transition-opacity">
-        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-      </button>
+      <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+        <button type="button" onclick="attachFileToSubtask('${st.subtask_id}')" title="Attach file to this subtask (syncs to Docs)" class="p-1 text-slate-400 hover:text-cyan-400 rounded transition-colors">
+          <i data-lucide="paperclip" class="w-3.5 h-3.5"></i>
+        </button>
+        <button type="button" onclick="attachLinkToSubtask('${st.subtask_id}')" title="Attach link to this subtask (syncs to Bookmarks)" class="p-1 text-slate-400 hover:text-purple-400 rounded transition-colors">
+          <i data-lucide="link-2" class="w-3.5 h-3.5"></i>
+        </button>
+        <button type="button" onclick="discussSubtask('${st.subtask_id}', '${escapeHtml(st.title).replace(/'/g, "\\'")}')" title="Discuss subtask (syncs to Messages)" class="p-1 text-slate-400 hover:text-emerald-400 rounded transition-colors">
+          <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+        </button>
+        <button type="button" onclick="deleteDrawerSubtask('${st.subtask_id}')" title="Delete subtask" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 p-1 transition-opacity">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
     </div>
   `).join('');
 
@@ -2425,7 +2439,9 @@ async function processUploadedFiles(files) {
 
       task.attachments.push(attachmentObj);
 
-      // Async sync to /api/iams/upload
+      const targetSubtaskId = window._activeSubtaskTargetId || null;
+
+      // 1. Async sync to /api/iams/upload
       fetch('/api/iams/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2436,12 +2452,44 @@ async function processUploadedFiles(files) {
           data: dataUrl
         })
       }).catch(() => {});
+
+      // 2. Auto-sync file deliverable to Docs tab & database
+      fetch('/api/iams/docs/sync-task-file', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-demo-admin': 'true',
+          'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
+        },
+        body: JSON.stringify({
+          project_id: task.project_id || window.WorkspacesState.currentProjectId,
+          task_id: task.task_id,
+          subtask_id: targetSubtaskId,
+          task_title: task.title,
+          name: file.name,
+          url: dataUrl,
+          size: formatFileSize(file.size),
+          type: file.type,
+          is_image: isImg
+        })
+      }).then(r => r.json()).then(res => {
+        if (res.success && res.data) {
+          if (!window.WorkspacesState.docs) window.WorkspacesState.docs = [];
+          const existingIdx = window.WorkspacesState.docs.findIndex(d => d.task_id === task.task_id && d.title === file.name);
+          if (existingIdx >= 0) window.WorkspacesState.docs[existingIdx] = res.data;
+          else window.WorkspacesState.docs.unshift(res.data);
+          renderDrawerLinkedHub(task);
+        }
+      }).catch(err => console.warn('Docs cross-link sync error:', err));
     } catch (err) {
       console.warn('Failed reading file:', file.name, err);
     }
   }
 
+  window._activeSubtaskTargetId = null;
+
   renderDrawerAttachments(task);
+  renderDrawerLinkedHub(task);
   if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
   else renderTaskListView();
 
@@ -2478,26 +2526,55 @@ function promptAddWebEmbedLink() {
     }
   }
 
-  const task = getActiveDrawerTask();
-  if (!task) return;
-  if (!task.attachments) task.attachments = [];
+  const targetSubtaskId = window._activeSubtaskTargetId || null;
 
   task.attachments.push({
     name,
     size: 'Web Embed',
     url: trimmed,
     type: 'link',
+    subtask_id: targetSubtaskId,
     is_image: /\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(trimmed),
     uploaded_at: new Date().toISOString()
   });
 
+  // Auto-sync link embed to Bookmarks tab & database
+  fetch('/api/iams/bookmarks/sync-task-link', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-demo-admin': 'true',
+      'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
+    },
+    body: JSON.stringify({
+      project_id: task.project_id || window.WorkspacesState.currentProjectId,
+      task_id: task.task_id,
+      subtask_id: targetSubtaskId,
+      task_title: task.title,
+      url: trimmed,
+      title: name,
+      source: 'TASK_ATTACHMENT'
+    })
+  }).then(r => r.json()).then(res => {
+    if (res.success && res.data) {
+      if (!window.WorkspacesState.bookmarks) window.WorkspacesState.bookmarks = [];
+      const existingIdx = window.WorkspacesState.bookmarks.findIndex(b => b.url === trimmed);
+      if (existingIdx >= 0) window.WorkspacesState.bookmarks[existingIdx] = res.data;
+      else window.WorkspacesState.bookmarks.unshift(res.data);
+      renderDrawerLinkedHub(task);
+    }
+  }).catch(err => console.warn('Bookmarks cross-link sync error:', err));
+
+  window._activeSubtaskTargetId = null;
+
   renderDrawerAttachments(task);
+  renderDrawerLinkedHub(task);
   if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
   else renderTaskListView();
   syncTaskUpdateToServer(task);
 
   if (typeof showNotification === 'function') {
-    showNotification(`Embedded "${name}" link successfully!`, 'success');
+    showNotification(`Embedded "${name}" and synced to Bookmarks!`, 'success');
   }
 }
 
@@ -2852,6 +2929,189 @@ function promptAddDrawerAttachment() {
   triggerDeviceFileUpload();
 }
 
+function attachFileToSubtask(subtaskId) {
+  window._activeSubtaskTargetId = subtaskId;
+  triggerDeviceFileUpload();
+}
+
+function attachLinkToSubtask(subtaskId) {
+  window._activeSubtaskTargetId = subtaskId;
+  promptAddWebEmbedLink();
+}
+
+function discussSubtask(subtaskId, subtaskTitle) {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  const title = prompt(`Start internal discussion topic for subtask "${subtaskTitle}":`, `[Subtask] ${subtaskTitle} — ${task.title}`);
+  if (!title || !title.trim()) return;
+  const content = prompt(`Enter initial message/spec for "${title}":`, `Discussion and deliverables for subtask: ${subtaskTitle}`);
+  if (!content || !content.trim()) return;
+
+  const prjId = task.project_id || window.WorkspacesState.currentProjectId;
+  fetch('/api/iams/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-demo-admin': 'true',
+      'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
+    },
+    body: JSON.stringify({
+      project_id: prjId,
+      task_id: task.task_id,
+      subtask_id: subtaskId,
+      task_title: task.title,
+      title: title.trim(),
+      content_html: `<p>${escapeHtml(content.trim()).replace(/\n/g, '<br>')}</p>`,
+      category: 'QUESTION'
+    })
+  }).then(r => r.json()).then(res => {
+    if (res.success) {
+      if (typeof showNotification === 'function') {
+        showNotification('Discussion topic created for subtask!', 'success');
+      }
+      loadProjectMessages().then(() => renderDrawerLinkedHub(task));
+      if (res.data?.topic_id) openTopicThreadModal(res.data.topic_id);
+    }
+  }).catch(err => console.warn('Failed to post subtask topic:', err));
+}
+
+async function promptCreateTaskDiscussion() {
+  const task = getActiveDrawerTask();
+  if (!task) return;
+  const title = prompt(`Start internal message topic for task "${task.title}":`, `Discussion: ${task.title}`);
+  if (!title || !title.trim()) return;
+  const content = prompt(`Enter initial message/context for "${title}":`, `Team discussion regarding deliverable: ${task.title}`);
+  if (!content || !content.trim()) return;
+
+  const prjId = task.project_id || window.WorkspacesState.currentProjectId;
+  try {
+    const res = await fetch('/api/iams/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-demo-admin': 'true',
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
+      },
+      body: JSON.stringify({
+        project_id: prjId,
+        task_id: task.task_id,
+        task_title: task.title,
+        title: title.trim(),
+        content_html: `<p>${escapeHtml(content.trim()).replace(/\n/g, '<br>')}</p>`,
+        category: 'QUESTION'
+      })
+    });
+    const result = await res.json();
+    if (result.success) {
+      if (typeof showNotification === 'function') {
+        showNotification('Internal discussion topic created for task!', 'success');
+      }
+      await loadProjectMessages();
+      renderDrawerLinkedHub(task);
+      if (result.data?.topic_id) {
+        openTopicThreadModal(result.data.topic_id);
+      }
+    }
+  } catch (err) {
+    console.error('Failed to create task discussion topic:', err);
+  }
+}
+
+function renderDrawerLinkedHub(task) {
+  const hub = document.getElementById('task-drawer-linked-hub');
+  if (!hub || !task) return;
+
+  const taskId = task.task_id;
+  const docs = (window.WorkspacesState.docs || []).filter(d => d.task_id === taskId);
+  const bookmarks = (window.WorkspacesState.bookmarks || []).filter(b => b.task_id === taskId);
+  const topics = (window.WorkspacesState.topics || []).filter(t => t.task_id === taskId);
+
+  if (docs.length === 0 && bookmarks.length === 0 && topics.length === 0) {
+    hub.innerHTML = `
+      <div class="p-3 rounded-xl bg-slate-900/50 border border-slate-800 text-center text-xs text-slate-500">
+        No linked docs, bookmarks, or discussion topics yet. Upload files, embed links, or click <button type="button" onclick="promptCreateTaskDiscussion()" class="text-cyan-400 hover:underline font-semibold">Start Topic</button>.
+      </div>
+    `;
+    return;
+  }
+
+  let html = '';
+
+  // Topics
+  if (topics.length > 0) {
+    html += `
+      <div class="space-y-1">
+        <div class="text-[10px] uppercase font-mono text-cyan-400 font-bold tracking-wider flex items-center gap-1">
+          <i data-lucide="message-square" class="w-3 h-3"></i> Internal Discussion Topics (${topics.length})
+        </div>
+        <div class="space-y-1">
+          ${topics.map(top => `
+            <div onclick="openTopicThreadModal('${top.topic_id}')" class="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all group">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 shrink-0"></span>
+                <span class="text-xs text-slate-200 group-hover:text-cyan-300 font-medium truncate">${escapeHtml(top.title)}</span>
+              </div>
+              <span class="text-[10px] text-slate-400 font-mono flex items-center gap-1 shrink-0">
+                <i data-lucide="message-circle" class="w-3 h-3 text-slate-500"></i> ${top.replies_count || 0}
+              </span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // Docs & Deliverables
+  if (docs.length > 0) {
+    html += `
+      <div class="space-y-1 pt-1">
+        <div class="text-[10px] uppercase font-mono text-amber-400 font-bold tracking-wider flex items-center gap-1">
+          <i data-lucide="file-text" class="w-3 h-3"></i> Linked Docs & Deliverables (${docs.length})
+        </div>
+        <div class="space-y-1">
+          ${docs.map(d => `
+            <div onclick="openDocEditorModal('${d.doc_id}')" class="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-amber-500/50 cursor-pointer transition-all group">
+              <div class="flex items-center gap-2 min-w-0">
+                <i data-lucide="${d.icon || 'file-text'}" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
+                <span class="text-xs text-slate-200 group-hover:text-amber-300 font-medium truncate">${escapeHtml(d.title)}</span>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40 font-mono">v${d.current_version || 1}</span>
+                ${d.file_url ? `<button type="button" onclick="event.stopPropagation(); triggerBrowserDownload('${d.file_url}', '${escapeHtml(d.title)}')" class="p-1 text-slate-400 hover:text-emerald-400"><i data-lucide="download" class="w-3 h-3"></i></button>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // Bookmarks
+  if (bookmarks.length > 0) {
+    html += `
+      <div class="space-y-1 pt-1">
+        <div class="text-[10px] uppercase font-mono text-purple-400 font-bold tracking-wider flex items-center gap-1">
+          <i data-lucide="bookmark" class="w-3 h-3"></i> Bookmarked Links (${bookmarks.length})
+        </div>
+        <div class="space-y-1">
+          ${bookmarks.map(b => `
+            <div class="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 transition-all group">
+              <a href="${escapeHtml(b.url)}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 min-w-0 flex-1">
+                ${b.favicon_url ? `<img src="${escapeHtml(b.favicon_url)}" class="w-3.5 h-3.5 rounded-sm" onerror="this.style.display='none'">` : '<i data-lucide="globe" class="w-3.5 h-3.5 text-purple-400"></i>'}
+                <span class="text-xs text-slate-200 group-hover:text-purple-300 font-medium truncate">${escapeHtml(b.title || b.url)}</span>
+              </a>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono shrink-0">${escapeHtml(b.domain || 'Link')}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  hub.innerHTML = html;
+  if (window.lucide) window.lucide.createIcons();
+}
+
 // Global Image Lightbox Preview
 function previewFullAttachmentImage(url, title) {
   const lightbox = document.getElementById('iceberg-media-lightbox');
@@ -3058,6 +3318,70 @@ function handleDrawerAddComment(e) {
   window.pendingCommentAttachments = [];
   renderPendingCommentAttachments();
   renderDrawerComments(task);
+
+  // Auto-sync URLs from comment text to Bookmarks
+  const urlRegex = /https?:\/\/[^\s<"']+/gi;
+  const commentUrls = (text || '').match(urlRegex) || [];
+  commentUrls.forEach(u => {
+    fetch('/api/iams/bookmarks/sync-task-link', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-demo-admin': 'true',
+        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
+      },
+      body: JSON.stringify({
+        project_id: task.project_id || window.WorkspacesState.currentProjectId,
+        task_id: task.task_id,
+        task_title: task.title,
+        url: u,
+        source: 'TASK_COMMENT'
+      })
+    }).then(r => r.json()).then(res => {
+      if (res.success && res.data) {
+        if (!window.WorkspacesState.bookmarks) window.WorkspacesState.bookmarks = [];
+        const existingIdx = window.WorkspacesState.bookmarks.findIndex(b => b.url === u);
+        if (existingIdx >= 0) window.WorkspacesState.bookmarks[existingIdx] = res.data;
+        else window.WorkspacesState.bookmarks.unshift(res.data);
+        renderDrawerLinkedHub(task);
+      }
+    }).catch(err => console.warn('Sync comment URL to bookmarks error:', err));
+  });
+
+  // Auto-sync files from comment attachments to Docs
+  if (attachedCopy.length > 0) {
+    attachedCopy.forEach(att => {
+      if (att && att.url && !att.url.startsWith('http')) {
+        fetch('/api/iams/docs/sync-task-file', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-demo-admin': 'true',
+            'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
+          },
+          body: JSON.stringify({
+            project_id: task.project_id || window.WorkspacesState.currentProjectId,
+            task_id: task.task_id,
+            task_title: task.title,
+            name: att.name,
+            url: att.url,
+            size: att.size,
+            is_image: !!att.is_image
+          })
+        }).then(r => r.json()).then(res => {
+          if (res.success && res.data) {
+            if (!window.WorkspacesState.docs) window.WorkspacesState.docs = [];
+            const existingIdx = window.WorkspacesState.docs.findIndex(d => d.task_id === task.task_id && d.title === att.name);
+            if (existingIdx >= 0) window.WorkspacesState.docs[existingIdx] = res.data;
+            else window.WorkspacesState.docs.unshift(res.data);
+            renderDrawerLinkedHub(task);
+          }
+        }).catch(err => console.warn('Sync comment file to docs error:', err));
+      }
+    });
+  }
+
+  renderDrawerLinkedHub(task);
 
   if (window.WorkspacesState.activeTool === 'kanban') renderKanbanColumns();
   else renderTaskListView();
@@ -3419,6 +3743,14 @@ function renderMessagesTopicList() {
       <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
         ${top.is_pinned ? '📌 ' : ''}${escapeHtml(top.title)}
       </h3>
+      ${top.task_id ? `
+        <div class="mb-2">
+          <button type="button" onclick="event.stopPropagation(); openTaskDetailsModal('${top.task_id}')" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-cyan-950/70 border border-cyan-800/60 text-[10px] text-cyan-300 font-semibold hover:bg-cyan-900 transition-colors">
+            <i data-lucide="check-square" class="w-3 h-3 text-cyan-400"></i>
+            <span class="truncate max-w-[240px]">Task: ${escapeHtml(top.task_title || top.task_id)}</span>
+          </button>
+        </div>
+      ` : ''}
       <div class="text-xs text-slate-400 line-clamp-2 mb-3">
         ${escapeHtml(top.content_html.replace(/<[^>]*>?/gm, ''))}
       </div>
@@ -3518,18 +3850,36 @@ function renderDocsGrid() {
   container.innerHTML = docs.map(d => `
     <div onclick="openDocEditorModal('${d.doc_id}')" class="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all shadow-md group">
       <div class="flex items-center justify-between mb-3">
-        <div class="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center">
-          <i data-lucide="file-text" class="w-4 h-4"></i>
+        <div class="w-8 h-8 rounded-xl ${d.is_deliverable ? 'bg-amber-500/10 border border-amber-500/30 text-amber-400' : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-400'} flex items-center justify-center">
+          <i data-lucide="${d.is_deliverable ? (d.icon || 'package') : 'file-text'}" class="w-4 h-4"></i>
         </div>
-        <span class="text-[10px] text-slate-500 font-mono">v${d.current_version}</span>
+        <div class="flex items-center gap-1.5">
+          ${d.is_deliverable ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950/60 text-amber-300 border border-amber-800/40">Deliverable</span>' : ''}
+          <span class="text-[10px] text-slate-500 font-mono">v${d.current_version || 1}</span>
+        </div>
       </div>
       <h3 class="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors mb-2">${escapeHtml(d.title)}</h3>
+      ${d.task_id ? `
+        <div class="mb-2">
+          <button type="button" onclick="event.stopPropagation(); openTaskDetailsModal('${d.task_id}')" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-cyan-950/70 border border-cyan-800/60 text-[10px] text-cyan-300 font-semibold hover:bg-cyan-900 transition-colors">
+            <i data-lucide="check-square" class="w-3 h-3 text-cyan-400"></i>
+            <span class="truncate max-w-[200px]">Task: ${escapeHtml(d.task_title || d.task_id)}</span>
+          </button>
+        </div>
+      ` : ''}
       <div class="text-xs text-slate-400 line-clamp-2 mb-4">
         ${escapeHtml(d.content_html ? d.content_html.replace(/<[^>]*>?/gm, '') : 'Structured documentation')}
       </div>
       <div class="flex items-center justify-between text-[10px] text-slate-500 pt-3 border-t border-slate-800/60">
         <span>By ${escapeHtml(d.last_edited_by || 'Team')}</span>
-        <span>${new Date(d.updated_at).toLocaleDateString()}</span>
+        <div class="flex items-center gap-2">
+          ${d.file_url ? `
+            <button type="button" onclick="event.stopPropagation(); triggerBrowserDownload('${d.file_url}', '${escapeHtml(d.title)}')" class="text-emerald-400 hover:underline flex items-center gap-0.5">
+              <i data-lucide="download" class="w-3 h-3"></i> Download
+            </button>
+          ` : ''}
+          <span>${new Date(d.updated_at).toLocaleDateString()}</span>
+        </div>
       </div>
     </div>
   `).join('');
@@ -3717,6 +4067,15 @@ function renderBookmarksGrid() {
       </div>
       <h4 class="text-xs font-bold text-white group-hover:text-cyan-400 transition-colors line-clamp-1 mb-1">${escapeHtml(b.title)}</h4>
       <p class="text-[11px] text-slate-400 line-clamp-2 mb-2">${escapeHtml(b.description || '')}</p>
+      ${b.task_id ? `
+        <div class="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between">
+          <button type="button" onclick="event.preventDefault(); event.stopPropagation(); openTaskDetailsModal('${b.task_id}')" class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md bg-cyan-950/60 border border-cyan-800/40 text-cyan-400 font-semibold hover:bg-cyan-900 transition-colors">
+            <i data-lucide="check-square" class="w-3 h-3"></i>
+            <span class="truncate max-w-[150px]">Task: ${escapeHtml(b.task_title || b.task_id)}</span>
+          </button>
+          <span class="text-[9px] text-slate-500 font-mono">${b.source === 'TASK_COMMENT' ? 'From Comment' : 'Task Deliverable'}</span>
+        </div>
+      ` : ''}
     </a>
   `).join('');
 
@@ -4346,6 +4705,11 @@ window.onDrawerAddAssignee = onDrawerAddAssignee;
 window.removeDrawerAssignee = removeDrawerAssignee;
 window.handleCommentInput = handleCommentInput;
 window.renderCommentMentionDropdown = renderCommentMentionDropdown;
+window.renderDrawerLinkedHub = renderDrawerLinkedHub;
+window.promptCreateTaskDiscussion = promptCreateTaskDiscussion;
+window.attachFileToSubtask = attachFileToSubtask;
+window.attachLinkToSubtask = attachLinkToSubtask;
+window.discussSubtask = discussSubtask;
 
 // Keyboard shortcuts (Esc to close drawer)
 if (typeof document !== 'undefined') {

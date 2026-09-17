@@ -513,6 +513,34 @@ window.EmployeesUI = (function() {
             </div>
           </div>
 
+          <!-- Cross-Tool Collaboration KPIs -->
+          <div class="grid grid-cols-4 gap-1.5 text-center p-2 rounded-xl bg-slate-950/50 border border-slate-800/60">
+            <div>
+              <div class="text-[9px] text-gray-500 font-mono">Docs & Files</div>
+              <div class="text-xs font-bold text-amber-300 font-mono mt-0.5 flex items-center justify-center gap-1">
+                <i data-lucide="file-text" class="w-3 h-3"></i> ${m.docs_produced_count || 0}
+              </div>
+            </div>
+            <div>
+              <div class="text-[9px] text-gray-500 font-mono">Bookmarks</div>
+              <div class="text-xs font-bold text-purple-300 font-mono mt-0.5 flex items-center justify-center gap-1">
+                <i data-lucide="bookmark" class="w-3 h-3"></i> ${m.bookmarks_shared_count || 0}
+              </div>
+            </div>
+            <div>
+              <div class="text-[9px] text-gray-500 font-mono">Subtasks</div>
+              <div class="text-xs font-bold text-cyan-300 font-mono mt-0.5 flex items-center justify-center gap-1">
+                <i data-lucide="check-square" class="w-3 h-3"></i> ${m.subtask_rate || 100}%
+              </div>
+            </div>
+            <div>
+              <div class="text-[9px] text-gray-500 font-mono">Collab Score</div>
+              <div class="text-xs font-bold text-emerald-400 font-mono mt-0.5 flex items-center justify-center gap-1">
+                <i data-lucide="zap" class="w-3 h-3"></i> ${m.collaboration_score || 95}%
+              </div>
+            </div>
+          </div>
+
           <!-- Executive Rating & Reviews -->
           <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
             <div class="flex items-center gap-1.5">
