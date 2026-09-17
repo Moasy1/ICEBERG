@@ -77,6 +77,18 @@ window.EmployeesUI = (function() {
     }
   }
 
+  const CLIENT_ROLES = ['ClientGuest', 'CLIENT_VIEWER', 'GUEST'];
+  function isInternalEmployee(user) {
+    if (!user) return false;
+    if (CLIENT_ROLES.includes(user.role)) return false;
+    if (user.assigned_client_id) return false;
+    const email = (user.email || '').toLowerCase();
+    if (email.startsWith('client_') || email.includes('@client.')) return false;
+    const name = (user.full_name || '').toLowerCase();
+    if (name.includes('client representative')) return false;
+    return true;
+  }
+
   // 1. Initializer
   async function init() {
     await Promise.all([loadEmployees(), loadPerformance()]);
@@ -87,7 +99,7 @@ window.EmployeesUI = (function() {
   async function loadEmployees() {
     const res = await api('/api/iams/employees');
     if (res.success) {
-      employees = res.employees || [];
+      employees = (res.employees || []).filter(isInternalEmployee);
       if (!selectedEmpForOnboarding && employees.length > 0) {
         selectedEmpForOnboarding = employees[0]._id;
       }
@@ -100,7 +112,7 @@ window.EmployeesUI = (function() {
   async function loadPerformance() {
     const res = await api('/api/iams/employees/performance');
     if (res.success) {
-      performanceRecords = res.performance || [];
+      performanceRecords = (res.performance || []).filter(isInternalEmployee);
     }
   }
 
