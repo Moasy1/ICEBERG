@@ -2671,7 +2671,7 @@
                         <div id="upbase-panel-messages" class="hidden space-y-4">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-sm font-bold text-white">Project Discussion Topics (Async Messages)</h3>
-                                <button onclick="document.getElementById('upbase-new-topic-modal').classList.remove('hidden')" class="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all">+ Post Topic</button>
+                                <button onclick="openNewTopicModal()" class="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all">+ Post Topic</button>
                             </div>
                             <div id="upbase-messages-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                         </div>
@@ -5012,6 +5012,12 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-400 mb-1">Topic Title *</label>
                     <input type="text" id="new-topic-title" required placeholder="Sprint 14 Launch Architecture..." class="form-input w-full px-3 py-2 rounded-xl text-xs bg-slate-900 border border-slate-800 text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">Link to Task (Optional)</label>
+                    <select id="new-topic-task-select" class="form-input w-full px-3 py-2 rounded-xl text-xs bg-slate-900 border border-slate-800 text-white">
+                        <option value="">-- General Topic (No Task) --</option>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-400 mb-1">Category</label>

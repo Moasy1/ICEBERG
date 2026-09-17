@@ -452,8 +452,24 @@ const DEFAULT_FALLBACK_TASKS = {
       created_at: '2026-09-03T11:00:00Z',
       assignees: [{ user_id: 'usr_steven', full_name: 'Steven', title: 'Video Editor', avatar_url: '' }],
       subtasks: [],
-      attachments: [],
-      comments: []
+      attachments: [
+        {
+          name: 'ICEBERG_KPI_SLA_Report_2026-09-17.csv',
+          size: '6.8 KB',
+          type: 'text/csv',
+          url: '/api/iams/download?file=ICEBERG_KPI_SLA_Report_2026-09-17.csv',
+          uploaded_at: '2026-09-17T14:30:00Z'
+        }
+      ],
+      comments: [
+        {
+          comment_id: 'c_ds_1',
+          author_name: 'Steven',
+          author_initials: 'ST',
+          text: 'Uploaded the SLA delivery benchmark report. Review master renders at https://drive.google.com for full video cut specs.',
+          created_at: '2026-09-17T14:31:00Z'
+        }
+      ]
     }
   ],
   prj_ghost_note: [
@@ -675,7 +691,10 @@ const DEFAULT_FALLBACK_TASKS = {
 
 const DEFAULT_FALLBACK_TOPICS = [
   {
-    topic_id: 'top_1',
+    topic_id: 'top_drum_shop_1',
+    project_id: 'prj_drum_shop',
+    task_id: 'task_ds_2',
+    task_title: 'Cymbal demo video edit & optimized vertical reels',
     title: 'Sprint 14 Launch Architecture & Client Roadmaps',
     category: 'ARCHITECTURE',
     content_html: '<p>Welcome to the unified project space. Check all deliverables, brand specs, and upcoming production milestones here.</p>',
@@ -688,9 +707,30 @@ const DEFAULT_FALLBACK_TOPICS = [
 
 const DEFAULT_FALLBACK_DOCS = [
   {
+    doc_id: 'doc_deliv_13j582b',
+    project_id: 'prj_drum_shop',
+    task_id: 'task_ds_2',
+    task_title: 'Cymbal demo video edit & optimized vertical reels',
+    title: 'ICEBERG_KPI_SLA_Report_2026-09-17.csv',
+    is_deliverable: true,
+    icon: 'file-text',
+    file_url: '/api/iams/download?file=ICEBERG_KPI_SLA_Report_2026-09-17.csv',
+    file_size: '6.8 KB',
+    current_version: 1,
+    content_html: '<p>Verified task deliverable for Cymbal demo video edit SLA report & conversion KPI metrics.</p>',
+    last_edited_by: 'Steven',
+    updated_at: '2026-09-17T14:30:00Z',
+    version_history: [{ version_number: 1, created_at: '2026-09-17T14:30:00Z' }]
+  },
+  {
     doc_id: 'doc_1',
+    project_id: 'prj_drum_shop',
+    task_id: 'task_ds_1',
+    task_title: 'Drum Shop brand identity, vector assets & catalog staging',
     title: 'Project Scope & Creative Brief',
     content_html: '<h2>Creative Strategy</h2><p>Establish high-converting brand presence and seamless omnichannel customer journey.</p><h3>Key Deliverables</h3><ul><li>High-fidelity Brand UI</li><li>Omnichannel Paid Media Assets</li><li>B2B Conversion Funnels</li></ul>',
+    last_edited_by: 'Team',
+    updated_at: new Date().toISOString(),
     version_history: [{ version_number: 1, created_at: new Date().toISOString() }]
   }
 ];
@@ -698,6 +738,9 @@ const DEFAULT_FALLBACK_DOCS = [
 const DEFAULT_FALLBACK_BOOKMARKS = [
   {
     bookmark_id: 'bm_1',
+    project_id: 'prj_drum_shop',
+    task_id: 'task_ds_1',
+    task_title: 'Drum Shop brand identity, vector assets & catalog staging',
     url: 'https://www.figma.com',
     title: 'Figma Brand System & UI Assets',
     domain: 'figma.com',
@@ -705,6 +748,9 @@ const DEFAULT_FALLBACK_BOOKMARKS = [
   },
   {
     bookmark_id: 'bm_2',
+    project_id: 'prj_drum_shop',
+    task_id: 'task_ds_2',
+    task_title: 'Cymbal demo video edit & optimized vertical reels',
     url: 'https://drive.google.com',
     title: 'Master Assets & 4K Renders',
     domain: 'drive.google.com',
@@ -3041,43 +3087,7 @@ function discussSubtask(subtaskId, subtaskTitle) {
 async function promptCreateTaskDiscussion() {
   const task = getActiveDrawerTask();
   if (!task) return;
-  const title = prompt(`Start internal message topic for task "${task.title}":`, `Discussion: ${task.title}`);
-  if (!title || !title.trim()) return;
-  const content = prompt(`Enter initial message/context for "${title}":`, `Team discussion regarding deliverable: ${task.title}`);
-  if (!content || !content.trim()) return;
-
-  const prjId = task.project_id || window.WorkspacesState.currentProjectId;
-  try {
-    const res = await fetch('/api/iams/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-demo-admin': 'true',
-        'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
-      },
-      body: JSON.stringify({
-        project_id: prjId,
-        task_id: task.task_id,
-        task_title: task.title,
-        title: title.trim(),
-        content_html: `<p>${escapeHtml(content.trim()).replace(/\n/g, '<br>')}</p>`,
-        category: 'QUESTION'
-      })
-    });
-    const result = await res.json();
-    if (result.success) {
-      if (typeof showNotification === 'function') {
-        showNotification('Internal discussion topic created for task!', 'success');
-      }
-      await loadProjectMessages();
-      renderDrawerLinkedHub(task);
-      if (result.data?.topic_id) {
-        openTopicThreadModal(result.data.topic_id);
-      }
-    }
-  } catch (err) {
-    console.error('Failed to create task discussion topic:', err);
-  }
+  openNewTopicModal(task.task_id);
 }
 
 function renderDrawerLinkedHub(task) {
@@ -3085,8 +3095,65 @@ function renderDrawerLinkedHub(task) {
   if (!hub || !task) return;
 
   const taskId = task.task_id;
-  const docs = (window.WorkspacesState.docs || []).filter(d => d.task_id === taskId);
-  const bookmarks = (window.WorkspacesState.bookmarks || []).filter(b => b.task_id === taskId);
+
+  // 1. Gather docs from WorkspacesState.docs AND task.attachments
+  const docs = [...(window.WorkspacesState.docs || []).filter(d => d.task_id === taskId)];
+  if (Array.isArray(task.attachments)) {
+    task.attachments.forEach(att => {
+      if (!docs.some(d => d.title === att.name || (att.url && d.file_url === att.url))) {
+        docs.push({
+          doc_id: 'att_' + (att.name || Math.random()).replace(/[^a-zA-Z0-9]/g, '_'),
+          title: att.name,
+          task_id: taskId,
+          task_title: task.title,
+          is_deliverable: true,
+          file_url: att.url,
+          file_size: att.size || 'File',
+          icon: att.is_image ? 'image' : 'file-text',
+          current_version: 1
+        });
+      }
+    });
+  }
+
+  // 2. Gather bookmarks from WorkspacesState.bookmarks AND task links
+  const bookmarks = [...(window.WorkspacesState.bookmarks || []).filter(b => b.task_id === taskId)];
+  const urlRegex = /(https?:\/\/[^\s<]+)/gi;
+  if (Array.isArray(task.comments)) {
+    task.comments.forEach(c => {
+      const matches = (c.text || '').match(urlRegex) || [];
+      matches.forEach(url => {
+        if (!bookmarks.some(b => b.url === url)) {
+          let domain = 'link';
+          try { domain = new URL(url).hostname.replace('www.', ''); } catch (e) {}
+          bookmarks.push({
+            bookmark_id: 'bmk_c_' + Math.random().toString(36).substring(2, 7),
+            title: url,
+            url: url,
+            domain: domain,
+            task_id: taskId
+          });
+        }
+      });
+    });
+  }
+  if (Array.isArray(task.attachments)) {
+    task.attachments.forEach(att => {
+      if (att.url && /^https?:\/\//i.test(att.url) && !bookmarks.some(b => b.url === att.url)) {
+        let domain = 'link';
+        try { domain = new URL(att.url).hostname.replace('www.', ''); } catch (e) {}
+        bookmarks.push({
+          bookmark_id: 'bmk_att_' + Math.random().toString(36).substring(2, 7),
+          title: att.name || att.url,
+          url: att.url,
+          domain: domain,
+          task_id: taskId
+        });
+      }
+    });
+  }
+
+  // 3. Gather topics
   const topics = (window.WorkspacesState.topics || []).filter(t => t.task_id === taskId);
 
   if (docs.length === 0 && bookmarks.length === 0 && topics.length === 0) {
@@ -3095,84 +3162,133 @@ function renderDrawerLinkedHub(task) {
         No linked docs, bookmarks, or discussion topics yet. Upload files, embed links, or click <button type="button" onclick="promptCreateTaskDiscussion()" class="text-cyan-400 hover:underline font-semibold">Start Topic</button>.
       </div>
     `;
-    return;
-  }
+  } else {
+    let html = '';
 
-  let html = '';
-
-  // Topics
-  if (topics.length > 0) {
-    html += `
-      <div class="space-y-1">
-        <div class="text-[10px] uppercase font-mono text-cyan-400 font-bold tracking-wider flex items-center gap-1">
-          <i data-lucide="message-square" class="w-3 h-3"></i> Internal Discussion Topics (${topics.length})
-        </div>
+    // Topics
+    if (topics.length > 0) {
+      html += `
         <div class="space-y-1">
-          ${topics.map(top => `
-            <div onclick="openTopicThreadModal('${top.topic_id}')" class="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all group">
-              <div class="flex items-center gap-2 min-w-0">
-                <span class="w-2 h-2 rounded-full bg-cyan-400 shrink-0"></span>
-                <span class="text-xs text-slate-200 group-hover:text-cyan-300 font-medium truncate">${escapeHtml(top.title)}</span>
+          <div class="text-[10px] uppercase font-mono text-cyan-400 font-bold tracking-wider flex items-center gap-1">
+            <i data-lucide="message-square" class="w-3 h-3"></i> Internal Discussion Topics (${topics.length})
+          </div>
+          <div class="space-y-1">
+            ${topics.map(top => `
+              <div onclick="openTopicThreadModal('${top.topic_id}')" class="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all group">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400 shrink-0"></span>
+                  <span class="text-xs text-slate-200 group-hover:text-cyan-300 font-medium truncate">${escapeHtml(top.title)}</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-mono flex items-center gap-1 shrink-0">
+                  <i data-lucide="message-circle" class="w-3 h-3 text-slate-500"></i> ${top.replies_count || 0}
+                </span>
               </div>
-              <span class="text-[10px] text-slate-400 font-mono flex items-center gap-1 shrink-0">
-                <i data-lucide="message-circle" class="w-3 h-3 text-slate-500"></i> ${top.replies_count || 0}
-              </span>
-            </div>
-          `).join('')}
+            `).join('')}
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    }
+
+    // Docs & Deliverables
+    if (docs.length > 0) {
+      html += `
+        <div class="space-y-1 pt-1">
+          <div class="text-[10px] uppercase font-mono text-amber-400 font-bold tracking-wider flex items-center gap-1">
+            <i data-lucide="file-text" class="w-3 h-3"></i> Linked Docs & Deliverables (${docs.length})
+          </div>
+          <div class="space-y-1">
+            ${docs.map(d => `
+              <div onclick="openDocEditorModal('${d.doc_id}')" class="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-amber-500/50 cursor-pointer transition-all group">
+                <div class="flex items-center gap-2 min-w-0">
+                  <i data-lucide="${d.icon || 'file-text'}" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
+                  <span class="text-xs text-slate-200 group-hover:text-amber-300 font-medium truncate">${escapeHtml(d.title)}</span>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40 font-mono">v${d.current_version || 1}</span>
+                  ${d.file_url ? `<button type="button" onclick="event.stopPropagation(); triggerBrowserDownload('${d.file_url}', '${escapeHtml(d.title)}')" class="p-1 text-slate-400 hover:text-emerald-400" title="Download"><i data-lucide="download" class="w-3 h-3"></i></button>` : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // Bookmarks
+    if (bookmarks.length > 0) {
+      html += `
+        <div class="space-y-1 pt-1">
+          <div class="text-[10px] uppercase font-mono text-purple-400 font-bold tracking-wider flex items-center gap-1">
+            <i data-lucide="bookmark" class="w-3 h-3"></i> Bookmarked Links (${bookmarks.length})
+          </div>
+          <div class="space-y-1">
+            ${bookmarks.map(b => `
+              <div class="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 transition-all group">
+                <a href="${escapeHtml(b.url)}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 min-w-0 flex-1">
+                  ${b.favicon_url ? `<img src="${escapeHtml(b.favicon_url)}" class="w-3.5 h-3.5 rounded-sm" onerror="this.style.display='none'">` : '<i data-lucide="globe" class="w-3.5 h-3.5 text-purple-400"></i>'}
+                  <span class="text-xs text-slate-200 group-hover:text-purple-300 font-medium truncate">${escapeHtml(b.title || b.url)}</span>
+                </a>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono shrink-0">${escapeHtml(b.domain || 'Link')}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    hub.innerHTML = html;
   }
 
-  // Docs & Deliverables
-  if (docs.length > 0) {
-    html += `
-      <div class="space-y-1 pt-1">
-        <div class="text-[10px] uppercase font-mono text-amber-400 font-bold tracking-wider flex items-center gap-1">
-          <i data-lucide="file-text" class="w-3 h-3"></i> Linked Docs & Deliverables (${docs.length})
-        </div>
-        <div class="space-y-1">
-          ${docs.map(d => `
-            <div onclick="openDocEditorModal('${d.doc_id}')" class="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-amber-500/50 cursor-pointer transition-all group">
-              <div class="flex items-center gap-2 min-w-0">
-                <i data-lucide="${d.icon || 'file-text'}" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
-                <span class="text-xs text-slate-200 group-hover:text-amber-300 font-medium truncate">${escapeHtml(d.title)}</span>
-              </div>
-              <div class="flex items-center gap-1.5 shrink-0">
-                <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40 font-mono">v${d.current_version || 1}</span>
-                ${d.file_url ? `<button type="button" onclick="event.stopPropagation(); triggerBrowserDownload('${d.file_url}', '${escapeHtml(d.title)}')" class="p-1 text-slate-400 hover:text-emerald-400"><i data-lucide="download" class="w-3 h-3"></i></button>` : ''}
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // Bookmarks
-  if (bookmarks.length > 0) {
-    html += `
-      <div class="space-y-1 pt-1">
-        <div class="text-[10px] uppercase font-mono text-purple-400 font-bold tracking-wider flex items-center gap-1">
-          <i data-lucide="bookmark" class="w-3 h-3"></i> Bookmarked Links (${bookmarks.length})
-        </div>
-        <div class="space-y-1">
-          ${bookmarks.map(b => `
-            <div class="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 transition-all group">
-              <a href="${escapeHtml(b.url)}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 min-w-0 flex-1">
-                ${b.favicon_url ? `<img src="${escapeHtml(b.favicon_url)}" class="w-3.5 h-3.5 rounded-sm" onerror="this.style.display='none'">` : '<i data-lucide="globe" class="w-3.5 h-3.5 text-purple-400"></i>'}
-                <span class="text-xs text-slate-200 group-hover:text-purple-300 font-medium truncate">${escapeHtml(b.title || b.url)}</span>
-              </a>
-              <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono shrink-0">${escapeHtml(b.domain || 'Link')}</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  hub.innerHTML = html;
   if (window.lucide) window.lucide.createIcons();
+
+  // 4. Background API query to refresh linked resources for this task
+  if (!task._linkedFetched) {
+    task._linkedFetched = true;
+    const prjId = task.project_id || window.WorkspacesState.currentProjectId;
+    const authHeaders = {
+      'x-demo-admin': 'true',
+      'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
+    };
+
+    Promise.allSettled([
+      fetch(`/api/iams/docs?project_id=${prjId}&task_id=${taskId}`, { headers: authHeaders }).then(r => r.json()),
+      fetch(`/api/iams/messages?project_id=${prjId}&task_id=${taskId}`, { headers: authHeaders }).then(r => r.json()),
+      fetch(`/api/iams/bookmarks?project_id=${prjId}&task_id=${taskId}`, { headers: authHeaders }).then(r => r.json())
+    ]).then(results => {
+      const [docsRes, msgsRes, bmksRes] = results;
+      let stateChanged = false;
+      if (docsRes.status === 'fulfilled' && docsRes.value?.success && Array.isArray(docsRes.value.data)) {
+        if (!window.WorkspacesState.docs) window.WorkspacesState.docs = [];
+        docsRes.value.data.forEach(d => {
+          const idx = window.WorkspacesState.docs.findIndex(x => x.doc_id === d.doc_id);
+          if (idx >= 0) window.WorkspacesState.docs[idx] = d;
+          else window.WorkspacesState.docs.push(d);
+          stateChanged = true;
+        });
+      }
+      if (msgsRes.status === 'fulfilled' && msgsRes.value?.success && Array.isArray(msgsRes.value.data)) {
+        if (!window.WorkspacesState.topics) window.WorkspacesState.topics = [];
+        msgsRes.value.data.forEach(t => {
+          const idx = window.WorkspacesState.topics.findIndex(x => x.topic_id === t.topic_id);
+          if (idx >= 0) window.WorkspacesState.topics[idx] = t;
+          else window.WorkspacesState.topics.push(t);
+          stateChanged = true;
+        });
+      }
+      if (bmksRes.status === 'fulfilled' && bmksRes.value?.success && Array.isArray(bmksRes.value.data)) {
+        if (!window.WorkspacesState.bookmarks) window.WorkspacesState.bookmarks = [];
+        bmksRes.value.data.forEach(b => {
+          const idx = window.WorkspacesState.bookmarks.findIndex(x => x.bookmark_id === b.bookmark_id);
+          if (idx >= 0) window.WorkspacesState.bookmarks[idx] = b;
+          else window.WorkspacesState.bookmarks.push(b);
+          stateChanged = true;
+        });
+      }
+      if (stateChanged && getActiveDrawerTask()?.task_id === taskId) {
+        renderDrawerLinkedHub(task);
+      }
+    }).catch(() => {});
+  }
 }
 
 // Global Image Lightbox Preview
@@ -3829,17 +3945,59 @@ function renderMessagesTopicList() {
   if (window.lucide) window.lucide.createIcons();
 }
 
+// Open Modal for Posting New Discussion Topic
+function openNewTopicModal(preselectedTaskId = null) {
+  const modal = document.getElementById('upbase-new-topic-modal');
+  if (!modal) return;
+
+  const taskSelect = document.getElementById('new-topic-task-select');
+  if (taskSelect) {
+    const currentPrjId = window.WorkspacesState.currentProjectId;
+    const tasks = (window.WorkspacesState.tasks || []).filter(t => !t.project_id || t.project_id === currentPrjId);
+    
+    taskSelect.innerHTML = `
+      <option value="">-- General Topic (No Task) --</option>
+      ${tasks.map(t => `
+        <option value="${t.task_id}" ${t.task_id === preselectedTaskId ? 'selected' : ''}>
+          ${escapeHtml(t.title)} (${t.status || 'TASK'})
+        </option>
+      `).join('')}
+    `;
+  }
+
+  const titleInput = document.getElementById('new-topic-title');
+  const contentInput = document.getElementById('new-topic-content');
+  if (titleInput) {
+    if (preselectedTaskId) {
+      const task = (window.WorkspacesState.tasks || []).find(t => t.task_id === preselectedTaskId);
+      titleInput.value = task ? `Discussion: ${task.title}` : '';
+    } else {
+      titleInput.value = '';
+    }
+  }
+  if (contentInput) contentInput.value = '';
+
+  modal.classList.remove('hidden');
+}
+
 // Post new async message topic
 async function postNewTopic(e) {
   if (e) e.preventDefault();
   const title = document.getElementById('new-topic-title')?.value;
   const content = document.getElementById('new-topic-content')?.value;
   const category = document.getElementById('new-topic-category')?.value || 'GENERAL';
+  const taskId = document.getElementById('new-topic-task-select')?.value || null;
 
   if (!title || !content) return;
 
   const wsId = window.WorkspacesState.currentWorkspaceId;
   const prjId = window.WorkspacesState.currentProjectId;
+
+  let taskTitle = null;
+  if (taskId) {
+    const matchedTask = (window.WorkspacesState.tasks || []).find(t => t.task_id === taskId);
+    if (matchedTask) taskTitle = matchedTask.title;
+  }
 
   try {
     const res = await fetch('/api/iams/messages', {
@@ -3851,6 +4009,8 @@ async function postNewTopic(e) {
       },
       body: JSON.stringify({
         project_id: prjId,
+        task_id: taskId || undefined,
+        task_title: taskTitle || undefined,
         title,
         content_html: `<p>${escapeHtml(content).replace(/\n/g, '<br>')}</p>`,
         category
@@ -3858,10 +4018,22 @@ async function postNewTopic(e) {
     });
     const result = await res.json();
     if (result.success) {
-      document.getElementById('new-topic-title').value = '';
-      document.getElementById('new-topic-content').value = '';
+      if (document.getElementById('new-topic-title')) document.getElementById('new-topic-title').value = '';
+      if (document.getElementById('new-topic-content')) document.getElementById('new-topic-content').value = '';
       closeAllModals();
       await loadProjectMessages();
+
+      if (taskId) {
+        const activeTask = getActiveDrawerTask();
+        if (activeTask && activeTask.task_id === taskId) {
+          activeTask._linkedFetched = false;
+          renderDrawerLinkedHub(activeTask);
+        }
+      }
+
+      if (typeof showNotification === 'function') {
+        showNotification('Topic posted successfully!', 'success');
+      }
     }
   } catch (err) {
     console.error('Failed to post topic:', err);
@@ -3883,13 +4055,45 @@ async function loadProjectDocs() {
         'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
+
+    let serverDocs = [];
     if (res.ok) {
       const result = await res.json();
-      if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-        window.WorkspacesState.docs = result.data;
-      } else {
-        window.WorkspacesState.docs = [...DEFAULT_FALLBACK_DOCS];
+      if (result.success && Array.isArray(result.data)) {
+        serverDocs = result.data;
       }
+    }
+
+    // Harvest deliverables directly from tasks loaded in this project
+    const allDocs = [...serverDocs];
+    const tasks = (window.WorkspacesState.tasks || []).filter(t => !t.project_id || t.project_id === prjId);
+    tasks.forEach(t => {
+      if (Array.isArray(t.attachments)) {
+        t.attachments.forEach(att => {
+          const alreadyExists = allDocs.some(d => (d.task_id === t.task_id && d.title === att.name) || (att.url && d.file_url === att.url));
+          if (!alreadyExists) {
+            allDocs.unshift({
+              doc_id: 'doc_task_' + (att.name || Math.random().toString(36).substring(2, 7)).replace(/[^a-zA-Z0-9]/g, '_'),
+              project_id: prjId,
+              task_id: t.task_id,
+              task_title: t.title,
+              title: att.name,
+              is_deliverable: true,
+              icon: att.is_image ? 'image' : 'file-text',
+              file_url: att.url,
+              file_size: att.size || 'Deliverable',
+              current_version: 1,
+              content_html: `<p>Task Deliverable attached to: <strong>${escapeHtml(t.title)}</strong> (${att.size || 'Asset'})</p>`,
+              last_edited_by: t.created_by || 'Team',
+              updated_at: att.uploaded_at || t.created_at || new Date().toISOString()
+            });
+          }
+        });
+      }
+    });
+
+    if (allDocs.length > 0) {
+      window.WorkspacesState.docs = allDocs;
     } else {
       window.WorkspacesState.docs = [...DEFAULT_FALLBACK_DOCS];
     }
@@ -3984,6 +4188,20 @@ async function createNewDoc() {
 
 // Open and edit document
 async function openDocEditorModal(docId) {
+  // Check if it's a deliverable with a file_url
+  const localDoc = (window.WorkspacesState.docs || []).find(d => d.doc_id === docId);
+  if (localDoc && (localDoc.is_deliverable || localDoc.file_url)) {
+    if (localDoc.file_url) {
+      if (localDoc.icon === 'image' || (localDoc.file_type && localDoc.file_type.startsWith('image/')) || /\.(png|jpe?g|gif|webp|svg)$/i.test(localDoc.file_url)) {
+        openImageLightbox(localDoc.file_url, localDoc.title);
+        return;
+      } else {
+        triggerBrowserDownload(localDoc.file_url, localDoc.title);
+        return;
+      }
+    }
+  }
+
   try {
     const res = await fetch(`/api/iams/docs/${docId}`, {
       headers: {
@@ -3991,27 +4209,38 @@ async function openDocEditorModal(docId) {
         'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
-    const result = await res.json();
-    if (result.success) {
-      window.WorkspacesState.activeDoc = result.data;
+    let docData = null;
+    if (res.ok) {
+      const result = await res.json();
+      if (result.success) docData = result.data;
+    }
+    if (!docData && localDoc) {
+      docData = localDoc;
+    }
+    if (docData) {
+      window.WorkspacesState.activeDoc = docData;
       const modal = document.getElementById('upbase-doc-modal');
       const titleInput = document.getElementById('doc-editor-title');
       const bodyInput = document.getElementById('doc-editor-body');
       const versionList = document.getElementById('doc-version-history');
 
-      if (titleInput) titleInput.value = result.data.title;
-      if (bodyInput) bodyInput.value = result.data.content_html;
+      if (titleInput) titleInput.value = docData.title || '';
+      if (bodyInput) bodyInput.value = docData.content_html || '';
 
-      if (versionList && result.data.version_history) {
-        versionList.innerHTML = result.data.version_history.map(v => `
-          <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-800 text-xs">
-            <div>
-              <span class="font-bold text-cyan-400 font-mono">v${v.version_number}</span>
-              <span class="text-slate-400 text-[10px] ml-2">${new Date(v.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+      if (versionList) {
+        if (docData.version_history && docData.version_history.length > 0) {
+          versionList.innerHTML = docData.version_history.map(v => `
+            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-800 text-xs">
+              <div>
+                <span class="font-bold text-cyan-400 font-mono">v${v.version_number}</span>
+                <span class="text-slate-400 text-[10px] ml-2">${new Date(v.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+              </div>
+              <button onclick="restoreDocVersion('${docId}', ${v.version_number})" class="text-[10px] text-emerald-400 hover:underline">Restore</button>
             </div>
-            <button onclick="restoreDocVersion('${docId}', ${v.version_number})" class="text-[10px] text-emerald-400 hover:underline">Restore</button>
-          </div>
-        `).join('');
+          `).join('');
+        } else {
+          versionList.innerHTML = `<div class="text-[10px] text-slate-500 py-1">Initial version (v1)</div>`;
+        }
       }
 
       if (modal) modal.classList.remove('hidden');
@@ -4090,13 +4319,62 @@ async function loadProjectBookmarks() {
         'Authorization': `Bearer ${(sessionStorage.getItem('iceberg_jwt') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || '')}`
       }
     });
+
+    let serverBmarks = [];
     if (res.ok) {
       const result = await res.json();
-      if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-        window.WorkspacesState.bookmarks = result.data;
-      } else {
-        window.WorkspacesState.bookmarks = [...DEFAULT_FALLBACK_BOOKMARKS];
+      if (result.success && Array.isArray(result.data)) {
+        serverBmarks = result.data;
       }
+    }
+
+    const allBmarks = [...serverBmarks];
+    const urlRegex = /(https?:\/\/[^\s<]+)/gi;
+    const tasks = (window.WorkspacesState.tasks || []).filter(t => !t.project_id || t.project_id === prjId);
+    tasks.forEach(t => {
+      // Harvest from comments
+      if (Array.isArray(t.comments)) {
+        t.comments.forEach(c => {
+          const matches = (c.text || '').match(urlRegex) || [];
+          matches.forEach(url => {
+            if (!allBmarks.some(b => b.url === url)) {
+              let domain = 'link';
+              try { domain = new URL(url).hostname.replace('www.', ''); } catch (e) {}
+              allBmarks.push({
+                bookmark_id: 'bmk_c_' + Math.random().toString(36).substring(2, 7),
+                title: `${t.title} Reference`,
+                url: url,
+                domain: domain,
+                task_id: t.task_id,
+                task_title: t.title,
+                source: 'TASK_COMMENT'
+              });
+            }
+          });
+        });
+      }
+      // Harvest from attachments
+      if (Array.isArray(t.attachments)) {
+        t.attachments.forEach(att => {
+          if (att.url && /^https?:\/\//i.test(att.url) && !allBmarks.some(b => b.url === att.url)) {
+            let domain = 'link';
+            try { domain = new URL(att.url).hostname.replace('www.', ''); } catch (e) {}
+            allBmarks.push({
+              bookmark_id: 'bmk_att_' + Math.random().toString(36).substring(2, 7),
+              title: att.name || att.url,
+              url: att.url,
+              domain: domain,
+              task_id: t.task_id,
+              task_title: t.title,
+              source: 'TASK_ATTACHMENT'
+            });
+          }
+        });
+      }
+    });
+
+    if (allBmarks.length > 0) {
+      window.WorkspacesState.bookmarks = allBmarks;
     } else {
       window.WorkspacesState.bookmarks = [...DEFAULT_FALLBACK_BOOKMARKS];
     }
@@ -4692,6 +4970,7 @@ window.handleKanbanDragOver = handleKanbanDragOver;
 window.handleKanbanDragLeave = handleKanbanDragLeave;
 window.handleKanbanDrop = handleKanbanDrop;
 window.createQuickTask = createQuickTask;
+window.openNewTopicModal = openNewTopicModal;
 window.postNewTopic = postNewTopic;
 window.createNewDoc = createNewDoc;
 window.openDocEditorModal = openDocEditorModal;
