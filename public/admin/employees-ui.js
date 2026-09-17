@@ -24,7 +24,7 @@ window.EmployeesUI = (function() {
   ];
 
   async function api(endpoint, options = {}) {
-    const token = sessionStorage.getItem('iceberg_jwt') || sessionStorage.getItem('iceberg_admin_token') || localStorage.getItem('token') || 'demo_token';
+    const token = sessionStorage.getItem('iceberg_jwt') || sessionStorage.getItem('iceberg_admin_token') || localStorage.getItem('token') || localStorage.getItem('iceberg_jwt') || 'demo_token';
     const headers = {
       'Content-Type': 'application/json',
       'x-demo-admin': 'true',
@@ -227,6 +227,11 @@ window.EmployeesUI = (function() {
               <button onclick="EmployeesUI.toggleEmployeeActive('${emp._id}', ${!emp.is_active})" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 ${emp.is_active ? 'text-rose-400 hover:text-rose-300' : 'text-emerald-400 hover:text-emerald-300'} transition-colors" title="${emp.is_active ? 'Suspend Account' : 'Reactivate Account'}">
                 <i data-lucide="${emp.is_active ? 'user-x' : 'user-check'}" class="w-3.5 h-3.5"></i>
               </button>
+              ${emp.email !== 'admin@icebergma.com' && emp.email !== 'admin@iceberg.agency' ? `
+              <button onclick="EmployeesUI.deleteEmployee('${emp._id}', '${emp.full_name.replace(/'/g, "\\'")}')" class="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/20 transition-colors" title="Permanently Delete Account">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+              ` : ''}
             </div>
           </td>
         </tr>
@@ -695,6 +700,24 @@ window.EmployeesUI = (function() {
     }
   }
 
+  async function deleteEmployee(empId, empName) {
+    const confirmed = window.confirm(
+      `⚠️ PERMANENT USER DELETION\n\nAre you sure you want to permanently delete the account for "${empName}"?\n\nThis will completely remove their credentials, profile, onboarding history, and OKRs from the database.\n\nThis action CANNOT be undone.`
+    );
+    if (!confirmed) return;
+
+    const res = await api(`/api/iams/employees/${empId}`, {
+      method: 'DELETE'
+    });
+
+    if (res.success) {
+      showToast(res.message || 'Employee permanently deleted');
+      await init();
+    } else {
+      showToast(res.error || 'Failed to delete employee account', 'error');
+    }
+  }
+
   // OKR Modals
   function openCreateOkrModal(empId) {
     selectedEmpForOkr = empId;
@@ -829,6 +852,7 @@ window.EmployeesUI = (function() {
     closeResetPasswordModal,
     submitResetPassword,
     toggleEmployeeActive,
+    deleteEmployee,
     selectOnboardingEmployee,
     toggleOnboardingStep,
     saveOnboardingMetadata,
