@@ -238,3 +238,108 @@ body {
   padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
 }
 
+/* ========================================================================== */
+/* MOBILE DYNAMIC ENHANCEMENTS & APP DOCK                                     */
+/* ========================================================================== */
+
+/* Prevent iOS Safari auto-zooming into inputs */
+@media (max-width: 640px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  /* Bottom sheet modal animation on mobile */
+  .modal-sheet {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    margin-bottom: 0 !important;
+    width: 100% !important;
+    max-height: 88vh !important;
+    overflow-y: auto !important;
+    box-shadow: 0 -10px 40px -10px rgba(0, 0, 0, 0.9) !important;
+  }
+}
+
+/* Modal drag handle pill for native mobile feel */
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(148, 163, 184, 0.35);
+  margin: 0 auto 0.75rem auto;
+}
+
+/* Mobile App Dock navigation buttons */
+.mobile-dock-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.6rem;
+  color: #94a3b8;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  border-radius: 0.75rem;
+  min-width: 58px;
+}
+
+.mobile-dock-btn.active {
+  color: #22d3ee;
+  transform: translateY(-2px);
+}
+
+.mobile-dock-btn.active .dock-icon-wrap {
+  background: rgba(6, 182, 212, 0.18);
+  border-color: rgba(6, 182, 212, 0.45);
+  color: #22d3ee;
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.35);
+}
+
+.mobile-dock-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  width: 16px;
+  height: 3px;
+  background: #06b6d4;
+  border-radius: 9999px;
+  box-shadow: 0 0 8px #06b6d4;
+}
+
+/* Touch feedback and active micro-interactions */
+button, .glass-card-interactive, .nav-tab-btn, .mobile-dock-btn {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+button:active:not(:disabled), 
+.btn-cyan:active:not(:disabled), 
+.btn-ghost:active:not(:disabled),
+.mobile-dock-btn:active {
+  transform: scale(0.96);
+}
+
+/* Mobile scroll hint mask for top nav */
+.nav-scroll-container {
+  position: relative;
+}
+
+.nav-scroll-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 28px;
+  background: linear-gradient(to right, transparent, rgba(7, 11, 20, 0.9));
+  pointer-events: none;
+}
+
+/* Smooth padding when mobile dock is visible */
+@media (max-width: 640px) {
+  body.has-mobile-dock {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+

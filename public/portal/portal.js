@@ -15,8 +15,237 @@ const PortalApp = (() => {
   let cachedAddons = [];
   let chatPollTimer = null;
 
+  // ── DEMO PREVIEW STATE ───────────────────────────────────────────────────
+  const DEMO_STATE = {
+    brief: {
+      status: 'IN_REVIEW',
+      brand_overview: {
+        brand_story: 'Brand Alpha is a premier direct-to-consumer luxury brand redefining modern lifestyle apparel with sustainable, organic textiles and bespoke design.',
+        value_proposition: 'Artisanal tailoring, sustainable luxury, and guaranteed perfect fit.',
+        industry_niche: 'Luxury Direct-to-Consumer Fashion'
+      },
+      target_audience: {
+        primary_persona: 'High-earning urban professionals aged 25-45 valuing refined minimalist aesthetics.',
+        pain_points: ['Fast fashion degradation', 'Lack of supply-chain sustainability transparency', 'Inconsistent sizing']
+      },
+      scope_and_objectives: {
+        primary_goal: 'ECOMMERCE_SALES',
+        target_kpis: '4.5x ROAS on Meta ads, 15,000 monthly orders, <1s mobile load speed'
+      },
+      creative_guidelines: {
+        visual_style: 'MINIMAL_LUXURY',
+        brand_colors: '#070b14, #06b6d4, #10b981',
+        benchmark_urls: 'https://apple.com, https://stripe.com, https://linear.app'
+      },
+      brand_assets: {
+        shared_drive_url: 'https://drive.google.com/drive/folders/iceberg-brand-alpha-demo',
+        guidelines_doc_url: 'https://figma.com/@iceberg/brand-alpha-tokens',
+        technical_access_notes: 'Meta Pixel ID: 981248912 | Shopify Plus Storefront Active'
+      }
+    },
+    deliverables: [
+      {
+        task_id: 'tsk_hero_motion_demo',
+        title: 'Hero Video Reels & High-ROAS Ad Creative Suite (Batch 1)',
+        description: '5 scripted short-form videos with motion graphics, sound design, and hook variations.',
+        status: 'IN_REVIEW',
+        revision_rounds_count: 1,
+        max_free_revisions: 2,
+        current_version: {
+          version_number: 2,
+          client_status: 'PENDING_REVIEW',
+          asset_url: 'https://icebergma.com',
+          client_feedback: null
+        }
+      },
+      {
+        task_id: 'tsk_landing_page_demo',
+        title: 'High-Converting Mobile Landing Page & Fast Checkout Funnel',
+        description: 'Sub-second mobile-first storefront landing page with integrated Meta CAPI tracking and A/B test split.',
+        status: 'IN_REVIEW',
+        revision_rounds_count: 0,
+        max_free_revisions: 2,
+        current_version: {
+          version_number: 1,
+          client_status: 'PENDING_REVIEW',
+          asset_url: 'https://icebergma.com',
+          client_feedback: null
+        }
+      },
+      {
+        task_id: 'tsk_brand_system_demo',
+        title: 'Design System & Typography Token Architecture',
+        description: 'Complete Figma master design system with components, responsive grids, and dark theme tokens.',
+        status: 'DONE',
+        revision_rounds_count: 0,
+        max_free_revisions: 2,
+        current_version: {
+          version_number: 1,
+          client_status: 'APPROVED',
+          asset_url: '#',
+          client_feedback: 'Approved by Creative Director'
+        }
+      }
+    ],
+    onboardingMilestones: [
+      { title: 'Project Kickoff & Strategic Goal Setting', category: 'ONBOARDING', status: 'DONE' },
+      { title: 'Meta CAPI Server-Side & Google Analytics Setup', category: 'TRACKING', status: 'DONE' },
+      { title: 'Brand Vision & Creative Tone Sign-off', category: 'CREATIVE', status: 'DONE' },
+      { title: 'Customer Persona & Competitor Benchmarking', category: 'STRATEGY', status: 'IN_PROGRESS' },
+      { title: 'Staging Environment & DNS Verification', category: 'TECHNICAL', status: 'TODO' }
+    ],
+    messages: [
+      { sender_role: 'Account Director', sender_name: 'Karim Hegazi', text: 'Welcome to your Iceberg Client Suite! We have uploaded Version 2 of your Hero Video Ads for review.', created_at: new Date(Date.now() - 3600000).toISOString() },
+      { sender_role: 'Lead Specialist', sender_name: 'Amr Mansour', text: 'Your Meta CAPI tracking and server-side events are active and hitting 9.8/10 Event Match Quality.', created_at: new Date(Date.now() - 1800000).toISOString() }
+    ],
+    appliedAddons: []
+  };
+
   // ── API HELPER ─────────────────────────────────────────────────────────────
   async function apiFetch(endpoint, options = {}) {
+    const isDemo = localStorage.getItem('iceberg_demo_active') === 'true';
+
+    // Handle demo mock endpoints seamlessly
+    if (isDemo) {
+      if (endpoint === '/api/iams/client-portal/me') {
+        return {
+          success: true,
+          user: currentUser || { full_name: 'Demo Client', username: 'demo_guest' },
+          client: currentClient || { company_name: 'Brand Alpha Group' },
+          project: currentProject || { title: 'Brand Alpha — Global Scale & Creative Sprint', category: 'PERFORMANCE_MARKETING' }
+        };
+      }
+      if (endpoint === '/api/iams/client-portal/dashboard' || endpoint === '/api/iams/client-portal/overview') {
+        const pendingCount = DEMO_STATE.deliverables.filter(d => d.current_version?.client_status === 'PENDING_REVIEW').length;
+        const approvedCount = DEMO_STATE.deliverables.filter(d => d.current_version?.client_status === 'APPROVED').length;
+        return {
+          success: true,
+          project: currentProject,
+          metrics: {
+            completed_deliverables: approvedCount,
+            pending_client_approvals: pendingCount,
+            brief_completion: 92
+          },
+          recent_assets: DEMO_STATE.deliverables.map(d => ({
+            task_title: d.title,
+            version: d.current_version?.version_number || 1,
+            preview_type: 'Deliverable',
+            client_status: d.current_version?.client_status || 'IN_REVIEW',
+            asset_url: d.current_version?.asset_url || '#'
+          })),
+          contacts: {
+            account_manager: {
+              full_name: 'Karim Hegazi',
+              phone: '+201000000000',
+              email: 'accounts@icebergma.com'
+            },
+            lead_specialist: {
+              full_name: 'Amr Mansour',
+              department: 'Performance & Web Architecture'
+            }
+          }
+        };
+      }
+      if (endpoint === '/api/iams/client-portal/brief') {
+        if (options.method === 'POST') {
+          return { success: true, message: 'Brief saved successfully in demo mode.' };
+        }
+        return { success: true, brief: DEMO_STATE.brief };
+      }
+      if (endpoint === '/api/iams/client-portal/checklists') {
+        return {
+          success: true,
+          onboarding_tasks: DEMO_STATE.onboardingMilestones,
+          deliverables: DEMO_STATE.deliverables
+        };
+      }
+      if (endpoint === '/api/iams/client-portal/addons') {
+        return {
+          success: true,
+          catalog: cachedAddons.length > 0 ? cachedAddons : [
+            {
+              slug: 'landing-page-sprint',
+              category: 'Web & CRO',
+              title: 'High-Converting Landing Page Sprint',
+              description: 'Bespoke, high-velocity landing page designed for Meta & Google ads. Sub-second load times and integrated tracking.',
+              deliverables: ['Custom UX/UI Wireframe', 'Responsive Front-End Code', 'Meta CAPI Setup', 'A/B Test Structure'],
+              turnaround_days: 7,
+              price_usd: 1450,
+              price_egp: 72000,
+              icon: 'layout-grid',
+              featured: true
+            },
+            {
+              slug: 'meta-ads-scaling-pack',
+              category: 'Performance Marketing',
+              title: 'Meta & TikTok Performance Scaling Pack',
+              description: 'Comprehensive paid acquisition campaign setup. Full creative testing matrix and ROAS-focused budget allocation.',
+              deliverables: ['10 High-Performing Ad Creatives', 'Video Motion Hooks', 'Conversion API Tracking', 'Weekly Performance Dashboard'],
+              turnaround_days: 10,
+              price_usd: 1800,
+              price_egp: 89000,
+              icon: 'trending-up',
+              featured: true
+            },
+            {
+              slug: 'viral-reels-batch',
+              category: 'Creative Production',
+              title: 'Viral Video & Reels Batch (5 Videos)',
+              description: 'High-impact short-form videos tailored for Instagram Reels, TikTok, and YouTube Shorts.',
+              deliverables: ['5 Scripted Concepts', 'Motion Graphics', 'Sound Design', 'Optimized Captions'],
+              turnaround_days: 8,
+              price_usd: 950,
+              price_egp: 47000,
+              icon: 'video',
+              featured: false
+            }
+          ],
+          requests: DEMO_STATE.appliedAddons
+        };
+      }
+      if (endpoint === '/api/iams/client-portal/addons/apply') {
+        const body = JSON.parse(options.body || '{}');
+        DEMO_STATE.appliedAddons.push({
+          request_id: 'req_demo_' + Date.now(),
+          addon_slug: body.addon_slug,
+          urgency: body.urgency,
+          currency: body.currency,
+          client_notes: body.client_notes,
+          status: 'PENDING_REVIEW',
+          created_at: new Date().toISOString()
+        });
+        return { success: true, message: 'Add-on request submitted successfully!' };
+      }
+      if (endpoint === '/api/iams/client-portal/deliverables/review') {
+        const body = JSON.parse(options.body || '{}');
+        const target = DEMO_STATE.deliverables.find(d => d.task_id === body.task_id);
+        if (target && target.current_version) {
+          if (body.action === 'APPROVE') {
+            target.current_version.client_status = 'APPROVED';
+            target.status = 'DONE';
+          } else {
+            target.current_version.client_status = 'CHANGES_REQUESTED';
+            target.current_version.client_feedback = body.feedback_notes;
+            target.revision_rounds_count = (target.revision_rounds_count || 0) + 1;
+          }
+        }
+        return { success: true, message: 'Deliverable review processed.' };
+      }
+      if (endpoint === '/api/iams/client-portal/messages') {
+        if (options.method === 'POST') {
+          const body = JSON.parse(options.body || '{}');
+          DEMO_STATE.messages.push({
+            sender_role: 'Client (You)',
+            sender_name: currentUser?.full_name || 'Client',
+            text: body.text,
+            created_at: new Date().toISOString()
+          });
+          return { success: true };
+        }
+        return { success: true, messages: DEMO_STATE.messages };
+      }
+    }
+
     const headers = {
       'Content-Type': 'application/json',
       ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}),
@@ -33,7 +262,7 @@ const PortalApp = (() => {
       }
       return data;
     } catch (err) {
-      console.error(`[Portal API Error] ${endpoint}:`, err);
+      console.warn(`[Portal API Network Notice] ${endpoint}:`, err.message);
       return { success: false, error: 'Network error or service offline.' };
     }
   }
@@ -106,12 +335,21 @@ const PortalApp = (() => {
   function showAuthView() {
     document.getElementById('auth-view')?.classList.remove('hidden');
     document.getElementById('portal-main-view')?.classList.add('hidden');
+    document.body.classList.remove('has-mobile-dock');
     if (window.lucide) window.lucide.createIcons();
   }
 
   function showMainView() {
     document.getElementById('auth-view')?.classList.add('hidden');
     document.getElementById('portal-main-view')?.classList.remove('hidden');
+    document.body.classList.add('has-mobile-dock');
+
+    const isDemo = localStorage.getItem('iceberg_demo_active') === 'true';
+    const demoBadge = document.getElementById('demo-mode-indicator');
+    if (demoBadge) {
+      if (isDemo) demoBadge.classList.remove('hidden');
+      else demoBadge.classList.add('hidden');
+    }
 
     // Populate Top Header
     document.getElementById('hdr-company-name').textContent = currentClient?.company_name || 'Client Project';
@@ -125,6 +363,33 @@ const PortalApp = (() => {
     }
 
     if (window.lucide) window.lucide.createIcons();
+  }
+
+  function loginDemo() {
+    currentUser = {
+      user_id: 'usr_demo_client_preview',
+      username: 'demo_client',
+      full_name: 'Sarah Jenkins (Demo)',
+      role: 'ClientGuest',
+      email: 'client@demo.icebergma.com'
+    };
+    currentClient = {
+      client_id: 'cli_demo_brand',
+      company_name: 'Brand Alpha Group',
+      industry: 'Luxury Retail & E-Commerce'
+    };
+    currentProject = {
+      project_id: 'prj_demo_alpha',
+      title: 'Brand Alpha — Global Scale & Creative Sprint',
+      category: 'PERFORMANCE MARKETING',
+      status: 'ACTIVE_SPRINT'
+    };
+    authToken = 'demo_token_preview';
+    localStorage.setItem('iceberg_client_token', authToken);
+    localStorage.setItem('iceberg_demo_active', 'true');
+    showToast('Entering Interactive Client Suite Demo Preview!');
+    showMainView();
+    loadDashboard();
   }
 
   async function handleLogin(e) {
@@ -201,7 +466,7 @@ const PortalApp = (() => {
       chatPollTimer = null;
     }
 
-    // Update active tab button styles
+    // Update active tab button styles (top nav)
     document.querySelectorAll('.nav-tab-btn').forEach(btn => {
       btn.classList.remove('active', 'text-cyan-400');
       btn.classList.add('text-slate-400');
@@ -210,6 +475,16 @@ const PortalApp = (() => {
     if (activeBtn) {
       activeBtn.classList.add('active');
       activeBtn.classList.remove('text-slate-400');
+      activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+
+    // Update mobile app dock buttons
+    document.querySelectorAll('.mobile-dock-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    const activeDockBtn = document.getElementById(`dock-btn-${tabName}`);
+    if (activeDockBtn) {
+      activeDockBtn.classList.add('active');
     }
 
     // Toggle Tab Views
@@ -235,6 +510,9 @@ const PortalApp = (() => {
       // Auto-poll every 3.5 seconds while viewing Team Stream
       chatPollTimer = setInterval(loadMessages, 3500);
     }
+
+    // Scroll to top of content container smoothly on tab switch
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     if (window.lucide) window.lucide.createIcons();
   }
@@ -272,17 +550,29 @@ const PortalApp = (() => {
     document.getElementById('stat-pending-num').textContent = metrics.pending_client_approvals;
     document.getElementById('stat-brief-score').textContent = `${metrics.brief_completion || 0}%`;
 
-    // Badges in Header tabs
+    // Badges in Header tabs & Mobile Dock
     const briefBadge = document.getElementById('tab-brief-badge');
+    const dockBriefBadge = document.getElementById('dock-brief-badge');
     if (briefBadge) briefBadge.textContent = `${metrics.brief_completion || 0}%`;
+    if (dockBriefBadge) dockBriefBadge.textContent = `${metrics.brief_completion || 0}%`;
 
     const pendingBadge = document.getElementById('tab-pending-badge');
+    const dockPendingBadge = document.getElementById('dock-pending-badge');
+    const pendingApprovals = metrics.pending_client_approvals || 0;
     if (pendingBadge) {
-      if (metrics.pending_client_approvals > 0) {
-        pendingBadge.textContent = metrics.pending_client_approvals;
+      if (pendingApprovals > 0) {
+        pendingBadge.textContent = pendingApprovals;
         pendingBadge.classList.remove('hidden');
       } else {
         pendingBadge.classList.add('hidden');
+      }
+    }
+    if (dockPendingBadge) {
+      if (pendingApprovals > 0) {
+        dockPendingBadge.textContent = pendingApprovals;
+        dockPendingBadge.classList.remove('hidden');
+      } else {
+        dockPendingBadge.classList.add('hidden');
       }
     }
 
@@ -871,6 +1161,7 @@ const PortalApp = (() => {
     init,
     showToast,
     handleLogin,
+    loginDemo,
     logout,
     togglePasswordVisibility,
     switchTab,

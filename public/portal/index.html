@@ -126,7 +126,19 @@
           </button>
         </form>
 
-        <div class="mt-6 pt-5 border-t border-slate-800 text-center">
+        <!-- Live Interactive Demo Button -->
+        <div class="mt-4 pt-4 border-t border-slate-800 text-center">
+          <button type="button" onclick="PortalApp.loginDemo()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500/15 via-emerald-500/15 to-cyan-500/15 hover:from-cyan-500/25 hover:to-emerald-500/25 border border-cyan-500/30 text-cyan-300 text-xs font-bold flex items-center justify-center gap-2 transition shadow-lg shadow-cyan-950/40">
+            <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
+            <span>Explore Live Interactive Demo</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-cyan-400"></i>
+          </button>
+          <p class="text-[11px] text-slate-500 mt-2">
+            Instant 1-tap preview of active deliverables, sprints & brief
+          </p>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-800/60 text-center">
           <p class="text-xs text-slate-400">
             Assigned project credentials are provided by your Iceberg Account Director. Need access?
             <a href="mailto:accounts@icebergma.com" class="text-cyan-400 hover:underline">Contact Desk</a>
@@ -153,8 +165,13 @@
             <div class="text-sm font-extrabold tracking-wider font-display text-white flex items-center gap-1.5">
               ICEBERG <span class="text-cyan-400 text-xs px-1.5 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/30">CLIENT SUITE</span>
             </div>
-            <div id="hdr-company-name" class="text-xs text-slate-400 font-medium truncate max-w-[160px] sm:max-w-xs">
-              Loading client...
+            <div class="flex items-center gap-1.5">
+              <div id="hdr-company-name" class="text-xs text-slate-400 font-medium truncate max-w-[120px] sm:max-w-xs">
+                Loading client...
+              </div>
+              <span id="demo-mode-indicator" class="hidden px-1.5 py-0.2 rounded-full text-[9px] font-extrabold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                Demo
+              </span>
             </div>
           </div>
         </a>
@@ -172,16 +189,16 @@
       </div>
 
       <!-- Right Header Actions -->
-      <div class="flex items-center gap-2.5 sm:gap-3">
+      <div class="flex items-center gap-2 sm:gap-3">
         <!-- Install App Quick Button -->
-        <button type="button" id="hdr-install-btn" onclick="PortalPWA.promptInstall()" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-semibold transition shadow-md shadow-cyan-500/10" title="Install App to Home Screen">
+        <button type="button" id="hdr-install-btn" onclick="PortalPWA.promptInstall()" class="hidden items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-semibold transition shadow-md shadow-cyan-500/10" title="Install App to Home Screen">
           <i data-lucide="smartphone" class="w-3.5 h-3.5 text-cyan-400"></i>
           <span class="hidden sm:inline">Install App</span>
         </button>
 
         <!-- Client User Pill -->
-        <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800">
-          <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-xs text-slate-950 font-display">
+        <div class="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800">
+          <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-xs text-slate-950 font-display">
             <span id="hdr-avatar-init">C</span>
           </div>
           <div class="hidden sm:block text-left">
@@ -198,7 +215,7 @@
     </header>
 
     <!-- Sub-Header Navigation Tabs -->
-    <nav class="bg-space-900/60 border-b border-slate-800/60 px-4 sm:px-8 overflow-x-auto scrollbar-none">
+    <nav class="nav-scroll-container bg-space-900/60 border-b border-slate-800/60 px-4 sm:px-8 overflow-x-auto scrollbar-none">
       <div class="flex items-center gap-2 min-w-max">
         <button onclick="PortalApp.switchTab('overview')" id="tab-btn-overview" class="nav-tab-btn active px-4 py-3 text-xs sm:text-sm font-semibold flex items-center gap-2 transition rounded-t-lg">
           <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
@@ -676,7 +693,7 @@
       <!-- TAB 5: TEAM STREAM (Direct Project Messaging)                         -->
       <!-- ==================================================================== -->
       <section id="tab-view-messages" class="hidden space-y-4">
-        <div class="glass-panel p-6 flex flex-col h-[650px]">
+        <div class="glass-panel p-4 sm:p-6 flex flex-col h-[calc(100vh-230px)] min-h-[480px] sm:h-[650px]">
           <div class="flex items-center justify-between pb-4 border-b border-slate-800">
             <div>
               <h3 class="text-base font-bold font-display text-white flex items-center gap-2">
@@ -710,7 +727,7 @@
     </main>
 
     <!-- Global Footer -->
-    <footer class="mt-auto py-6 border-t border-slate-800/80 text-center text-xs text-slate-500">
+    <footer class="mt-auto py-6 pb-20 sm:pb-6 border-t border-slate-800/80 text-center text-xs text-slate-500">
       <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
         <div>
           ICEBERG Digital Marketing Agency — Confidential Client Portal &copy; 2026
@@ -722,6 +739,46 @@
         </div>
       </div>
     </footer>
+
+    <!-- Mobile App Bottom Dock (Visible on Mobile Viewports) -->
+    <nav id="mobile-app-dock" class="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-space-950/92 backdrop-blur-2xl border-t border-slate-800/80 px-2 pt-1.5 safe-bottom-padding flex items-center justify-around shadow-2xl" aria-label="Mobile Navigation Dock">
+      <button type="button" onclick="PortalApp.switchTab('overview')" id="dock-btn-overview" class="mobile-dock-btn active">
+        <div class="dock-icon-wrap p-1.5 rounded-xl border border-transparent transition">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+        </div>
+        <span class="text-[10px] font-bold mt-0.5 tracking-tight">Overview</span>
+      </button>
+
+      <button type="button" onclick="PortalApp.switchTab('brief')" id="dock-btn-brief" class="mobile-dock-btn">
+        <div class="dock-icon-wrap p-1.5 rounded-xl border border-transparent transition relative">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span id="dock-brief-badge" class="absolute -top-1 -right-2 px-1 text-[8px] font-mono rounded-full bg-cyan-500 text-slate-950 font-extrabold">0%</span>
+        </div>
+        <span class="text-[10px] font-bold mt-0.5 tracking-tight">Brief</span>
+      </button>
+
+      <button type="button" onclick="PortalApp.switchTab('checklists')" id="dock-btn-checklists" class="mobile-dock-btn">
+        <div class="dock-icon-wrap p-1.5 rounded-xl border border-transparent transition relative">
+          <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+          <span id="dock-pending-badge" class="hidden absolute -top-1 -right-2 px-1 text-[8px] font-mono rounded-full bg-amber-400 text-slate-950 font-extrabold">0</span>
+        </div>
+        <span class="text-[10px] font-bold mt-0.5 tracking-tight">Approvals</span>
+      </button>
+
+      <button type="button" onclick="PortalApp.switchTab('addons')" id="dock-btn-addons" class="mobile-dock-btn">
+        <div class="dock-icon-wrap p-1.5 rounded-xl border border-transparent transition">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+        </div>
+        <span class="text-[10px] font-bold mt-0.5 tracking-tight">Add-ons</span>
+      </button>
+
+      <button type="button" onclick="PortalApp.switchTab('messages')" id="dock-btn-messages" class="mobile-dock-btn">
+        <div class="dock-icon-wrap p-1.5 rounded-xl border border-transparent transition">
+          <i data-lucide="message-square" class="w-4 h-4"></i>
+        </div>
+        <span class="text-[10px] font-bold mt-0.5 tracking-tight">Stream</span>
+      </button>
+    </nav>
   </div>
 
   <!-- ======================================================================== -->
@@ -729,8 +786,9 @@
   <!-- ======================================================================== -->
 
   <!-- Modal 1: Deliverable Revision Request -->
-  <div id="modal-revision" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-    <div class="glass-panel p-6 max-w-lg w-full bg-slate-900 border-slate-700 shadow-2xl relative space-y-4">
+  <div id="modal-revision" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/80 backdrop-blur-md">
+    <div class="glass-panel p-5 sm:p-6 max-w-lg w-full bg-slate-900 border-slate-700 shadow-2xl relative space-y-4 modal-sheet rounded-t-3xl sm:rounded-2xl">
+      <div class="sheet-handle sm:hidden"></div>
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
         <h4 class="text-base font-bold font-display text-white flex items-center gap-2">
           <i data-lucide="edit-3" class="w-4 h-4 text-amber-400"></i> Request Deliverable Revision
@@ -763,8 +821,9 @@
   </div>
 
   <!-- Modal 2: Deliverable Approval Confirmation -->
-  <div id="modal-approve" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-    <div class="glass-panel p-6 max-w-md w-full bg-slate-900 border-slate-700 shadow-2xl relative space-y-4 text-center">
+  <div id="modal-approve" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/80 backdrop-blur-md">
+    <div class="glass-panel p-6 max-w-md w-full bg-slate-900 border-slate-700 shadow-2xl relative space-y-4 text-center modal-sheet rounded-t-3xl sm:rounded-2xl">
+      <div class="sheet-handle sm:hidden"></div>
       <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto mb-2">
         <i data-lucide="check-circle-2" class="w-6 h-6"></i>
       </div>
@@ -787,8 +846,9 @@
   </div>
 
   <!-- Modal 3: Add-on Service Application -->
-  <div id="modal-addon-apply" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-    <div class="glass-panel p-6 max-w-lg w-full bg-slate-900 border-slate-700 shadow-2xl relative space-y-4">
+  <div id="modal-addon-apply" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/80 backdrop-blur-md">
+    <div class="glass-panel p-5 sm:p-6 max-w-lg w-full bg-slate-900 border-slate-700 shadow-2xl relative space-y-4 modal-sheet rounded-t-3xl sm:rounded-2xl">
+      <div class="sheet-handle sm:hidden"></div>
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
         <div>
           <span id="apply-addon-category" class="text-[10px] font-bold px-2 py-0.5 rounded-full badge-purple">ACCELERATOR</span>
@@ -847,7 +907,7 @@
   <!-- ======================================================================== -->
   <!-- MOBILE PWA INSTALL NOTIFICATION BANNER                                   -->
   <!-- ======================================================================== -->
-  <aside id="pwa-install-banner" class="hidden fixed bottom-3 inset-x-3 sm:inset-x-auto sm:right-6 sm:bottom-6 z-50 max-w-md mx-auto pwa-banner-slide safe-bottom-padding" aria-label="Install App Notification">
+  <aside id="pwa-install-banner" class="hidden fixed bottom-16 sm:bottom-6 inset-x-3 sm:inset-x-auto sm:right-6 z-50 max-w-md mx-auto pwa-banner-slide safe-bottom-padding" aria-label="Install App Notification">
     <div class="glass-panel p-4 pwa-pulse-glow border-cyan-500/40 relative overflow-hidden backdrop-blur-2xl bg-slate-950/95 shadow-2xl rounded-2xl">
       <!-- Ambient light effect -->
       <div class="absolute -top-10 -right-10 w-28 h-28 bg-cyan-500/20 rounded-full blur-2xl pointer-events-none"></div>
@@ -1026,7 +1086,7 @@
   </div>
 
   <!-- Mobile Floating Trigger Button (Shown if dismissed, so user can still install anytime) -->
-  <button id="pwa-floating-trigger" onclick="PortalPWA.promptInstall()" class="hidden fixed bottom-4 right-4 z-40 px-3.5 py-2.5 rounded-2xl bg-slate-900/95 border border-cyan-500/40 text-cyan-300 shadow-2xl shadow-cyan-950/60 flex items-center gap-2 hover:border-cyan-400 transition" title="Install App to Home Screen">
+  <button id="pwa-floating-trigger" onclick="PortalPWA.promptInstall()" class="hidden fixed bottom-16 sm:bottom-4 right-4 z-40 px-3.5 py-2.5 rounded-2xl bg-slate-900/95 border border-cyan-500/40 text-cyan-300 shadow-2xl shadow-cyan-950/60 flex items-center gap-2 hover:border-cyan-400 transition" title="Install App to Home Screen">
     <i data-lucide="smartphone" class="w-4 h-4 text-cyan-400"></i>
     <span class="text-xs font-bold">Install App</span>
   </button>
