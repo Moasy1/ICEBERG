@@ -179,3 +179,62 @@ body {
 .pulse-dot {
   animation: softPulse 2s infinite ease-in-out;
 }
+
+/* ========================================================================== */
+/* PWA MOBILE INSTALL BANNER & MODAL STYLES                                  */
+/* ========================================================================== */
+.pwa-banner-slide {
+  animation: pwaSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pwaSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pwa-banner-hide {
+  animation: pwaSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pwaSlideDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+.pwa-pulse-glow {
+  box-shadow: 0 0 30px rgba(6, 182, 212, 0.3), 0 12px 40px -10px rgba(0, 0, 0, 0.85);
+}
+
+.pwa-icon-glow {
+  box-shadow: 0 4px 20px -2px rgba(6, 182, 212, 0.45);
+}
+
+@keyframes bounceDown {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+.bounce-arrow {
+  animation: bounceDown 1.5s infinite ease-in-out;
+}
+
+.safe-bottom-padding {
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+}
+

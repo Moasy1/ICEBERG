@@ -8,6 +8,18 @@
   <link rel="canonical" href="https://icebergma.com/portal">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="shortcut icon" href="/favicon.ico">
+  <!-- PWA & Mobile Web App Meta & Manifest -->
+  <link rel="manifest" href="/portal/portal.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ICEBERG Portal">
+  <meta name="application-name" content="ICEBERG Portal">
+  <meta name="theme-color" content="#070b14">
+  <link rel="apple-touch-icon" href="/portal/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/portal/icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="/portal/icon-512.png">
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -56,6 +68,15 @@
         <p class="text-xs sm:text-sm text-slate-400 mt-2">
           Secure, authenticated project workspace and deliverable command center.
         </p>
+
+        <!-- Mobile Install Quick Pill -->
+        <div id="auth-install-pill" class="hidden mt-3">
+          <button type="button" onclick="PortalPWA.promptInstall()" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/70 border border-cyan-500/40 text-cyan-300 text-xs font-semibold hover:bg-cyan-900/80 transition shadow-lg shadow-cyan-500/10">
+            <i data-lucide="smartphone" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span>Install App on Home Screen</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-cyan-400/70"></i>
+          </button>
+        </div>
       </div>
 
       <!-- Login Card -->
@@ -151,7 +172,13 @@
       </div>
 
       <!-- Right Header Actions -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2.5 sm:gap-3">
+        <!-- Install App Quick Button -->
+        <button type="button" id="hdr-install-btn" onclick="PortalPWA.promptInstall()" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-semibold transition shadow-md shadow-cyan-500/10" title="Install App to Home Screen">
+          <i data-lucide="smartphone" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <span class="hidden sm:inline">Install App</span>
+        </button>
+
         <!-- Client User Pill -->
         <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800">
           <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-xs text-slate-950 font-display">
@@ -817,7 +844,195 @@
   <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- Portal Application JS -->
+  <!-- ======================================================================== -->
+  <!-- MOBILE PWA INSTALL NOTIFICATION BANNER                                   -->
+  <!-- ======================================================================== -->
+  <aside id="pwa-install-banner" class="hidden fixed bottom-3 inset-x-3 sm:inset-x-auto sm:right-6 sm:bottom-6 z-50 max-w-md mx-auto pwa-banner-slide safe-bottom-padding" aria-label="Install App Notification">
+    <div class="glass-panel p-4 pwa-pulse-glow border-cyan-500/40 relative overflow-hidden backdrop-blur-2xl bg-slate-950/95 shadow-2xl rounded-2xl">
+      <!-- Ambient light effect -->
+      <div class="absolute -top-10 -right-10 w-28 h-28 bg-cyan-500/20 rounded-full blur-2xl pointer-events-none"></div>
+
+      <div class="flex items-start gap-3.5 relative z-10">
+        <!-- App Icon -->
+        <div class="relative shrink-0">
+          <img src="/portal/icon-192.png" alt="ICEBERG Portal" class="w-[52px] h-[52px] rounded-2xl pwa-icon-glow border border-cyan-400/40 bg-slate-900 object-cover shadow-lg">
+          <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-slate-950 pulse-dot"></span>
+        </div>
+
+        <!-- Info & CTAs -->
+        <div class="flex-1 min-w-0 pr-6">
+          <div class="flex items-center gap-1.5 mb-1">
+            <h3 class="text-sm font-bold text-white tracking-tight font-display">Install ICEBERG Portal</h3>
+            <span class="px-1.5 py-0.2 rounded-full text-[9px] font-extrabold uppercase tracking-wide badge-cyan">App</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-snug">
+            Add to your Home Screen for faster 1-tap access, real-time alerts & full-screen view.
+          </p>
+
+          <div class="mt-3 flex items-center gap-2">
+            <button type="button" id="pwa-banner-action-btn" onclick="PortalPWA.promptInstall()" class="px-4 py-2 rounded-xl btn-cyan text-xs font-bold text-slate-950 flex items-center gap-1.5 shadow-lg shadow-cyan-500/20">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span id="pwa-banner-action-text">Install App</span>
+            </button>
+            <button type="button" onclick="PortalPWA.dismissBanner(true)" class="px-3 py-2 rounded-xl btn-ghost text-xs text-slate-400 hover:text-white transition">
+              Not Now
+            </button>
+          </div>
+        </div>
+
+        <!-- Dismiss X Button -->
+        <button type="button" onclick="PortalPWA.dismissBanner(true)" class="absolute top-0 right-0 p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 rounded-lg transition" aria-label="Close">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ======================================================================== -->
+  <!-- iOS STEP-BY-STEP INSTALL MODAL                                           -->
+  <!-- ======================================================================== -->
+  <div id="pwa-ios-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md" role="dialog" aria-modal="true">
+    <div class="glass-panel w-full max-w-md p-5 sm:p-6 border-cyan-500/40 relative overflow-hidden bg-slate-950/95 shadow-2xl rounded-2xl animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <img src="/portal/icon-192.png" alt="ICEBERG Icon" class="w-9 h-9 rounded-xl border border-cyan-400/40 object-cover">
+          <div>
+            <h4 class="text-sm font-bold text-white font-display">Install on iPhone / iPad</h4>
+            <p class="text-[11px] text-cyan-400">Add to Home Screen in 3 easy steps</p>
+          </div>
+        </div>
+        <button type="button" onclick="PortalPWA.closeIosModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Instructions List -->
+      <div class="py-4 space-y-3 text-xs text-slate-200">
+        
+        <!-- Step 1 -->
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs shrink-0">
+            1
+          </div>
+          <div class="flex-1">
+            <span class="font-semibold text-white">Tap the Share icon</span> in your Safari toolbar
+            <div class="mt-1 flex items-center gap-2 text-slate-400 text-[11px]">
+              <span>Look for this icon:</span>
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded bg-slate-800 text-cyan-400 border border-slate-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                </svg>
+              </span>
+              <span>(bottom of screen)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs shrink-0">
+            2
+          </div>
+          <div class="flex-1">
+            <span class="font-semibold text-white">Scroll down & tap "Add to Home Screen"</span>
+            <div class="mt-1 flex items-center gap-2 text-slate-400 text-[11px]">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded bg-slate-800 text-cyan-400 border border-slate-700">
+                <i data-lucide="plus-square" class="w-4 h-4"></i>
+              </span>
+              <span>Select "Add to Home Screen"</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs shrink-0">
+            3
+          </div>
+          <div class="flex-1">
+            <span class="font-semibold text-white">Tap "Add"</span> in the top-right corner to complete installation.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="pt-2 flex items-center justify-between">
+        <span class="text-[11px] text-slate-400 flex items-center gap-1">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i> Instant setup, no App Store needed
+        </span>
+        <button type="button" onclick="PortalPWA.closeIosModal()" class="px-5 py-2 rounded-xl btn-cyan text-xs font-bold text-slate-950">
+          Got It
+        </button>
+      </div>
+
+      <!-- Bouncing Arrow pointing to bottom bar on mobile Safari -->
+      <div class="mt-3 text-center bounce-arrow text-cyan-400 sm:hidden">
+        <i data-lucide="arrow-down" class="w-5 h-5 mx-auto"></i>
+        <span class="text-[10px] uppercase font-bold tracking-wider text-cyan-400">Tap Share Icon Below</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================================== -->
+  <!-- ANDROID / GENERIC FALLBACK INSTALL MODAL                                 -->
+  <!-- ======================================================================== -->
+  <div id="pwa-generic-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md" role="dialog" aria-modal="true">
+    <div class="glass-panel w-full max-w-md p-5 sm:p-6 border-cyan-500/40 relative overflow-hidden bg-slate-950/95 shadow-2xl rounded-2xl animate-in fade-in zoom-in-95 duration-200">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <img src="/portal/icon-192.png" alt="ICEBERG Icon" class="w-9 h-9 rounded-xl border border-cyan-400/40 object-cover">
+          <div>
+            <h4 class="text-sm font-bold text-white font-display">Install ICEBERG Portal</h4>
+            <p class="text-[11px] text-cyan-400">Quick browser installation</p>
+          </div>
+        </div>
+        <button type="button" onclick="PortalPWA.closeGenericModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="py-4 space-y-3 text-xs text-slate-200">
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs shrink-0">1</div>
+          <div class="flex-1">
+            Tap the browser menu <span class="font-bold text-white">⋮</span> (three dots in top-right corner).
+          </div>
+        </div>
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs shrink-0">2</div>
+          <div class="flex-1">
+            Select <span class="font-bold text-white">"Install app"</span> or <span class="font-bold text-white">"Add to Home screen"</span>.
+          </div>
+        </div>
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs shrink-0">3</div>
+          <div class="flex-1">
+            Tap <span class="font-bold text-white">"Install"</span> to confirm. It will be added right to your Home Screen!
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-2 flex items-center justify-end">
+        <button type="button" onclick="PortalPWA.closeGenericModal()" class="px-5 py-2 rounded-xl btn-cyan text-xs font-bold text-slate-950">
+          Understood
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Floating Trigger Button (Shown if dismissed, so user can still install anytime) -->
+  <button id="pwa-floating-trigger" onclick="PortalPWA.promptInstall()" class="hidden fixed bottom-4 right-4 z-40 px-3.5 py-2.5 rounded-2xl bg-slate-900/95 border border-cyan-500/40 text-cyan-300 shadow-2xl shadow-cyan-950/60 flex items-center gap-2 hover:border-cyan-400 transition" title="Install App to Home Screen">
+    <i data-lucide="smartphone" class="w-4 h-4 text-cyan-400"></i>
+    <span class="text-xs font-bold">Install App</span>
+  </button>
+
+  <!-- Portal Application JS & PWA Controller -->
   <script src="/portal/portal.js"></script>
+  <script src="/portal/portal-pwa.js"></script>
 </body>
 </html>

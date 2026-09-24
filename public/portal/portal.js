@@ -869,6 +869,7 @@ const PortalApp = (() => {
   // Public Exports
   return {
     init,
+    showToast,
     handleLogin,
     logout,
     togglePasswordVisibility,
